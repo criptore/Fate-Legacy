@@ -282,6 +282,15 @@ node tools/sim.js random 8000   # or: skilled
 - **Sacred and Divine content.** Reachable, but only a handful of events
   exist past Supreme — deliberately deferred until the mid-game tone was
   settled, which it now mostly is.
+- **More Origins** beyond the current three (Outskirts / Citadel Ward /
+  Great Clan) — other backgrounds a Sleeper could plausibly come from,
+  each with its own stat bias and Aspect weighting.
+- **Interactions with named characters from the novel** — conditional, not
+  committed. Writing a scenario around an actual character (getting their
+  voice right, not flattening them into a stat-check) is a different bar
+  than the invented-original scenarios so far, and not one I trust my own
+  judgment on yet. This waits on feedback on the writing already in the
+  game before it's attempted at all.
 
 If you want to take a swing at any of the above, see "Adding content" —
 and the repo's README (this file) is the canon-vs-invented reference to
