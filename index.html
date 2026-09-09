@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<script>
+/* Recovery hatch: /?repair
+   Unregisters the service worker and drops FILE caches, then reloads.
+   Never touches localStorage (that is where saves live).
+   Inlined on purpose: if a stale worker starts serving a mismatched mix of
+   files, index.html is the only thing the client still fetches from network,
+   so this is the only code we can be sure of running. */
+(function () {
+  if (location.search.indexOf("repair") === -1) return;
+  var done = function () { location.replace(location.pathname); };
+  try {
+    var jobs = [];
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+      jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) {
+        return Promise.all(rs.map(function (r) { return r.unregister(); }));
+      }));
+    }
+    if (window.caches && caches.keys) {
+      jobs.push(caches.keys().then(function (ks) {
+        return Promise.all(ks.map(function (k) { return caches.delete(k); }));
+      }));
+    }
+    Promise.all(jobs).then(done, done);
+    setTimeout(done, 4000);
+  } catch (e) { done(); }
+})();
+</script>
+<title>Fate Legacy · Survive the Spell</title>
+<meta name="description" content="A narrative life-sim in a world of Nightmares. Awaken, survive your trials, and climb the Soul Ranks — if your lifespan lets you." />
+<meta name="theme-color" content="#0a0a0f" />
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/tokens.css?v=0.1.1" />
+<link rel="stylesheet" href="css/main.css?v=0.1.1" />
+</head>
+<body>
+<div id="app">
+  <!-- HOME -->
+  <section class="screen" id="screen-home">
+    <div class="wrap">
+      <h1 class="logo">FATE<span>LEGACY</span></h1>
+      <p class="tagline">The Spell chose you. Everything after that is your own doing.</p>
+      <div class="stack">
+        <button class="btn btn-primary" id="btn-continue" hidden>Continue</button>
+        <button class="btn" id="btn-new">New Life</button>
+      </div>
+      <p class="fineprint" id="home-save-info"></p>
+    </div>
+  </section>
+
+  <!-- ORIGIN -->
+  <section class="screen" id="screen-origin" hidden>
+    <div class="wrap">
+      <h2 class="end-title">Where the Spell finds you</h2>
+      <p class="end-cause">Very few people from the outskirts survive the First Nightmare. This is the difficulty setting.</p>
+      <div class="stack" id="origin-list"></div>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="screen-game" hidden>
+    <header class="hud">
+      <div class="hud-row">
+        <span class="rank-pill" id="hud-rank">Dormant</span>
+        <span class="hud-age" id="hud-age"></span>
+      </div>
+      <div class="lifebar" title="Remaining lifespan">
+        <div class="lifebar-fill" id="hud-life"></div>
+      </div>
+      <div class="meters" id="hud-meters"></div>
+    </header>
+
+    <main class="story" id="story">
+      <h2 class="event-title" id="event-title"></h2>
+      <div class="event-text" id="event-text"></div>
+      <div class="outcome" id="outcome" hidden></div>
+      <div class="choices" id="choices"></div>
+    </main>
+
+    <footer class="toolbar">
+      <button class="btn btn-ghost" id="btn-sheet">Status</button>
+      <button class="btn btn-ghost" id="btn-quit">Abandon</button>
+    </footer>
+  </section>
+
+  <!-- DEATH / EPILOGUE -->
+  <section class="screen" id="screen-end" hidden>
+    <div class="wrap">
+      <h2 class="end-title" id="end-title">Your story ends</h2>
+      <p class="end-cause" id="end-cause"></p>
+      <div class="end-stats" id="end-stats"></div>
+      <button class="btn btn-primary" id="btn-again">Begin Again</button>
+    </div>
+  </section>
+
+  <!-- STATUS SHEET -->
+  <div class="sheet-backdrop" id="sheet" hidden>
+    <div class="sheet">
+      <h3>Spell Status Page</h3>
+      <div id="sheet-body"></div>
+      <button class="btn" id="btn-sheet-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js?v=0.1.1"></script>
+<script src="js/save.js?v=0.1.1"></script>
+<script src="js/engine.js?v=0.1.1"></script>
+<script src="js/ui.js?v=0.1.1"></script>
+<script>
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
+}
+</script>
+</body>
+</html>

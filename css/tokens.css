@@ -1,0 +1,21 @@
+:root{
+  --bg:#08080c; --bg-2:#0f1018; --bg-3:#161826;
+  --ink:#e8e6f0; --ink-dim:#9a97ad; --ink-faint:#5d5a70;
+  --line:#242536;
+  --accent:#7b5cff;      /* soul essence violet */
+  --accent-2:#c9a227;    /* memory gold */
+  --danger:#c0392b;
+  --ok:#3fb27f;
+  --radius:14px;
+  --pad:18px;
+  --fs-body:16px;
+  --maxw:640px;
+}
+/* Rank accent colours, applied on <body data-rank="..."> */
+body[data-rank="dormant"]     { --rank:#6b6f80; }
+body[data-rank="awakened"]    { --rank:#7b5cff; }
+body[data-rank="ascended"]    { --rank:#2f8fd8; }
+body[data-rank="transcendent"]{ --rank:#c9a227; }
+body[data-rank="supreme"]     { --rank:#d2603a; }
+body[data-rank="sacred"]      { --rank:#e0e0ea; }
+body[data-rank="divine"]      { --rank:#fff6c9; }
