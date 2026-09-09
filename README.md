@@ -1,9 +1,28 @@
 # Fate Legacy
 
+**Play it: https://criptore.github.io/Fate-Legacy/**
+
 A narrative life-sim in the world of the Nightmare Spell. One run is one whole
 life — from the week the Spell infects you to whatever finally stops you.
 
-Static site: no framework, no build step, no backend. Open `index.html`.
+## What this is
+
+**Fate Legacy is an unofficial, non-commercial fan project** built for readers
+of Shadow Slave. It is not written or endorsed by GuiltyThree, and it makes
+no money — no ads, no donations, no premium tier, none planned, ever. It
+exists for one reason: to turn the book's soul-rank ladder into a fun,
+replayable interactive story, free for anyone to play. Source is open for
+the same reason — if you enjoy the setting, take the code and run with it.
+
+If GuiltyThree or a rights holder would rather this didn't exist in this
+form, opening an issue is enough — it'll be taken down without argument.
+
+**Found a bug, or have thoughts after a run?** The end screen has direct
+links to file it on this repo's [Issues](../../issues) page — that's the
+whole feedback loop, and it's how the project actually improves.
+
+Static site: no framework, no build step, no backend. Open `index.html`, or
+just use the play link above.
 
 ---
 

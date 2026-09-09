@@ -18,8 +18,11 @@
     endRankName:$("end-rank-name"), endRankPips:$("end-rank-pips"),
     endTitle:$("end-title"), endCause:$("end-cause"), endRunes:$("end-runes"),
     endAchv:$("end-achv"), endStats:$("end-stats"),
+    linkBug:$("link-bug"), linkFeedback:$("link-feedback"),
     themeToggle:$("theme-toggle"),
   };
+
+  const REPO_URL = "https://github.com/criptore/Fate-Legacy";
 
   let S = null;         // current run state
   let EV = null;        // event on screen
@@ -175,6 +178,35 @@
     return items;
   }
 
+  /* Pre-fills a GitHub "new issue" form with this run's details and opens it
+     in a new tab. Nothing is transmitted until the player reviews it and
+     clicks submit on GitHub's own page — this only builds a URL, it never
+     talks to the GitHub API or holds any credential. That also means it
+     needs the player to have (and log into) a GitHub account; there is no
+     way to collect anonymous feedback from a static site without one. */
+  function feedbackURL(kind) {
+    const r = Engine.rank(S);
+    const origin = Engine.ORIGINS().find(o => o.id === S.origin);
+    const aspect = S.aspect && ASPECTS.find(a => a.id === S.aspect);
+    const flaw = S.flaw && FLAWS.find(f => f.id === S.flaw);
+    const lines = [
+      kind === "bug"
+        ? "**What happened?**\n(describe here — what you expected vs what you saw)\n"
+        : "**Your thoughts?**\n(what worked, what didn't, what you'd want more of)\n",
+      "---",
+      `- Final rank: ${r.name} (${r.common})`,
+      `- Cause: ${S.cause ?? "—"}`,
+      `- Age at end: ${Engine.years(S)}`,
+      `- Origin: ${origin ? origin.name : "—"}`,
+      `- Aspect / Flaw: ${aspect ? aspect.name : "—"} / ${flaw ? flaw.name : "—"}`,
+      `- Decisions made: ${S.eventCount ?? S.history.length}`,
+      kind === "bug" ? `- Browser: ${navigator.userAgent}` : null,
+    ].filter(Boolean).join("\n");
+    const title = kind === "bug" ? "[Bug] " : "[Feedback] ";
+    const params = new URLSearchParams({ labels: kind, title, body: lines });
+    return `${REPO_URL}/issues/new?${params.toString()}`;
+  }
+
   function end() {
     show("end");
     const r = Engine.rank(S);
@@ -211,6 +243,9 @@
     ];
     el.endStats.innerHTML = tiles.map(([k, v, wide]) =>
       `<div class="stat-tile${wide ? " wide" : ""}"><b>${escape(k)}</b><span>${escape(String(v))}</span></div>`).join("");
+
+    el.linkBug.href = feedbackURL("bug");
+    el.linkFeedback.href = feedbackURL("feedback");
 
     Save.clear();
   }

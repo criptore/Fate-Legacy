@@ -166,6 +166,11 @@ body{
 .stat-tile span{font-size:14px;color:var(--ink);line-height:1.4}
 .stat-tile.wide{grid-column:1 / -1}
 
+/* --- feedback links --- */
+.feedback-row{display:flex;gap:10px;margin-top:14px}
+.feedback-row .btn{width:auto;flex:1;text-align:center;font-size:13px;padding:10px 12px;border-color:var(--line)}
+.feedback-note{color:var(--ink-faint);font-size:11px;text-align:center;margin:10px 0 0;line-height:1.5}
+
 /* --- sheet --- */
 .sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center;z-index:20}
 .sheet{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius) var(--radius) 0 0;padding:22px;width:100%;max-width:var(--maxw);max-height:82dvh;overflow:auto;animation:up .25s ease}

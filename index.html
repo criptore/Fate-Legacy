@@ -44,7 +44,7 @@
 <meta name="theme-color" content="#0a0a0f" />
 <link rel="icon" href="data:," />
 <link rel="stylesheet" href="css/tokens.css?v=0.2.1" />
-<link rel="stylesheet" href="css/main.css?v=0.2.1" />
+<link rel="stylesheet" href="css/main.css?v=0.2.2" />
 </head>
 <body>
 <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle day mode" title="Toggle day mode">☾</button>
@@ -130,6 +130,12 @@
       <div class="stat-grid" id="end-stats"></div>
 
       <button class="btn btn-primary" id="btn-again">Begin Again</button>
+
+      <div class="feedback-row">
+        <a class="btn btn-ghost" id="link-bug" target="_blank" rel="noopener">Report a bug ↗</a>
+        <a class="btn btn-ghost" id="link-feedback" target="_blank" rel="noopener">Leave feedback ↗</a>
+      </div>
+      <p class="feedback-note">Opens GitHub in a new tab, with this run's details pre-filled. Nothing is sent unless you submit it there — you'll need a (free) GitHub account.</p>
     </div>
   </section>
 
@@ -146,7 +152,7 @@
 <script src="js/data.js?v=0.2.1"></script>
 <script src="js/save.js?v=0.2.0"></script>
 <script src="js/engine.js?v=0.2.1"></script>
-<script src="js/ui.js?v=0.2.1"></script>
+<script src="js/ui.js?v=0.2.2"></script>
 <script>
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
