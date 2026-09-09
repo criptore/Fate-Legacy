@@ -210,8 +210,79 @@ node tools/validate.js          # after any content change
 node tools/sim.js random 8000   # or: skilled
 ```
 
-## Status
+## Features
 
-Engine complete and validated. 56 events across seven acts, Aspirant to Sacred.
-Sacred and Divine are reachable but thin — deliberately left until the
-mid-game tone is settled. The work from here is writing.
+### Implemented
+
+- **Full rank ladder, Aspirant to Divine.** Seven Soul Ranks, each with its
+  own lifespan and time-scale (see the table above). Sacred and Divine are
+  reachable but thin on content — see "Planned" below.
+- **3 Origins** (Outskirts / Citadel Ward / Great Clan) — the difficulty
+  setting. Each biases starting stats, which Aspects you're likely to draw,
+  and how generously the Spell grades your First Nightmare.
+- **Aspect + Flaw**, drawn at infection and granted after survival, per
+  canon's actual sequencing (see the table above). Flaws are weighted by
+  what you did in the Nightmare, not rolled blind.
+- **Aspect grading** — the Spell appraises your First Nightmare and grades
+  your Aspect Dormant / Awakened / Ascended / Transcendent accordingly.
+  (Currently capped at Transcendent — see "Planned.")
+- **7 hand-written Nightmare scenarios**, none of them from the novel, built
+  inside its rules: 3 for the First Nightmare (Hollow Choir, Nine-Tenths
+  Tide, Debt Collector), 2 for the Second (Lantern March, Iron Orchard), 1
+  for the Third (Assembly of Mouths), 1 for the Fourth (Quiet Between
+  Stars). A fresh one is drawn every run.
+- **2 solstice regions** (Saltglass Flats, The Ledger) — new destinations
+  built on the same pattern as the novel's Forgotten Shore / Dark City /
+  Hollow Mountains.
+- **Soul fragments**, following the wiki's actual formula
+  (`2^(ranks above you) × soul cores`), and **Tether**, which thins with
+  every rank the way the novel describes (Masters leave a tether, Saints
+  are miniature Gateways, Supremes are barely tied to Earth at all).
+- **Escalating world state** — Gate difficulty scales with both your rank
+  and the years you've lived, so refusing to climb is not a survival
+  strategy. This is what keeps "die of old age" at ~0.03% of runs instead
+  of the ~86% it was in an earlier version (see `README` git history / the
+  balance numbers above).
+- **Memories** (permanent stat bonuses from key choices) and a curated
+  **Achievements** list (22 entries) shown on the end screen, built from
+  which Nightmares you actually conquered — not just entered.
+- **Rune-styled HUD**: rank badge with a rank-tier ladder, always-visible
+  glyphs for Vitality/Willpower/Perception/Essence and your Aspect, an
+  expandable row for Cunning/Renown/Tether + your Flaw's text.
+- **Day mode**, opt-in, persisted, applied before first paint.
+- **End-of-run feedback links** — "Report a bug" / "Leave feedback" open a
+  pre-filled GitHub issue with the run's details.
+- **PWA / offline play** via the service worker, and a **save/continue**
+  system in localStorage.
+- **Balance tooling** — `tools/validate.js` (event-graph correctness) and
+  `tools/sim.js` (thousands of simulated lives, `random` or `skilled`
+  policy) — both described above.
+
+### Planned / not yet implemented
+
+- **Divine-grade Aspects.** Canon has a small, named category of
+  "Divine Aspect Holders" (Sunny, Nephis, Mordret) whose Aspect outranks
+  Transcendent — the game's grading currently hard-caps at Transcendent, so
+  a Divine-grade Aspect cannot occur yet. This isn't a balance choice, it's
+  a gap: the ceiling needs raising and something needs to gate how rare it
+  is.
+- **A real Class system**, separate from Soul Rank, matching what the wiki
+  actually describes for Divine Aspect holders: "Humans only ever had one
+  soul core" — normal Awakened are permanently capped at Beast Class no
+  matter their Rank. A Divine Aspect is what lets someone form additional
+  Soul Cores and climb Beast → Monster → Demon → Devil → Tyrant → Terror →
+  Titan, gated by soul-fragment thresholds (1000 / 2000 / 3000 / 4000 /
+  5000 / 6000+) exactly like a Nightmare Creature's own Class ladder. None
+  of this exists in the engine yet — `s.fragments` already tracks the right
+  number, but nothing reads it for Class purposes.
+- **More Nightmare scenarios per tier**, and content for the Fifth and
+  Sixth. Right now each tier has just enough scenarios to feel non-repeat
+  early and gets thin fast (the Fourth has exactly one).
+- **More solstice regions** beyond the two above.
+- **Sacred and Divine content.** Reachable, but only a handful of events
+  exist past Supreme — deliberately deferred until the mid-game tone was
+  settled, which it now mostly is.
+
+If you want to take a swing at any of the above, see "Adding content" —
+and the repo's README (this file) is the canon-vs-invented reference to
+check against before writing anything that touches Rank, Class, or Aspect.
