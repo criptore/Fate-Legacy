@@ -183,6 +183,39 @@ const MEMORIES = {
   ledger_page: { name:"Torn Ledger Page",   desc:"Your name is on it, in a hand you do not recognise.",             stats:{ willpower:2, essence:1 } },
 };
 
+/* -------------------------------------------------------------
+   ACHIEVEMENTS
+   Purely presentational: a curated subset of flags worth showing
+   on the end screen as a feat, rather than every flag a run can
+   pick up. Keyed by the flag that unlocks it. Ordered roughly by
+   how dramatic the feat is — the end screen shows them in this
+   order, most impressive first.
+------------------------------------------------------------- */
+const ACHIEVEMENTS = {
+  apotheosis:        { name:"Apotheosis",         desc:"Conquered the Fifth Nightmare and became a lesser god. No one from this cycle of the Spell had ever returned from it before." },
+  fourth:             { name:"The Fourth",         desc:"Crossed the Quiet Between Stars. Only three humans had ever reached Supreme before you." },
+  ancient_path:       { name:"The Old Road",       desc:"Reached Transcendence without a Third Nightmare, by a soul-refining technique the Spell did not teach you." },
+  war_saint:          { name:"Broke a Front",      desc:"Broke a battle line in the war between Domains that a hundred thousand Awakened could not move." },
+  built_refuge:       { name:"Landing Zone",       desc:"Built a refuge in the Dream Realm for two hundred million people." },
+  answered:           { name:"Silenced the Assembly", desc:"Gave the Assembly of Mouths an answer that did not need a chamber to hold it." },
+  stopped_the_march:  { name:"Stopped the March",  desc:"Stood in the road until forty thousand lanterns went out, and the Nightmare had nothing left to collect." },
+  saw_the_interval:   { name:"Saw the Interval",   desc:"Survived the Quiet Between Stars without crossing it. Nobody else has done even that." },
+  went_quiet:         { name:"Went Quiet",         desc:"Vanished from Sovereign attention for forty years, on purpose, and came back unnoticed." },
+  neutral:            { name:"Neutral Ground",     desc:"Refused both Domains during their war, and survived refusing them." },
+  killed_awakened:    { name:"Blood Price",        desc:"Killed another Awakened for the contents of their Soul Core." },
+  carried_them:       { name:"Carried Them Out",   desc:"Pulled allies from a Gate that should have killed everyone in it." },
+  held_the_sea:       { name:"Held the Soul Sea",  desc:"Held a soul-eating Nightmare Creature out of your own Core, by will alone." },
+  came_back_for_them: { name:"Went Back",          desc:"Turned back inside a Nightmare for someone you could have left." },
+  faced_it:           { name:"Faced It",           desc:"Looked the First Nightmare's fear in the eye without flinching." },
+  outsmarted_it:      { name:"Outwitted the Nightmare", desc:"Beat the First Nightmare on wit rather than force." },
+  walked_toward:      { name:"Walked Toward It",   desc:"Walked toward the thing in the dark, on purpose, in your First Nightmare." },
+  blooded:            { name:"Bloodied",           desc:"Helped bring down a Fallen-ranked Nightmare Creature as an Awakened." },
+  went_first:         { name:"First Across",       desc:"Crossed the Saltglass Flats first, alone, with everyone else watching." },
+  led:                { name:"Led Them",           desc:"Talked eight Awakened out of a fight that would have killed most of them." },
+  declined_fifth:     { name:"Chose Humanity",     desc:"Declined the Fifth Nightmare, as Anvil and Ki Song once did." },
+  seeking_sixth:      { name:"Seeking the Sixth",  desc:"Sacred, and still looking for the last door." },
+};
+
 const EVENTS = [
 
 /* ===================================================================
@@ -411,7 +444,7 @@ const EVENTS = [
   text:"You wake on the floor of a room in the waking world with your heart going like a hammer and the taste of somewhere else still in your mouth.\n\nYou are alive, which puts you in a minority.\n\nThere is a weight under your ribs that was not there before — small, cold, turning. And the Spell is writing on the inside of your eyes: a judgement of what you did in there, an ability you did not have yesterday, and the price it has decided to charge you for it.",
   choices:[
     { label:"Read the price.",
-      effects:{ awardFlaw:true, flags:{ add:["sleeper"] }, chapter:"sleeper" } },
+      effects:{ awardFlaw:true, flags:{ add:["sleeper"] }, chapter:"sleeper", conquered:true } },
   ]
 },
 
@@ -846,7 +879,7 @@ const EVENTS = [
   title:"Master",
   text:"The Seed resolves and spits you back into the Dream Realm, and the Spell writes one line, and the line is a rank.\n\nAscended. Master, in the older language. Another Aspect Ability, a Soul Core of a different quality altogether, and three hundred and twenty years instead of a hundred and forty.\n\nSomething else has changed, and it takes you a week to name it: you no longer need to be asleep. You can walk into the Dream Realm on your own feet now, leaving a tether behind you in the waking world, like a man leaving a rope down a well.",
   choices:[
-    { label:"Go up.", effects:{ rank:1, chapter:"ascended", stats:{ essence:5, renown:6 } } },
+    { label:"Go up.", effects:{ rank:1, chapter:"ascended", stats:{ essence:5, renown:6 }, conquered:true } },
   ]
 },
 
@@ -968,7 +1001,7 @@ const EVENTS = [
   title:"Saint",
   text:"Transcendent.\n\nThe old word for it is Saint, and there are a few dozen of those, and as of this moment you are one of them.\n\nNine hundred years. A Transformation Aspect Ability you have not yet dared use. And a change in what you are that you notice first in a small way: you no longer need a Gateway. You are one. You can step between the worlds where you stand, and take someone with you if you choose.\n\nSomewhere, three people who have been managing the number of Saints in the world for decades are being informed.",
   choices:[
-    { label:"Accept it.", effects:{ rank:1, chapter:"transcendent", stats:{ essence:8, renown:10 } } },
+    { label:"Accept it.", effects:{ rank:1, chapter:"transcendent", stats:{ essence:8, renown:10 }, conquered:true } },
   ]
 },
 
@@ -1022,7 +1055,7 @@ const EVENTS = [
       check:{ stat:"willpower", dc:9, dcSelf:true, fatal:1, fatalKind:"nightmare",
         fatalText:"You go out into the interval. The interval is what happens to things that go out into it.",
         fatalCause:"Lost in the Quiet Between Stars. No body, no Gateway, no record." },
-      success:{ text:"You cross it, and crossing it is the answer, because a distance that has been crossed once is no longer the kind of distance this place was built out of.\n\nSomething very old stops being true.\n\nYou come back through with an authority you did not go in with, and the Spell has no word for you, and neither does anyone else. There have been three. You are the fourth.", effects:{ rank:1, chapter:"supreme", stats:{ essence:14, renown:20, willpower:8 }, flags:{ add:["fourth"] } } },
+      success:{ text:"You cross it, and crossing it is the answer, because a distance that has been crossed once is no longer the kind of distance this place was built out of.\n\nSomething very old stops being true.\n\nYou come back through with an authority you did not go in with, and the Spell has no word for you, and neither does anyone else. There have been three. You are the fourth.", effects:{ rank:1, chapter:"supreme", stats:{ essence:14, renown:20, willpower:8 }, flags:{ add:["fourth"] }, conquered:true } },
       failure:{ text:"You do not cross it. You survive it, which nobody has done either, and you come back nine hundred years older in a body that has not aged and a mind that has.", effects:{ stats:{ willpower:6, essence:6, tether:-4 }, flags:{ add:["saw_the_interval"] }, days:600, chapter:"transcendent" } } },
     { label:"Turn around while turning around is still a thing that can be done.",
       effects:{ stats:{ willpower:2, renown:-6 }, flags:{ add:["fled_fourth"] }, chapter:"transcendent" } },

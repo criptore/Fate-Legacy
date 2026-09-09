@@ -1,4 +1,4 @@
-const CACHE = "fatelegacy-v0.1.1", V = CACHE.split("-v")[1];
+const CACHE = "fatelegacy-v0.2.2", V = CACHE.split("-v")[1];
 const CORE = [
   "./", "./index.html",
   `./css/tokens.css?v=${V}`, `./css/main.css?v=${V}`,

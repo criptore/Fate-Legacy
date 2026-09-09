@@ -29,15 +29,25 @@
     setTimeout(done, 4000);
   } catch (e) { done(); }
 })();
+/* Theme is set here, before CSS paints anything, so switching to day mode
+   never flashes the dark theme first. The toggle button (wired in ui.js)
+   just flips this same attribute and re-saves it. */
+(function () {
+  try {
+    var t = localStorage.getItem("fatelegacy.theme");
+    if (t === "light") document.documentElement.dataset.theme = "light";
+  } catch (e) {}
+})();
 </script>
 <title>Fate Legacy · Survive the Spell</title>
 <meta name="description" content="A narrative life-sim in a world of Nightmares. Awaken, survive your trials, and climb the Soul Ranks — if your lifespan lets you." />
 <meta name="theme-color" content="#0a0a0f" />
 <link rel="icon" href="data:," />
-<link rel="stylesheet" href="css/tokens.css?v=0.1.1" />
-<link rel="stylesheet" href="css/main.css?v=0.1.1" />
+<link rel="stylesheet" href="css/tokens.css?v=0.2.1" />
+<link rel="stylesheet" href="css/main.css?v=0.2.1" />
 </head>
 <body>
+<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle day mode" title="Toggle day mode">☾</button>
 <div id="app">
   <!-- HOME -->
   <section class="screen" id="screen-home">
@@ -65,13 +75,25 @@
   <section class="screen" id="screen-game" hidden>
     <header class="hud">
       <div class="hud-row">
-        <span class="rank-pill" id="hud-rank">Dormant</span>
+        <div class="rank-badge">
+          <span class="rank-badge-name" id="hud-rank">Dormant</span>
+          <span class="rank-pips" id="hud-pips"></span>
+        </div>
         <span class="hud-age" id="hud-age"></span>
       </div>
       <div class="lifebar" title="Remaining lifespan">
         <div class="lifebar-fill" id="hud-life"></div>
       </div>
-      <div class="meters" id="hud-meters"></div>
+      <!-- The runes: this is the Spell's status page, the way the book
+           describes it — written where only the carrier can see it. -->
+      <div class="rune-strip" id="hud-runes"></div>
+      <button class="rune-expand" id="hud-expand" type="button" aria-expanded="false">
+        <span id="hud-expand-label">More runes ▾</span>
+      </button>
+      <div class="rune-panel" id="hud-panel" hidden>
+        <div class="rune-strip rune-strip-secondary" id="hud-runes-secondary"></div>
+        <p class="rune-flaw" id="hud-flaw"></p>
+      </div>
     </header>
 
     <main class="story" id="story">
@@ -88,11 +110,25 @@
   </section>
 
   <!-- DEATH / EPILOGUE -->
-  <section class="screen" id="screen-end" hidden>
+  <section class="screen screen-end" id="screen-end" hidden>
     <div class="wrap">
+      <div class="end-badge">
+        <div class="rank-badge rank-badge-lg">
+          <span class="rank-badge-name" id="end-rank-name">Dormant</span>
+          <span class="rank-pips" id="end-rank-pips"></span>
+        </div>
+      </div>
       <h2 class="end-title" id="end-title">Your story ends</h2>
       <p class="end-cause" id="end-cause"></p>
-      <div class="end-stats" id="end-stats"></div>
+
+      <div class="rune-strip rune-strip-end" id="end-runes"></div>
+
+      <h3 class="end-section-title">Achievements</h3>
+      <div class="achv-grid" id="end-achv"></div>
+
+      <h3 class="end-section-title">Life at a Glance</h3>
+      <div class="stat-grid" id="end-stats"></div>
+
       <button class="btn btn-primary" id="btn-again">Begin Again</button>
     </div>
   </section>
@@ -107,10 +143,10 @@
   </div>
 </div>
 
-<script src="js/data.js?v=0.1.1"></script>
-<script src="js/save.js?v=0.1.1"></script>
-<script src="js/engine.js?v=0.1.1"></script>
-<script src="js/ui.js?v=0.1.1"></script>
+<script src="js/data.js?v=0.2.1"></script>
+<script src="js/save.js?v=0.2.0"></script>
+<script src="js/engine.js?v=0.2.1"></script>
+<script src="js/ui.js?v=0.2.1"></script>
 <script>
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });

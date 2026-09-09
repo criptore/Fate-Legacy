@@ -3,7 +3,7 @@
   --ink:#e8e6f0; --ink-dim:#9a97ad; --ink-faint:#5d5a70;
   --line:#242536;
   --accent:#7b5cff;      /* soul essence violet */
-  --accent-2:#c9a227;    /* memory gold */
+  --accent-2:#c9a227;    /* memory gold — also the Aspect rune's colour */
   --danger:#c0392b;
   --ok:#3fb27f;
   --radius:14px;
@@ -11,7 +11,9 @@
   --fs-body:16px;
   --maxw:640px;
 }
-/* Rank accent colours, applied on <body data-rank="..."> */
+/* Rank accent colours, applied on <body data-rank="...">. This is also the
+   colour the rune glyphs glow with, so the whole HUD's palette shifts as
+   the character climbs — dormant grey, awakened violet, and so on up. */
 body[data-rank="dormant"]     { --rank:#6b6f80; }
 body[data-rank="awakened"]    { --rank:#7b5cff; }
 body[data-rank="ascended"]    { --rank:#2f8fd8; }
@@ -19,3 +21,30 @@ body[data-rank="transcendent"]{ --rank:#c9a227; }
 body[data-rank="supreme"]     { --rank:#d2603a; }
 body[data-rank="sacred"]      { --rank:#e0e0ea; }
 body[data-rank="divine"]      { --rank:#fff6c9; }
+
+/* -------------------------------------------------------------
+   DAY MODE
+   Opt-in via the toggle button (top-right, all screens). The
+   Nightmare Spell's default aesthetic is night — this is the one
+   concession to players who want to read this on a bright train.
+   Rank colours are redeclared here: several of the dark-theme
+   values (near-white "sacred", pale "divine") are unreadable once
+   the background itself turns pale, so they get darker, more
+   saturated variants instead of being reused as-is.
+------------------------------------------------------------- */
+html[data-theme="light"]{
+  --bg:#f6f3ec; --bg-2:#ffffff; --bg-3:#ece6d6;
+  --ink:#241f2e; --ink-dim:#5c5468; --ink-faint:#8b8496;
+  --line:#ddd5c0;
+  --accent:#5b3fd6;
+  --accent-2:#9a6f0e;
+  --danger:#a8332a;
+  --ok:#237a55;
+}
+html[data-theme="light"] body[data-rank="dormant"]     { --rank:#585c6d; }
+html[data-theme="light"] body[data-rank="awakened"]    { --rank:#5b3fd6; }
+html[data-theme="light"] body[data-rank="ascended"]    { --rank:#1f6fae; }
+html[data-theme="light"] body[data-rank="transcendent"]{ --rank:#9a6f0e; }
+html[data-theme="light"] body[data-rank="supreme"]     { --rank:#a8492a; }
+html[data-theme="light"] body[data-rank="sacred"]      { --rank:#6b6458; }
+html[data-theme="light"] body[data-rank="divine"]      { --rank:#a3841a; }

@@ -8,20 +8,65 @@
     home:$("screen-home"), origin:$("screen-origin"), game:$("screen-game"), end:$("screen-end"),
     originList:$("origin-list"),
     btnNew:$("btn-new"), btnContinue:$("btn-continue"), saveInfo:$("home-save-info"),
-    rank:$("hud-rank"), age:$("hud-age"), life:$("hud-life"), meters:$("hud-meters"),
+    rank:$("hud-rank"), pips:$("hud-pips"), age:$("hud-age"), life:$("hud-life"),
+    runes:$("hud-runes"), runesSecondary:$("hud-runes-secondary"), flawLine:$("hud-flaw"),
+    expand:$("hud-expand"), expandLabel:$("hud-expand-label"), panel:$("hud-panel"),
     title:$("event-title"), text:$("event-text"), outcome:$("outcome"), choices:$("choices"),
     sheet:$("sheet"), sheetBody:$("sheet-body"),
     btnSheet:$("btn-sheet"), btnSheetClose:$("btn-sheet-close"),
     btnQuit:$("btn-quit"), btnAgain:$("btn-again"),
-    endTitle:$("end-title"), endCause:$("end-cause"), endStats:$("end-stats"),
+    endRankName:$("end-rank-name"), endRankPips:$("end-rank-pips"),
+    endTitle:$("end-title"), endCause:$("end-cause"), endRunes:$("end-runes"),
+    endAchv:$("end-achv"), endStats:$("end-stats"),
+    themeToggle:$("theme-toggle"),
   };
 
   let S = null;         // current run state
   let EV = null;        // event on screen
 
+  /* ---------- runes ----------
+     The Spell's status page, the way the book describes it: a script only
+     the carrier can see, showing what they are made of right now. Each
+     stat gets a glyph in a ring that glows the colour of the current rank;
+     Aspect gets its own glyph in the memory-gold accent, since it is
+     personal rather than rank-conferred. */
+  const GLYPH = {
+    vitality:"♥", willpower:"◈", perception:"◉", essence:"✦",
+    cunning:"◆", renown:"★", tether:"⚓",
+  };
+
+  function runeHTML(def, value) {
+    return `<span class="rune" title="${escape(def.name)} — ${escape(def.desc)}">
+      <span class="rune-glyph">${GLYPH[def.id] ?? "●"}</span>
+      <span class="rune-val">${Math.floor(value)}</span>
+      <span class="rune-label">${escape(def.short)}</span>
+    </span>`;
+  }
+
+  function aspectRuneHTML(aspect) {
+    if (!aspect) return "";
+    return `<span class="rune rune-aspect" title="${escape(aspect.name)} — ${escape(aspect.desc)}">
+      <span class="rune-glyph">✧</span>
+      <span class="rune-name">${escape(aspect.name)}</span>
+      <span class="rune-label">Aspect</span>
+    </span>`;
+  }
+
+  function renderPips(container, rankIndex) {
+    let h = "";
+    for (let i = 0; i < RANKS.length; i++) h += `<i class="${i <= rankIndex ? "on" : ""}"></i>`;
+    container.innerHTML = h;
+  }
+
   /* ---------- screens ---------- */
   function show(name) {
     for (const k of ["home","origin","game","end"]) el[k].hidden = (k !== name);
+    /* A screen switch is a new page as far as the reader is concerned.
+       Without this, the end screen can appear scrolled halfway down —
+       whatever position a long event happened to leave the page at —
+       so a death can render with the rank badge and cause of death
+       already scrolled out of view above the fold. */
+    window.scrollTo(0, 0);
   }
 
   /* ---------- HUD ---------- */
@@ -33,6 +78,7 @@
        All three are the Dormant soul rank; only the word changes. */
     el.rank.textContent = S.chapter === "aspirant" ? "Aspirant"
       : (r.common === r.name ? r.name : `${r.name} · ${r.common}`);
+    renderPips(el.pips, S.rank);
 
     const span = Engine.lifespanYears(S);
     el.age.textContent = span == null
@@ -40,14 +86,17 @@
       : `Age ${Engine.years(S).toLocaleString()} / ${span.toLocaleString()}`;
     el.life.style.width = (Engine.lifeRemaining(S) * 100).toFixed(1) + "%";
 
-    el.meters.innerHTML = "";
-    for (const d of STATS.filter(x => x.hud)) {
-      const m = document.createElement("span");
-      m.className = "meter";
-      m.title = d.desc;
-      m.innerHTML = `${d.short}<b>${Math.floor(S.stats[d.id] ?? 0)}</b>`;
-      el.meters.appendChild(m);
-    }
+    // Primary runes: always visible while playing — VIT/WIL/PER/ESS, plus
+    // Aspect once the Spell has granted one.
+    const aspect = S.aspect && ASPECTS.find(a => a.id === S.aspect);
+    el.runes.innerHTML = STATS.filter(d => d.hud).map(d => runeHTML(d, S.stats[d.id] ?? 0)).join("")
+      + aspectRuneHTML(aspect);
+
+    // Secondary runes: Cunning/Renown/Tether, plus the Flaw's text. Tucked
+    // behind the expander so the always-on strip stays short on a phone.
+    el.runesSecondary.innerHTML = STATS.filter(d => !d.hud).map(d => runeHTML(d, S.stats[d.id] ?? 0)).join("");
+    const flaw = S.flaw && FLAWS.find(f => f.id === S.flaw);
+    el.flawLine.textContent = flaw ? `Flaw — ${flaw.name}: ${flaw.desc}` : "";
   }
 
   /* ---------- event ---------- */
@@ -113,6 +162,19 @@
   }
 
   /* ---------- end ---------- */
+  const TRIAL_TIER_NAME = { first:"First Nightmare", second:"Second Nightmare", third:"Third Nightmare", fourth:"Fourth Nightmare" };
+
+  function buildAchievements() {
+    const items = [];
+    for (const t of S.trials ?? [])
+      items.push({ name:`Conquered: ${t.name}`, desc:TRIAL_TIER_NAME[t.tier] ?? "Nightmare" });
+    if (S.aspectGrade === "Ascended" || S.aspectGrade === "Transcendent")
+      items.push({ name:`${S.aspectGrade}-Grade Aspect`, desc:"The Spell's appraisal of the First Nightmare ranked this Aspect far above the ordinary." });
+    for (const [flag, a] of Object.entries(ACHIEVEMENTS))
+      if (S.flags.includes(flag)) items.push(a);
+    return items;
+  }
+
   function end() {
     show("end");
     const r = Engine.rank(S);
@@ -120,22 +182,36 @@
       hollow:"Hollow", lost:"Lost", murdered:"Murdered", war:"Killed in the war of the Domains",
       chain:"Killed by the Chain of Nightmares", age:"Died of the years", wounds:"Died of wounds",
       ascension:"Unmade on the Path" };
+    const finalRankLabel = S.rank === 0 && S.chapter === "aspirant" ? "Aspirant" : (r.common === r.name ? r.name : `${r.name} · ${r.common}`);
+    el.endRankName.textContent = finalRankLabel;
+    renderPips(el.endRankPips, S.rank);
     el.endTitle.textContent = KIND[S.causeKind] ?? `Died ${r.common}`;
     el.endCause.textContent = S.cause ?? "The story ends here.";
+
+    const aspect = S.aspect && ASPECTS.find(a => a.id === S.aspect);
+    el.endRunes.innerHTML = STATS.map(d => runeHTML(d, S.stats[d.id] ?? 0)).join("") + aspectRuneHTML(aspect);
+
+    const achievements = buildAchievements();
+    el.endAchv.innerHTML = achievements.length
+      ? achievements.map(a => `<div class="achv-chip"><b>${escape(a.name)}</b><span>${escape(a.desc)}</span></div>`).join("")
+      : `<p class="achv-empty">No notable feats. A life can be that too, and most of them are.</p>`;
+
     const origin = Engine.ORIGINS().find(o => o.id === S.origin);
-    const rows = [
+    const flaw = S.flaw ? FLAWS.find(f => f.id === S.flaw) : null;
+    const tiles = [
       ["Age at death", Engine.years(S).toLocaleString() + " years"],
       ["Final rank", S.rank === 0 && S.chapter === "aspirant" ? "Aspirant (never Awakened)" : `${r.name} (${r.common})`],
       ["Born", origin ? origin.name : "—"],
-      ["Aspect", S.aspect ? ASPECTS.find(a => a.id === S.aspect).name + (S.aspectGrade ? ` · ${S.aspectGrade} grade` : "") : "—"],
-      ["Flaw", S.flaw ? FLAWS.find(f => f.id === S.flaw).name : "Never paid for"],
-      ["Solstice", S.region ?? "Never reached the Dream Realm"],
-      ["Trials conquered", (S.trials ?? []).length ? S.trials.map(t => t.name).join(", ") : "None"],
-      ["Memories", S.memories.length ? S.memories.map(m => MEMORIES[m].name).join(", ") : "None"],
+      ["Decisions made", S.eventCount ?? S.history.length],
       ["Soul fragments", Math.round(S.fragments ?? 0).toLocaleString()],
-      ["Decisions", S.eventCount ?? S.history.length],
+      ["Solstice region", S.region ?? "Never reached"],
+      ["Aspect", aspect ? `${aspect.name}${S.aspectGrade ? ` · ${S.aspectGrade} grade` : ""} — ${aspect.desc}` : "—", "wide"],
+      ["Flaw", flaw ? `${flaw.name} — ${flaw.desc}` : "Never paid for", "wide"],
+      ["Memories", S.memories.length ? S.memories.map(m => MEMORIES[m].name).join(", ") : "None", "wide"],
     ];
-    el.endStats.innerHTML = rows.map(([k, v]) => `<div><span>${escape(k)}</span><span>${escape(String(v))}</span></div>`).join("");
+    el.endStats.innerHTML = tiles.map(([k, v, wide]) =>
+      `<div class="stat-tile${wide ? " wide" : ""}"><b>${escape(k)}</b><span>${escape(String(v))}</span></div>`).join("");
+
     Save.clear();
   }
 
@@ -154,7 +230,7 @@
     if (S.aspectGrade) h += line("Spell's appraisal", `${S.aspectGrade} grade Aspect`);
     if (S.region) h += line("Solstice", S.region);
     h += `<div class="sheet-section">Attributes</div>`;
-    for (const d of STATS) h += line(d.name, String(Math.floor(S.stats[d.id] ?? 0)));
+    h += `<div class="rune-strip">${STATS.map(d => runeHTML(d, S.stats[d.id] ?? 0)).join("")}${aspectRuneHTML(a)}</div>`;
     h += `<div class="sheet-section">Aspect</div>`;
     h += a ? line(a.name, a.desc) : line("—", "Not yet Awakened");
     h += `<div class="sheet-section">Flaw</div>`;
@@ -209,6 +285,26 @@
     if (!confirm("Abandon this life?")) return;
     Save.clear(); show("home"); boot();
   };
+
+  el.expand.onclick = () => {
+    const open = el.panel.hidden;
+    el.panel.hidden = !open;
+    el.expand.setAttribute("aria-expanded", String(open));
+    el.expandLabel.textContent = open ? "Fewer runes ▴" : "More runes ▾";
+  };
+
+  /* Day mode. Persisted separately from the save — it is a display
+     preference, not part of any life. Set in <head> too, so the very
+     first paint already matches (see index.html), and re-applied here so
+     the toggle works instantly without a reload. */
+  function applyTheme(light) {
+    document.documentElement.dataset.theme = light ? "light" : "";
+    document.querySelector('meta[name="theme-color"]').content = light ? "#f6f3ec" : "#0a0a0f";
+    el.themeToggle.textContent = light ? "☀" : "☾";
+    try { localStorage.setItem("fatelegacy.theme", light ? "light" : "dark"); } catch (e) {}
+  }
+  el.themeToggle.onclick = () => applyTheme(document.documentElement.dataset.theme !== "light");
+  applyTheme(document.documentElement.dataset.theme === "light");
 
   /* Flush on the way out — mobile users leave by switching tabs. */
   addEventListener("visibilitychange", () => { if (document.hidden && S && !S.dead) Save.write(S); });

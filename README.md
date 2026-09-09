@@ -104,6 +104,42 @@ tools/sim.js        balance harness
 
 ---
 
+## The rune HUD and day mode
+
+The status HUD is styled as the Spell's status page — "a script only the
+carrier can see" — rather than a generic stat bar. Each attribute is a glyph
+in a ring that glows the current rank's colour (`--rank`, set per rank in
+`css/tokens.css`); Aspect gets its own glyph in the memory-gold accent
+(`--accent-2`) since it is personal rather than rank-conferred. VIT/WIL/PER/
+ESS and Aspect are always visible during play; CUN/REN/TET and the Flaw's
+text sit behind the "More runes" expander so the always-on strip stays short
+on a phone. The same glyphs and rank badge are reused on the end screen
+(`#end-runes`, `.rank-badge-lg`) and in the deeper Status sheet, so the
+visual language is one system, not three.
+
+Day mode is an opt-in toggle (`#theme-toggle`, top-right, every screen),
+persisted to `localStorage["fatelegacy.theme"]` and applied via
+`html[data-theme="light"]` in `css/tokens.css`. It is applied inline in
+`index.html`'s `<head>`, before either stylesheet paints, so switching to it
+never flashes the dark theme first. Several rank colours (`sacred`, `divine`)
+are redeclared for light mode rather than reused — the dark theme's
+near-white values are unreadable once the background itself turns pale.
+
+**A layout trap worth knowing before touching the HUD:** the theme toggle is
+`position:fixed` and the HUD is `position:sticky`, so they occupy the same
+screen band for as long as the game screen is open — not just at one scroll
+position. `.hud-row` carries a permanent `padding-right` gutter to keep the
+age text clear of it; if you resize or reposition either element, re-check
+that gutter rather than assuming a screenshot at scroll-top proves it clear.
+
+End-screen achievements are read from `S.trials`, populated only by
+`conquered:true` on a Nightmare's resolution node (`fn_resolve`, `sn_resolve`,
+`tn_resolve`, and the Fourth's success branch) — never at entry. A run that
+dies inside a Nightmare must not be credited with conquering it; `s.currentTrial`
+holds the attempt until (if) it resolves.
+
+---
+
 ## Adding content
 
 ```js
@@ -126,7 +162,9 @@ tools/sim.js        balance harness
     failure:{ text:"...", effects:{...} },
     effects:{ stats:{essence:2}, flags:{add:["x"]}, rank:1, appraisal:2,
               kill:{rank:2, size:2}, memory:"id", awardFlaw:true,
-              nightmare:"second", solstice:true,
+              nightmare:"second",   // stages a random scenario from that tier
+              conquered:true,       // ONLY on the resolution node's success — see below
+              solstice:true,
               chapter:"ascended", goto:"next_id", death:{text:"", kind:""} }
   }]
 }

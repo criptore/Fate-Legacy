@@ -220,10 +220,18 @@ const Engine = (() => {
        individually" — so a fresh scenario is drawn every run, and the same is
        true of where the solstice puts a Sleeper down in the Dream Realm. */
     if (fx.nightmare) {
+      /* Entering a Nightmare only stages it. It is not a trial "conquered"
+         until the matching _resolve node fires `conquered:true` below — a
+         run that dies inside the Hollow Choir must not show up on the end
+         screen as having beaten the Hollow Choir. */
       const sc = pickRandom(NIGHTMARES[fx.nightmare]);
-      s.trials = s.trials || [];
-      s.trials.push({ tier: fx.nightmare, id: sc.id, name: sc.name });
+      s.currentTrial = { tier: fx.nightmare, id: sc.id, name: sc.name };
       s.pending = sc.entry;
+    }
+    if (fx.conquered && s.currentTrial) {
+      s.trials = s.trials || [];
+      s.trials.push(s.currentTrial);
+      s.currentTrial = null;
     }
     if (fx.solstice) {
       const r = pickRandom(SOLSTICE);
