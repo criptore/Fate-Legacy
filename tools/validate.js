@@ -144,6 +144,19 @@ for (const e of EVENTS) {
       P("ERROR", e.id, `choice ${i} pairs dcSelf with fatal on a recurring event — a fixed death chance that repeats forever`);
 }
 
+// `variants` share the event's choices, so they must be real alternate
+// texts: an array of non-empty strings, none identical to `text`. A one-off
+// event gains nothing from them.
+for (const e of EVENTS) {
+  if (e.variants == null) continue;
+  if (!Array.isArray(e.variants) || !e.variants.length) { P("ERROR", e.id, "variants must be a non-empty array"); continue; }
+  e.variants.forEach((v, i) => {
+    if (typeof v !== "string" || !v.trim()) P("ERROR", e.id, `variant ${i} is empty`);
+    else if (v === e.text) P("WARN", e.id, `variant ${i} repeats the main text`);
+  });
+  if (e.once) P("WARN", e.id, "variants on a once-only event will never be seen");
+}
+
 // A Memory or Echo that no choice ever awards is dead content: it exists in
 // the catalogue, shows up in no run, and quietly rots out of sync with the
 // rest of the file. This caught six unreachable Echoes the first time it ran.

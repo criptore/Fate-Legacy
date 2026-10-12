@@ -10,7 +10,7 @@ whole lifespan without ever playing a boring year.
 **2. Almost nobody dies of old age.** Lifespan exists, and rising ranks buy
 centuries of it, but it is not what kills you. You die in a Nightmare, at a
 Gate, in the Dream Realm, or at the hands of another Awakened. Under random
-play, about **1.5%** of lives end of the years (see below; an earlier version
+play, about **2%** of lives end of the years (see below; an earlier version
 had ~86%).
 
 ## Simulation
@@ -25,33 +25,33 @@ policies, because they answer three different questions:
   rank ceiling; `skilled` is not, because optimal survival means not climbing.
 
 ```
-random  play, 8000 runs   furthest rank: Sleeper 31.5%  Awakened 55.3%
-                                         Master 11.6%  Saint 1.5%
-        cause: gate 59.5%  nightmare 25.2%  dream realm 8.3%  age 1.5%
+random  play, 8000 runs   furthest rank: Sleeper 31.8%  Awakened 53.0%
+                                         Master 13.0%  Saint 2.1%  Sovereign 0.1%
+        cause: gate 59.1%  nightmare 26.7%  dream realm 7.2%  age 1.8%
 
-skilled play, 8000 runs   furthest rank: Sleeper 1.6%  Awakened 4.6%
-                                         Master 53.5%  Saint 40.4%
-        cause: gate 50.2%  age 25.2%  wounds 9.0%  nightmare 6.2%
+skilled play, 8000 runs   furthest rank: Sleeper 1.7%  Awakened 3.9%
+                                         Master 52.8%  Saint 41.6%
+        cause: gate 49.0%  age 25.6%  wounds 8.8%  nightmare 6.9%
 
-climber play, 8000 runs   furthest rank: Sleeper 1.6%  Awakened 4.0%
-                                         Master 53.8%  Saint 34.1%
-                                         Sovereign 5.9%  Sacred 0.7%
-        cause: gate 50.5%  nightmare 34.5%  age 4.0%  chain 1.0%
+climber play, 8000 runs   furthest rank: Sleeper 1.4%  Awakened 3.4%
+                                         Master 52.4%  Saint 35.0%
+                                         Sovereign 7.1%  Sacred 0.6%
+        cause: gate 48.8%  nightmare 35.7%  age 4.6%  chain 1.4%
 ```
 
-(Citadel origin, v0.3.4. Measured after the Second/Third Seed offers stopped
-being one-shot. Before that, answering "Not yet" stranded a life at its rank
-for good, which is most of why `skilled` used to end 10% of lives at
+(Citadel origin, v0.3.5: Aspect stat bonuses applied on Awakening, and the
+Second/Third Seed offers no longer one-shot. Before that, answering "Not
+yet" stranded a life at its rank for good, which is most of why `skilled` used to end 10% of lives at
 Awakened.)
 
-Reaching Master or higher by origin, random play: clan 21.1%, citadel 13.2%,
-outskirts 8.5%.
+Reaching Master or higher by origin, random play: clan 24.3%, citadel 15.2%,
+outskirts 11.3%.
 
 Aspect rank from the First Nightmare's appraisal comes out at roughly
 Supreme 1%, Sacred 0.2% and Divine 0.04% of survivors.
 
 **On `skilled`'s 25% age deaths.** Under `random` play the second design rule
-holds (1.5%). Under `skilled` it does not, and the reason is worth stating
+holds (about 2%). Under `skilled` it does not, and the reason is worth stating
 plainly: once the personal trials are priced correctly, conquering a
 Nightmare is a bad bet, so a survival-maximising player stops climbing and
 ages out on purpose. That is a real strategy the game permits, not a bug.

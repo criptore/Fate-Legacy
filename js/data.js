@@ -905,6 +905,12 @@ const EVENTS = [
   id:"aw_gate", chapter:"awakened", weight:46, cooldown:30, days:45,
   title:"The Communicator",
   text:"It goes off at four in the morning, because they always do.\n\nA Gate has opened eleven miles out. You are the nearest Awakened, which is the entire basis on which this works. There is no version of the arrangement where you get to decide it is somebody else's night.",
+  variants:[
+    "Your communicator buzzes in the middle of dinner.\n\nA Gate has opened by the old rail yards, and you are the closest Awakened on the list. The rule is simple: the nearest one goes. Tonight that is you.",
+    "A Gate has torn open in a parking lot across the city. The police have already cleared the street. Now they are standing at the tape, waiting for an Awakened to arrive.\n\nThe dispatcher reads your name off the screen.",
+    "The alert comes in the afternoon, in broad daylight: a small Gate, two districts over, graded low.\n\nLow grades are usually right. You have learned not to bet your life on \"usually\".",
+    "It is your third call this month. The Gate is on the coast road, close to a school that was evacuated an hour ago.\n\nNobody asks if you are tired. That is not how the duty works.",
+  ],
   choices:[
     { label:"Answer it. Standard sweep.", hint:"Perception. Find out what came through before it finds you.",
       check:{ stat:"perception", dc:10, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
@@ -1167,6 +1173,10 @@ const EVENTS = [
   id:"ms_gate", chapter:"ascended", weight:26, cooldown:20, days:50,
   title:"The Duty Does Not Stop",
   text:"A Master answers the Gates that Awakened cannot. That is the whole of the promotion, from the outside: harder Gates, fewer colleagues, and a communicator that now only rings for the bad ones.",
+  variants:[
+    "Two Awakened teams went into this Gate yesterday. One came back.\n\nThe request reaches you by name. When the ordinary response fails, they call a Master, and today the Master on call is you.",
+    "The Gate opened inside a hospital basement. It is graded high enough that no Awakened is allowed near it.\n\nYour communicator lights up with a single word: yours.",
+  ],
   choices:[
     { label:"Take it.", hint:"Willpower",
       check:{ stat:"willpower", dc:15, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
@@ -1383,6 +1393,10 @@ const EVENTS = [
   id:"world_worse", chapter:"awakened", weight:34, cooldown:70, days:70,
   title:"It Is Getting Worse",
   text:"Everyone who has been doing this for more than twenty years says the same thing, and the clans keep denying it, and the numbers keep agreeing with everyone who has been doing this for more than twenty years.\n\nThere are more Gates than there were. They are opening faster and grading higher. The theory nobody will print is that every Ascension thickens them — that the Awakened are the cause, and that the more of you there are and the higher you climb, the worse the world you are climbing in becomes.\n\nThis one has opened directly beneath you, which is new.",
+  variants:[
+    "The veterans keep saying it: there are more Gates every year, and they are getting stronger. The clans say that is not true. The numbers say it is.\n\nSome believe every Ascension makes the Gates worse, so the more Awakened climb, the more dangerous the world becomes.\n\nTonight a Gate opens in the middle of your own street, with no warning at all.",
+    "Ten years ago, a Gate inside the city walls was rare enough to make the news. Now it barely gets a headline.\n\nThis one opens in a crowded market at noon, a few hundred metres from where you are standing.",
+  ],
   choices:[
     { label:"Fight it in the open.", hint:"Vitality",
       check:{ stat:"vitality", dc:11, dcScale:2, dcEra:3, fatal:3, fatalKind:"gate",

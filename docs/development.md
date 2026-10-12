@@ -87,6 +87,8 @@ dies inside a Nightmare must not be credited with conquering it;
              aspect:["shadow"], flaw:["hunger"], lineage:["valor","song"],
              aspectRank:["Sacred","Divine"], soulClass:{ min:1 } },
   title:"...", text:"...",
+  variants:["...", "..."],     // optional alternate texts for a recurring event;
+                               // same choices, never the same one twice in a row
   choices:[{
     label:"...", hint:"Willpower",
     check:{ stat:"willpower", dc:14,

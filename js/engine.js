@@ -221,12 +221,37 @@ const Engine = (() => {
     if (s.dead) return null;
 
     s.current = ev.id;
+    pickVariant(s, ev);
     s.seen[ev.id] = (s.seen[ev.id] ?? 0) + 1;
     s.lastSeen[ev.id] = s.ageDays;
     s.history.push(ev.id);
     s.eventCount++;
     if (s.history.length > 60) s.history.shift();
     return ev;
+  }
+
+  /* ---------- text variants ----------
+     A recurring event (Gate duty above all) may carry `variants`: alternate
+     opening texts that sit alongside `text` and share its choices. A tester
+     got the same Gate text three times in one run (issue #3). The pick never
+     repeats the previous one for that event, and is stored on the state so
+     resuming a save shows the same text that was on screen. */
+  function pickVariant(s, ev) {
+    const n = 1 + (ev.variants?.length ?? 0);
+    s.lastVariant ??= {};
+    let i = 0;
+    if (n > 1) {
+      const prev = s.lastVariant[ev.id];
+      i = Math.floor(Math.random() * n);
+      if (i === prev) i = (i + 1 + Math.floor(Math.random() * (n - 1))) % n;
+      s.lastVariant[ev.id] = i;
+    }
+    s.currentVariant = i;
+  }
+
+  function eventText(s, ev) {
+    const i = s.current === ev.id ? (s.currentVariant ?? 0) : 0;
+    return i > 0 ? (ev.variants?.[i - 1] ?? ev.text) : ev.text;
   }
 
   /* ---------- effects ---------- */
@@ -352,6 +377,15 @@ const Engine = (() => {
     const f = weighted(pool).f;
     s.flaw = f.id;
     applyStatBlock(s, f.stats, deltas);
+
+    /* The Aspect's own stat block lands here, with the Flaw, not at
+       infection. Canon: Aspirants carry "a Dormant Rank Aspect without the
+       Flaw or Aspect Ability" and are "given Flaw in exchange for the power",
+       so power and price arrive together. Until v0.3.5 this block was never
+       applied at all: every Aspect was flavour text and the Flaw was a pure
+       penalty (issue #3). */
+    const aspect = ASPECTS.find(a => a.id === s.aspect);
+    if (aspect) applyStatBlock(s, aspect.stats, deltas);
 
     /* The Spell appraises the trial and ranks the Aspect on it. Canon: "The
        Aspect can rank up after the trial is over, depending on the appraisal
@@ -494,7 +528,7 @@ const Engine = (() => {
     newRun, draw, choose, choiceAvailable, applyEffects, harvest, ORIGINS: () => ORIGINS,
     soulClass: s => CLASSES[s.soulClass ?? 0],
     maxClassFor,
-    rank, years, lifeRemaining, lifespanYears, statDef, shown,
+    rank, years, lifeRemaining, lifespanYears, statDef, shown, eventText,
     DAYS_PER_YEAR,
     eventById: id => EVENTS.find(e => e.id === id),
   };

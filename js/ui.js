@@ -60,11 +60,13 @@
   /* A Flaw's mechanical price, spelled out. Player feedback: the poetic
      desc alone ("You move before you decide to. It has saved you twice...")
      can read like a skill rather than a curse. */
-  function flawCost(f) {
-    const parts = Object.entries(f.stats ?? {}).map(([id, v]) =>
-      `${v > 0 ? "+" : "−"}${Math.abs(v)} ${Engine.statDef(id)?.short ?? id}`);
-    return parts.length ? `Cost: ${parts.join(", ")}` : "";
+  function statBlock(stats) {
+    return Object.entries(stats ?? {}).map(([id, v]) =>
+      `${v > 0 ? "+" : "−"}${Math.abs(v)} ${Engine.statDef(id)?.short ?? id}`).join(", ");
   }
+  function flawCost(f) { const b = statBlock(f.stats); return b ? `Cost: ${b}` : ""; }
+  /* Shown only once the Flaw exists: that is when the Aspect's stats apply. */
+  function aspectGift(a) { const b = statBlock(a.stats); return b && S && S.flaw ? ` Grants: ${b}.` : ""; }
 
   function renderPips(container, rankIndex) {
     let h = "";
@@ -115,7 +117,7 @@
     const lines = [];
     /* Aspect first: its rune only carries a hover title, which a phone can
        never show, so this line is the only place mobile players can read it. */
-    if (aspect) lines.push(`Aspect — ${aspect.name}${S.aspectRank && S.aspectRank !== "Dormant" ? ` (${S.aspectRank} rank)` : ""}: ${aspect.desc}`);
+    if (aspect) lines.push(`Aspect — ${aspect.name}${S.aspectRank && S.aspectRank !== "Dormant" ? ` (${S.aspectRank} rank)` : ""}: ${aspect.desc}${aspectGift(aspect)}`);
     if (lin && lin.id !== "none") lines.push(`Lineage — ${lin.name}${lin.divine ? " (divine)" : ""}: ${lin.desc}`);
     if (flaw) lines.push(`Flaw — ${flaw.name}: ${flaw.desc} ${flawCost(flaw)}.`);
     /* Class only earns HUD space once it stops being the default. Everyone
@@ -174,7 +176,7 @@
     el.outcome.hidden = true;
     el.outcome.className = "outcome";
     el.title.textContent = ev.title ?? "";
-    el.text.textContent = ev.text ?? "";
+    el.text.textContent = Engine.eventText(S, ev) ?? "";
     el.choices.innerHTML = "";
 
     ev.choices.forEach((c, i) => {
@@ -322,7 +324,7 @@
       ["Soul fragments", Math.round(S.fragments ?? 0).toLocaleString()],
       ["Solstice region", S.region ?? "Never reached"],
       ["Soul Cores", `${Engine.soulClass(S).name} · ${Engine.soulClass(S).cores}`],
-      ["Aspect", aspect ? `${aspect.name}${S.aspectRank ? ` · ${S.aspectRank} rank` : ""} — ${aspect.desc}` : "—", "wide"],
+      ["Aspect", aspect ? `${aspect.name}${S.aspectRank ? ` · ${S.aspectRank} rank` : ""} — ${aspect.desc}${aspectGift(aspect)}` : "—", "wide"],
       ["Flaw", flaw ? `${flaw.name} — ${flaw.desc} ${flawCost(flaw)}.` : "Never paid for", "wide"],
       ["Lineage", lineage ? `${lineage.name}${lineage.divine ? " · divine" : ""} — ${lineage.desc}` : "—", "wide"],
       ["Memories", S.memories.length
@@ -359,7 +361,7 @@
     h += `<div class="sheet-section">Attributes</div>`;
     h += `<div class="rune-strip">${STATS.map(d => runeHTML(d, S.stats[d.id] ?? 0)).join("")}${aspectRuneHTML(a)}</div>`;
     h += `<div class="sheet-section">Aspect</div>`;
-    h += a ? line(a.name, a.desc) : line("—", "Not yet Awakened");
+    h += a ? line(a.name, a.desc + aspectGift(a)) : line("—", "Not yet Awakened");
     h += `<div class="sheet-section">Flaw</div>`;
     h += f ? line(f.name, `${f.desc} ${flawCost(f)}.`) : line("—", "Not yet Awakened");
     const l = S.lineage && LINEAGES.find(x => x.id === S.lineage);
