@@ -45,12 +45,18 @@ home screen and the in-game toolbar.
 ## Features
 
 - The full Soul Rank ladder, from Aspirant to Divine
-- 3 Origins, 14 Aspects, 14 Flaws and 10 Lineages, for thousands of possible
-  characters
+- 3 Origins, 14 Aspects, 14 Flaws and 6 Lineages (including the War, Beast
+  and Storm God lineages of the novel's Great Clans), for thousands of
+  possible characters
+- Choices that only appear for your own Aspect or Flaw
 - 11 hand-written Nightmares and 4 solstice regions, all original and built
   inside the novel's rules
-- Memories, Echoes, Soul Cores, Tether, Gate duty and a world that keeps
-  getting more dangerous
+- Memories and Echoes that help in a fight: Weapons and Armor count on
+  dangerous checks, and an Echo fights beside you and can die in your place
+- Found a company, an order or a landing zone, and run it: recruits,
+  rival clans, members going Hollow, and what became of it after you
+- Soul Cores, Tether, Gate duty and a world that keeps getting more
+  dangerous
 - Achievements and a full life summary on the end screen
 - Autosave, offline play (install it from your browser's "Add to Home
   Screen"), and a day mode
@@ -60,11 +66,8 @@ home screen and the in-game toolbar.
 - More Nightmares, especially for the Fourth, Fifth and Sixth
 - More content for the highest ranks (Sacred and Divine)
 - More Origins
-- Aspects and Flaws that change what happens in events, and Aspect
-  Abilities as real mechanics
-- Echoes and Memories you actually use, rather than passive bonuses
-- Divine Lineages taken from the novel (see
-  [issue #4](https://github.com/criptore/Fate-Legacy/issues/4))
+- More Aspect- and Flaw-specific moments, and Aspect Abilities as real
+  mechanics
 
 Open work is tracked on the [Issues](https://github.com/criptore/Fate-Legacy/issues) page.
 

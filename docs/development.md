@@ -85,12 +85,17 @@ dies inside a Nightmare must not be credited with conquering it;
              // the other axes are testable too, and this is how an event
              // becomes visible only to certain runs
              aspect:["shadow"], flaw:["hunger"], lineage:["valor","song"],
-             aspectRank:["Sacred","Divine"], soulClass:{ min:1 } },
+             aspectRank:["Sacred","Divine"], soulClass:{ min:1 },
+             org:{ min:1 },                 // size of your organization
+             chapter:["ascended","transcendent"] },  // for an event with no `chapter`
   title:"...", text:"...",
   variants:["...", "..."],     // optional alternate texts for a recurring event;
                                // same choices, never the same one twice in a row
   choices:[{
     label:"...", hint:"Willpower",
+    text:"...",               // outcome text for a choice with no check
+    requires:{ aspect:["iron"] },   // aspect/flaw-gated choices are HIDDEN from
+                                    // everyone else, not greyed out
     check:{ stat:"willpower", dc:14,
             dcScale:2,        // + this per rank      (recurring duties)
             dcEra:2,          // + this per 20 years  (the world worsening)
@@ -100,6 +105,7 @@ dies inside a Nightmare must not be credited with conquering it;
     failure:{ text:"...", effects:{...} },
     effects:{ stats:{essence:2}, flags:{add:["x"]}, rank:1, appraisal:2,
               kill:{rank:2, size:2}, memory:"id", echo:"id", awardFlaw:true,
+              org:{ found:"company", kind:"order", grow:1, sworn:true },
               nightmare:"second",   // stages a random scenario from that tier
               conquered:true,       // ONLY on the resolution node's success
               solstice:true,
@@ -107,6 +113,17 @@ dies inside a Nightmare must not be credited with conquering it;
   }]
 }
 ```
+
+**Dangerous checks.** A check with `fatal` whose `fatalKind` is `gate`,
+`nightmare`, `dream_realm`, `war` or `chain`, and which is not `dcSelf`, is a
+fight: Weapon Memories add +1 each (cap 2), a bound Echo adds a d4, Armor and
+Garment Memories take 2 Vitality each (cap 4) off the failure branch, and a
+fatal miss destroys the strongest Echo instead of the player. See
+`checkAid` in `engine.js`; `tools/sim.js` prices all of it.
+
+**A Nightmare ends in conquest or death.** No choice inside a Second+
+Nightmare may send the player back out un-ascended. A failed decisive check
+is a `death`, or a `goto` to a last attempt (see `qn1_2`).
 
 `kill.rank` is an index into the same 0-6 ladder the player is on, which for
 a Nightmare Creature reads Dormant 0, Awakened 1, Fallen 2, Corrupted 3,
@@ -126,7 +143,7 @@ in-game. Most were added after the thing they check actually happened:
 
 1. **Every choice inside a `scripted` node must lead somewhere** (`goto`,
    `chapter`, `rank`, `nightmare` or `solstice`), on *both* the success and
-   failure branch of a check. A chain that breaks drops the player back into
+   failure branch of a check (a failure branch may also end in `death`). A chain that breaks drops the player back into
    the ambient pool and quietly makes a whole act unreachable.
 2. **Every chapter needs at least one repeatable event**, or its pool
    starves, unless every event in it always leads onward, which is what the

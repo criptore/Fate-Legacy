@@ -25,36 +25,53 @@ policies, because they answer three different questions:
   rank ceiling; `skilled` is not, because optimal survival means not climbing.
 
 ```
-random  play, 8000 runs   furthest rank: Sleeper 31.8%  Awakened 53.0%
-                                         Master 13.0%  Saint 2.1%  Sovereign 0.1%
-        cause: gate 59.1%  nightmare 26.7%  dream realm 7.2%  age 1.8%
+random  play, 8000 runs   furthest rank: Sleeper 28.5%  Awakened 49.0%
+                                         Master 19.0%  Saint 3.3%  Sovereign 0.2%
+        cause: gate 48.8%  nightmare 30.4%  age 7.3%  murdered 5.1%  dream realm 3.8%
 
-skilled play, 8000 runs   furthest rank: Sleeper 1.7%  Awakened 3.9%
-                                         Master 52.8%  Saint 41.6%
-        cause: gate 49.0%  age 25.6%  wounds 8.8%  nightmare 6.9%
+skilled play, 8000 runs   furthest rank: Sleeper 1.5%  Awakened 2.4%
+                                         Master 72.0%  Saint 19.2%  Sovereign 4.9%
+        cause: gate 50.9%  nightmare 29.5%  wounds 9.2%  age 5.4%  murdered 2.8%
 
-climber play, 8000 runs   furthest rank: Sleeper 1.4%  Awakened 3.4%
-                                         Master 52.4%  Saint 35.0%
-                                         Sovereign 7.1%  Sacred 0.6%
-        cause: gate 48.8%  nightmare 35.7%  age 4.6%  chain 1.4%
+climber play, 8000 runs   furthest rank: Sleeper 1.7%  Awakened 2.5%
+                                         Master 71.4%  Saint 19.7%
+                                         Sovereign 4.1%  Sacred 0.5%
+        cause: gate 50.5%  nightmare 33.2%  wounds 9.2%  murdered 3.3%  age 2.4%
 ```
 
-(Citadel origin, v0.3.5: Aspect stat bonuses applied on Awakening, and the
-Second/Third Seed offers no longer one-shot. Before that, answering "Not
-yet" stranded a life at its rank for good, which is most of why `skilled` used to end 10% of lives at
-Awakened.)
+(Citadel origin, v0.4.0.) What changed since v0.3.5, and why the numbers
+moved:
 
-Reaching Master or higher by origin, random play: clan 24.3%, citadel 15.2%,
-outskirts 11.3%.
+- **Saint is rarer (issue #7).** `skilled` reached Saint in 41.6% of lives;
+  it is now 19.2%, inside the 15–20% target. Three causes: the Third
+  Nightmares no longer let you walk out, and failing their decisive check is
+  death rather than Sainthood (before, a failed final check still sent you
+  to `tn_resolve`); the Quiet Continent's decisive checks are personal
+  trials; and a Third Seed now needs Renown 16 and comes round more slowly.
+  Canon: "hundreds attempted the Third Nightmare in recent decades, but only
+  a few dozen humans returned".
+- **`skilled` stops ageing out.** Its age deaths fell from 25.6% to 5.4%,
+  because the Third Seed is no longer a free pass, so a survival-maximising
+  player meets it less often, and the one that does is no longer offered a
+  safe exit from inside it.
+- **Random play lives a little longer** (age 1.8% → 7.3%). That is the
+  Echoes: an Echo now dies in your place on a fatal miss (issue #9), and a
+  random player who refuses every Seed now survives some Gates they used to
+  die at. Still "almost nobody", but worth watching.
+- **Sovereign is a little more common for `skilled`** (0% → 4.9%), because
+  a failed crossing of the Fourth Nightmare now leads to a last attempt
+  instead of a safe trip home that ended the climb for good.
+
+Reaching Master or higher by origin, random play: clan 31.4%, citadel 22.5%,
+outskirts 16.6%.
 
 Aspect rank from the First Nightmare's appraisal comes out at roughly
 Supreme 1%, Sacred 0.2% and Divine 0.04% of survivors.
 
-**On `skilled`'s 25% age deaths.** Under `random` play the second design rule
-holds (about 2%). Under `skilled` it does not, and the reason is worth stating
-plainly: once the personal trials are priced correctly, conquering a
-Nightmare is a bad bet, so a survival-maximising player stops climbing and
-ages out on purpose. That is a real strategy the game permits, not a bug.
+**On `skilled` and old age.** Until v0.3.5 `skilled` died of old age in a
+quarter of lives: once the personal trials are priced correctly, conquering a
+Nightmare is a bad bet, so a survival-maximising player stopped climbing and
+aged out on purpose. Since v0.4.0 it is about 5%, for the reasons above.
 `climber` is what the ladder looks like when someone takes the bets anyway.
 
 ## Tooling bugs already fixed
