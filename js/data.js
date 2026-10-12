@@ -391,9 +391,10 @@ const MEMORIES = {
     desc:"Snapped clean through. It had been ready to give for years.",     stats:{ vitality:2, willpower:1 } },
   struck_the_ledger:{ name:"The Founding Entry", type:"Lineage", rank:"Ascended",
     desc:"One page, torn from under a judge's seat. Six centuries were a description of it.", stats:{ cunning:3, renown:2 } },
-  /* Handed to you by your own order (issue #10). */
+  /* Handed to you by your own order (issue #10). Canon: making a Memory is
+     rare even among Valor's enchanters, so your people commission it. */
   order_seal:   { name:"The Order's Seal",  type:"Charm",  rank:"Ascended",
-    desc:"Struck by your own people, from the first fragments they ever banked together.", stats:{ willpower:2, renown:2 } },
+    desc:"Commissioned from a clan enchanter, paid for with the first soul shards your people ever pooled.", stats:{ willpower:2, renown:2 } },
   core_shard:   { name:"Shard of a Broken Core", type:"Charm", rank:"Ascended",
     desc:"Somebody else's Soul Core, in pieces, still holding a little of what they had.", stats:{ essence:5 } },
 };
@@ -1310,7 +1311,7 @@ const EVENTS = [
     "The Gate opened inside a hospital basement. It is graded high enough that no Awakened is allowed near it.\n\nYour communicator lights up with a single word: yours.",
   ],
   choices:[
-    { label:"Go into the Gate yourself and close it.", hint:"Willpower",
+    { label:"Go to the Gate yourself and close it.", hint:"Willpower",
       check:{ stat:"willpower", dc:15, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
         fatalText:"A Corrupted came through. They are not supposed to come through. The grading system has a category for what happened next and it is used about twice a century.",
         fatalCause:"Killed by a Corrupted that stepped through a Gate it should not have fit." },
@@ -1504,9 +1505,10 @@ const EVENTS = [
    Lord of Shadows' Citadel, Ravenheart growing out of a lesser clan's
    stronghold. Canon threat: "The great clans have been suppressing
    the Transcendence of independent Awakened for decades" (ch. 1229).
-   Members are mostly Awakened, so they can still go Hollow: canon
+   Members are mostly Awakened, so they can still become Lost: canon
    says "Only Awakened below the Master rank can become Hollow or
-   Lost" (ch. 367). Everything else here is ours.
+   Lost" (ch. 367). Lost: the body dies in the waking world and the
+   soul is stranded in the Dream Realm until it reaches Master. Everything else here is ours.
 =================================================================== */
 {
   id:"org_recruit", weight:16, cooldown:60, days:40,
@@ -1528,17 +1530,17 @@ const EVENTS = [
   ]
 },
 {
-  id:"org_hollow", weight:9, cooldown:120, days:30,
+  id:"org_lost", weight:9, cooldown:120, days:30,
   requires:{ chapter:["ascended", "transcendent", "supreme"], org:{ min:1 } },
-  title:"One Of Yours Is Going Hollow",
-  text:"One of your Awakened has stopped sleeping, and then stopped eating, and this morning stopped answering to their name.\n\nThey are going Hollow. It happens to Awakened, never to Masters, and the rule for it is old and simple: deal with it before it finishes, or it will finish in a room full of your people.",
+  title:"One Of Yours Is Lost",
+  text:"One of your Awakened was asleep in the Dream Realm when their body died in the waking world: a collapsed building, a stray Gate, nothing anyone could have stopped.\n\nThey are Lost. Their soul is still out there, alive, and it cannot come home. An Awakened who is Lost stays in the Dream Realm unless they ever become a Master, and almost none of them do.",
   choices:[
-    { label:"Go into their Soul Sea with them and try to pull them back.", hint:"Willpower. It is not your Soul Sea.",
-      check:{ stat:"willpower", dc:15, dcScale:2, dcEra:1 },
-      success:{ text:"You find them at the bottom of it and bring them back up. They do not remember. Everyone else does.", effects:{ stats:{ renown:3, willpower:2 }, flags:{ add:["came_back_for_them"] } } },
-      failure:{ text:"You are too late. You end it yourself, because that is the other half of the rule.", effects:{ stats:{ willpower:-2 }, org:{ grow:-1 } } } },
-    { label:"Follow the rule: end it now, before it turns.", effects:{ stats:{ willpower:-1, renown:-1 }, org:{ grow:-1 } },
-      text:"It is quick. Your people watch you do it, and none of them say anything, which is its own kind of answer." },
+    { label:"Send a team into the Dream Realm to find them and bring them in.", hint:"Perception. The Dream Realm is very large.",
+      check:{ stat:"perception", dc:15, dcScale:2, dcEra:1 },
+      success:{ text:"Your people find them three regions away, half-starved and still fighting. They cannot go home, but they are not alone: they become your company's first outpost on the far side.", effects:{ stats:{ renown:3, willpower:2 }, flags:{ add:["came_back_for_them"] } } },
+      failure:{ text:"The team searches for a season and comes back without them. Nobody says the name at dinner any more.", effects:{ stats:{ willpower:-2 }, org:{ grow:-1 } } } },
+    { label:"Mark them as Lost and spend your people on the living.", effects:{ stats:{ willpower:-1, renown:-1 }, org:{ grow:-1 } },
+      text:"It is the sensible decision. Your people watch you make it, and none of them say anything, which is its own kind of answer." },
   ]
 },
 {
@@ -1586,8 +1588,8 @@ const EVENTS = [
       text:"They bring you a share of every Gate's shards for a decade. Your Core is fuller. Your people noticed." },
     { label:"Let them carry your name further.", effects:{ stats:{ renown:5 } },
       text:"They go where you cannot be, and say whose they are." },
-    { label:"Accept the seal they struck for you.", effects:{ memory:"order_seal", stats:{ willpower:1 } },
-      text:"A Memory, made by your own people from the first fragments they ever banked together." },
+    { label:"Accept the Memory they commissioned for you.", effects:{ memory:"order_seal", stats:{ willpower:1 } },
+      text:"Your people pooled their soul shards for years and paid a clan enchanter to make you a Memory. Very few people can make one at all." },
   ]
 },
 
@@ -2352,7 +2354,7 @@ const EVENTS = [
   id:"st_lineage_end", chapter:"transcendent", weight:18, once:true, days:300,
   requires:{ flags:{ all:["divine_lineage"] } },
   title:"The End Of The Line",
-  text:"Nine hundred years is long enough to watch a bloodline finish.\n\nA branch of yours does, quietly, in a provincial ward, in a woman of eighty-one who left the clan before you were born and who carries the same inherited Attribute you do, diluted down to almost nothing and still unmistakably the thing that is in you.\n\nThe god it came from died long before the Spell. That is the part nobody writes down about a divine lineage: it is a fact about your blood, and not a relationship with anybody.",
+  text:"Nine hundred years is long enough to watch a bloodline finish.\n\nA branch of yours does, quietly, in a provincial ward, in a woman of eighty-one who left the clan before you were born and who carries the same inherited Attribute you do, diluted down to almost nothing and still unmistakably the thing that is in you.\n\nThe god it came from has been dead for longer than anyone has records. That is the part nobody writes down about a divine lineage: it is a fact about your blood, and not a relationship with anybody.",
   choices:[
     { label:"Sit with her until it is over.",
       effects:{ stats:{ willpower:4, tether:1 }, memory:"clan_signet", flags:{ add:["sat_with_her"] } } },
@@ -2370,7 +2372,7 @@ const EVENTS = [
     "Something came through a Gate in the mountains and has been walking toward a city for six days. Nothing sent against it has slowed it down.\n\nThe city has two days left, and one Saint within reach.",
   ],
   choices:[
-    { label:"Go in yourself and close it.", hint:"Willpower",
+    { label:"Go to the Gate yourself and close it.", hint:"Willpower",
       check:{ stat:"willpower", dc:18, dcScale:3, fatal:4, fatalKind:"gate",
         fatalText:"It is Great-ranked, which the grading did not say, because the last person qualified to grade it did not come back either.",
         fatalCause:"Killed closing a Gate that was graded by somebody who had not seen it." },
