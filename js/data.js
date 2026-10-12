@@ -90,6 +90,12 @@ const ASPECTS = [
   { id:"iron",     name:"Iron",     desc:"You do not bend. It is not always a virtue.",             stats:{ vitality:3, essence:1 }, origins:["clan"] },
   { id:"lantern",  name:"Lantern",  desc:"You show people things. Not always what they wanted shown.", stats:{ perception:2, renown:2 }, origins:["citadel"] },
   { id:"quarry",   name:"Quarry",   desc:"You are better at being hunted than most things are at hunting.", stats:{ cunning:3, vitality:1 }, origins:["outskirts"] },
+  { id:"salt",     name:"Salt",     desc:"You keep things. Nothing you have held ever quite finishes rotting.",  stats:{ vitality:2, willpower:2 }, origins:["outskirts"] },
+  { id:"ledger",   name:"Ledger",   desc:"You remember what is owed, in both directions, exactly.",             stats:{ cunning:2, perception:2 }, origins:["citadel"] },
+  { id:"hearth",   name:"Hearth",   desc:"People are calmer near you, and it costs you something each time.",   stats:{ willpower:2, renown:2 }, origins:["citadel"] },
+  { id:"gate",     name:"Gate",     desc:"Doorways take slightly longer to close behind you than they should.",  stats:{ essence:3 }, origins:["clan"] },
+  { id:"harrow",   name:"Harrow",   desc:"You turn ground over. What was buried in you does not stay buried.",   stats:{ vitality:2, cunning:2 }, origins:["outskirts"] },
+  { id:"verdict",  name:"Verdict",  desc:"When you decide a thing is finished, it has an unsettling tendency to be.", stats:{ willpower:3, renown:1 }, origins:["clan"] },
 ];
 
 /* -------------------------------------------------------------
@@ -119,6 +125,152 @@ const FLAWS = [
     stats:{ willpower:-1, vitality:-2 }, affinity:["left_them","abandoned"] },
   { id:"echoing",   name:"The Echoing",   desc:"Every place you have bled calls you back to it.",
     stats:{ perception:-2 }, affinity:["cracked","broke"] },
+  { id:"unasked",   name:"The Unasked",   desc:"You cannot ask for help. The words are there and they do not come out.",
+    stats:{ renown:-3 }, affinity:["ran_first","hid"] },
+  { id:"ledgered",  name:"The Ledgered",  desc:"You keep an exact account of every debt, including the ones nobody is collecting.",
+    stats:{ willpower:-2, cunning:-1 }, affinity:["took_the_spoil","asked"] },
+  { id:"forewarned",name:"The Forewarned",desc:"You know slightly too much about how you are likely to die, and it is always in the room.",
+    stats:{ perception:-1, willpower:-2 }, affinity:["forewarned","noticed"] },
+  { id:"unhoused",  name:"The Unhoused",  desc:"Nowhere holds you. You have not slept in the same place twice since.",
+    stats:{ vitality:-1, essence:-2 }, affinity:["said_goodbye","abandoned"] },
+  { id:"first",     name:"The First",     desc:"You move before you decide to. It has saved you twice and cost you more.",
+    stats:{ perception:-3 }, affinity:["struck_first","walked_toward"] },
+  { id:"unspent",   name:"The Unspent",   desc:"Your Aspect holds back a portion of itself, always, and will not say why.",
+    stats:{ essence:-2, willpower:-1 }, affinity:["faced_it","came_back_for_them"] },
+];
+
+/* -------------------------------------------------------------
+   LINEAGE
+   Canon, and easy to get wrong: a lineage is a *hereditary*
+   Attribute, "especially true for Great Clans whose scions
+   inherited the same lineage Attribute" (wiki: Legacy Clans), and
+   a Divine Lineage is the inherited lineage of a divine creature.
+
+   The trap: Divine Lineage and Divine Aspect are two different
+   things, and the wiki is explicit that they are unrelated —
+   "Possessing a lineage of a certain divine creature doesn't mean
+   their aspect has to be related to it as well." Every documented
+   case bears that out: Mordret carried the lineage of the War God
+   with an Aspect about reflections; Sunny the lineage of the
+   Weaver with an Aspect tied to the Shadow God; Nephis the lineage
+   of the Sun God with an Aspect tied to the Nephilim.
+
+   So in this game lineage is a THIRD INDEPENDENT AXIS. It biases
+   nothing about your Aspect and your Aspect biases nothing about
+   it (see `awardAspect` and `awardLineage` in engine.js, which
+   deliberately do not consult one another).
+
+   Valor, Song and the House of Night are the canon Great Clans;
+   Immortal Flame is canon as a *fallen* Great Clan. The four
+   divine lineages below are INVENTED — the three canon ones belong
+   to named characters, and this project does not put the player in
+   their shoes. Every stat number here is ours.
+------------------------------------------------------------- */
+const LINEAGES = [
+  { id:"none",   name:"No Lineage", short:"—",
+    desc:"Nothing in the blood. Like almost everyone.",
+    stats:{}, flags:["no_lineage"], weight:{ outskirts:70, citadel:60, clan:6 } },
+  { id:"thin",   name:"A Thin Lineage", short:"Thin",
+    desc:"Something four generations back, diluted almost to nothing, and still faintly there.",
+    stats:{ willpower:1, perception:1 }, weight:{ outskirts:26, citadel:32, clan:14 } },
+  { id:"valor",  name:"Valor", short:"Valor",
+    desc:"The clan's inherited Attribute is stubbornness made structural. It does not make you brave. It makes you hard to move.",
+    stats:{ vitality:3, willpower:1 }, weight:{ outskirts:1, citadel:3, clan:22 } },
+  { id:"song",   name:"Song", short:"Song",
+    desc:"Your family hears the shape of a room before it walks into it, and has traded on that for nine hundred years.",
+    stats:{ perception:3, renown:1 }, weight:{ outskirts:1, citadel:3, clan:22 } },
+  { id:"night",  name:"House of Night", short:"Night",
+    desc:"An inherited talent for being where the account of events does not place you.",
+    stats:{ cunning:3, perception:1 }, weight:{ outskirts:1, citadel:2, clan:22 } },
+  /* Canon: Immortal Flame is a Great Clan that fell. A scion of a fallen
+     clan inherits the Attribute and none of the standing. */
+  { id:"flame",  name:"Immortal Flame", short:"Flame",
+    desc:"A dead clan's lineage. The Attribute still works. The name is a liability in every room that recognises it.",
+    stats:{ essence:3, willpower:2, renown:-4 }, flags:["fallen_clan"], weight:{ outskirts:2, citadel:2, clan:9 } },
+
+  /* --- Divine lineages: invented, and rare on purpose. Canon does not say
+     how common the lineage of a divine creature is, only that it exists and
+     that it is inherited. These do NOT confer a Divine Aspect. --- */
+  { id:"salt_queen", name:"the Salt Queen", short:"Salt", divine:true,
+    desc:"Something drowned and enormous is upstream of you, and salt water has never once frightened you.",
+    stats:{ vitality:3, willpower:3, essence:1 }, flags:["divine_lineage"], weight:{ outskirts:1, citadel:1, clan:2 } },
+  { id:"long_sleeper", name:"the Long Sleeper", short:"Sleeper", divine:true,
+    desc:"Your bloodline descends from a thing that has not woken up yet. Nobody in your family has ever needed much sleep.",
+    stats:{ willpower:4, essence:2 }, flags:["divine_lineage"], weight:{ outskirts:1, citadel:1, clan:2 } },
+  { id:"cartographer", name:"the Cartographer", short:"Chart", divine:true,
+    desc:"Something in your line mapped the Dream Realm before it had regions in it. You have never been lost.",
+    stats:{ perception:4, cunning:2 }, flags:["divine_lineage"], weight:{ outskirts:1, citadel:1, clan:2 } },
+  { id:"unmade_smith", name:"the Unmade Smith", short:"Smith", divine:true,
+    desc:"The first Memory was made by something that spent itself doing it, and a little of what was left is in you.",
+    stats:{ essence:4, vitality:1, cunning:1 }, flags:["divine_lineage"], weight:{ outskirts:1, citadel:1, clan:2 } },
+];
+
+/* -------------------------------------------------------------
+   ASPECT RANK
+   Canon: the Spell's status page lists "Aspect Rank" as "Same as
+   Soul Rank", and there are seven Soul Ranks — Dormant, Awakened,
+   Ascended, Transcendent, Supreme, Sacred, Divine. So an Aspect
+   rank is not a separate four-step grade; it is the same ladder.
+   Canon also says "Aspect Rank is not fixed and can evolve
+   depend[ing] on one's feat."
+
+   A DIVINE Aspect is therefore simply an Aspect at the top of that
+   ladder — and canon treats it as near-unique: the wiki lists
+   exactly three holders, ever. Canon says a Divine Aspect
+   "bestowed far greater potential on an Awakened. However, their
+   immense power came at the cost of rapidly depleting essence",
+   and that such a soul can carry more than one Soul Core, with
+   "no limit to the capacity to store essence".
+
+   Canon does NOT say how a Divine Aspect comes about. The gate in
+   `awardFlaw` — an extraordinary appraisal plus a rare draw — is
+   ours, as are all the bonus numbers below. It is deliberately not
+   gated on lineage, because canon says the two are unrelated.
+------------------------------------------------------------- */
+const ASPECT_RANKS = [
+  { id:"Dormant",      bonus:{},                                 note:"The rank every Aspirant starts with." },
+  { id:"Awakened",     bonus:{ essence:1, willpower:1 },          note:"An ordinary appraisal." },
+  { id:"Ascended",     bonus:{ essence:3, willpower:2 },          note:"The Spell thought well of you." },
+  { id:"Transcendent", bonus:{ essence:6, willpower:3 },          note:"Rare. The trial was far off your destined path." },
+  { id:"Supreme",      bonus:{ essence:9, willpower:4, perception:2 }, note:"Vanishingly rare." },
+  { id:"Sacred",       bonus:{ essence:12, willpower:5, perception:3 }, note:"A handful in recorded history." },
+  { id:"Divine",       bonus:{ essence:16, willpower:6, perception:4, cunning:2 },
+    note:"Canon names three holders, ever. Greater potential, and an essence that drains as fast as it fills." },
+];
+
+/* -------------------------------------------------------------
+   CLASS — separate axis from Soul Rank
+   Canon (wiki: Nightmare Creature) grades Creatures on TWO
+   independent axes. Rank is soul quality: Dormant, Awakened,
+   Fallen, Corrupted, Great, Cursed, Unholy. Class is the number of
+   Soul Cores: "Beast (1 core), Monster (2 cores), Demon (3 cores),
+   Devil (4 cores), Tyrant (5 cores), Terror (6 cores), Titan (7
+   cores)."
+
+   Canon on humans is softer than fan summaries suggest. The wiki
+   says "Human souls are not meant to have many cores or sustain
+   them", and that some Awakened have "the ability to form multiple
+   soul cores similar to Nightmare Creatures" — a Divine Aspect
+   being the documented case, where "the birth of a new core brings
+   immense pain". It does NOT flatly state that every ordinary
+   human is capped at one core forever. That cap is OUR inference,
+   and the fragment thresholds below are entirely ours.
+------------------------------------------------------------- */
+/* The fragment figures are calibrated against tools/sim.js, not taken from
+   anywhere: a whole skilled life in this game banks roughly 40 fragments,
+   130 at the extreme, because `harvest` follows the canon 2^(ranks above
+   you) formula and most kills are at or below your own rank. Thresholds in
+   the thousands — which is what fan summaries of the Class ladder quote —
+   would make every rung above Beast unreachable and the whole axis dead
+   content. */
+const CLASSES = [
+  { id:"beast",   name:"Beast",   cores:1, fragments:0 },
+  { id:"monster", name:"Monster", cores:2, fragments:70 },
+  { id:"demon",   name:"Demon",   cores:3, fragments:110 },
+  { id:"devil",   name:"Devil",   cores:4, fragments:160 },
+  { id:"tyrant",  name:"Tyrant",  cores:5, fragments:220 },
+  { id:"terror",  name:"Terror",  cores:6, fragments:290 },
+  { id:"titan",   name:"Titan",   cores:7, fragments:370 },
 ];
 
 /* -------------------------------------------------------------
@@ -149,12 +301,16 @@ const NIGHTMARES = {
     { id:"fn_choir",   name:"The Hollow Choir",    entry:"fnc_1", creature:"Monster" },
     { id:"fn_tide",    name:"The Nine-Tenths Tide",entry:"fnt_1", creature:"Beast" },
     { id:"fn_debt",    name:"The Debt Collector",  entry:"fnd_1", creature:"Demon" },
+    { id:"fn_ward",    name:"The Quiet Ward",      entry:"fnm_1", creature:"Monster" },
+    { id:"fn_leash",   name:"The Long Leash",      entry:"fnk_1", creature:"Beast" },
   ],
   second: [
     { id:"sn_lantern", name:"The Lantern March",   entry:"sn1_1" },
     { id:"sn_orchard", name:"The Iron Orchard",    entry:"sn2_1" },
+    { id:"sn_court",   name:"The Court of Uncounted Debts", entry:"sn3_1" },
   ],
-  third:  [ { id:"tn_assembly", name:"The Assembly of Mouths", entry:"tn1_1" } ],
+  third:  [ { id:"tn_assembly",  name:"The Assembly of Mouths", entry:"tn1_1" },
+            { id:"tn_continent", name:"The Quiet Continent",    entry:"tn2_1" } ],
   fourth: [ { id:"qn_quiet",    name:"The Quiet Between Stars", entry:"qn1_1" } ],
 };
 
@@ -173,14 +329,116 @@ const SOLSTICE = [
     blurb:"A dry sea turned to green glass, and something under it that remembers being water." },
   { id:"sol_ledger",    name:"The Ledger",          entry:"lg_1",
     blurb:"A city of shelves. Everything that ever died here was written down, and the writing is still being done." },
+  { id:"sol_belfry",    name:"The Ruined Belfry",   entry:"rb_1",
+    blurb:"A city of towers strung with bells the size of houses, and something nested in the belfries that answers when one rings." },
+  { id:"sol_vaults",    name:"The Harvest Vaults",  entry:"hv_1",
+    blurb:"A storehouse without end, still being filled, and the machinery has started taking inventory of you." },
 ];
 
+/* -------------------------------------------------------------
+   MEMORIES
+   Canon: "Memory is a magical item tied to the essence of a Dream
+   Realm inhabitant." The wiki's type list is Armor, Charm, Utility,
+   Garment, Weapon, Lineage Memory and Shard Memory, and Memories
+   sit on the same Soul Rank ladder as Aspects. A Memory's tier
+   reflects the Class — the soul-core count — of the creature it
+   came off: the wiki's worked example is "a Memory of an Awakened
+   Tyrant (who possessed five Soul Cores)".
+
+   `rank` and `type` below are therefore canon-shaped; which
+   specific Memory drops from which of our invented scenarios, and
+   every stat number, is ours. Canon sets no limit on how many a
+   person may carry, so neither do we.
+
+   NOTE: an Echo is NOT a type of Memory. The Spell's status page
+   lists Memories and Echoes as two separate rewards, so they are
+   two separate catalogues here. See ECHOES below.
+------------------------------------------------------------- */
 const MEMORIES = {
-  choir_bell:  { name:"Cracked Bell",       desc:"It rings in a register that makes Nightmare Creatures hesitate.", stats:{ perception:2, willpower:1 } },
-  tide_scale:  { name:"Scale of the Ninth", desc:"Cold, and slightly heavier than it should be.",                   stats:{ vitality:3 } },
-  debt_coin:   { name:"Settled Coin",       desc:"Payment for something you would rather not have sold.",           stats:{ cunning:2, essence:2 } },
-  salt_lens:   { name:"Saltglass Lens",     desc:"Ground from the flats. Shows what a place used to be.",           stats:{ perception:3 } },
-  ledger_page: { name:"Torn Ledger Page",   desc:"Your name is on it, in a hand you do not recognise.",             stats:{ willpower:2, essence:1 } },
+  choir_bell:  { name:"Cracked Bell",       type:"Utility", rank:"Dormant",
+    desc:"It rings in a register that makes Nightmare Creatures hesitate.", stats:{ perception:2, willpower:1 } },
+  tide_scale:  { name:"Scale of the Ninth", type:"Armor",   rank:"Dormant",
+    desc:"Cold, and slightly heavier than it should be.",                   stats:{ vitality:3 } },
+  debt_coin:   { name:"Settled Coin",       type:"Charm",   rank:"Dormant",
+    desc:"Payment for something you would rather not have sold.",           stats:{ cunning:2, essence:2 } },
+  salt_lens:   { name:"Saltglass Lens",     type:"Utility", rank:"Dormant",
+    desc:"Ground from the flats. Shows what a place used to be.",           stats:{ perception:3 } },
+  ledger_page: { name:"Torn Ledger Page",   type:"Charm",   rank:"Dormant",
+    desc:"Your name is on it, in a hand you do not recognise.",             stats:{ willpower:2, essence:1 } },
+  orchard_shears:{ name:"Orchard Shears",   type:"Weapon",  rank:"Awakened",
+    desc:"They cut the only wood in the Dream Realm that cuts back.",       stats:{ vitality:2, cunning:2 } },
+  lantern_wick: { name:"Unburnt Wick",      type:"Charm",   rank:"Awakened",
+    desc:"It has never been lit. It is the only thing from that road that has not.", stats:{ willpower:3, essence:1 } },
+  assembly_tooth:{ name:"Tooth of the Assembly", type:"Weapon", rank:"Ascended",
+    desc:"One of nine hundred. It still forms the beginning of a word when you hold it.", stats:{ essence:4, willpower:2 } },
+  interval_glass:{ name:"Interval Glass",   type:"Utility", rank:"Transcendent",
+    desc:"A lens ground from the quiet between two stars. Looking through it costs you a little of the year.", stats:{ perception:5, essence:3 } },
+  /* Canon lists "Lineage Memory" as a type in its own right: an item that
+     "can impart Awakened with unique qualities" and is "hereditary... passed
+     down through a bloodline". This one is handed over, not looted. */
+  clan_signet:  { name:"Clan Signet",       type:"Lineage", rank:"Awakened",
+    desc:"Your family's Attribute, worn where people can see whose it is.",  stats:{ renown:4, willpower:1 } },
+  /* Canon: a Shard Memory is built around "a physical manifestation of a
+     broken Soul Core that contains remnant Soul Essence". */
+  frost_rope:   { name:"Frost-Cored Rope",  type:"Utility", rank:"Dormant",
+    desc:"Cut from the belfry bridges. Does not fray, and does not fully thaw.", stats:{ vitality:3 } },
+  cold_manifest:{ name:"Cold Manifest Leaf", type:"Charm",   rank:"Dormant",
+    desc:"A stocktaker's page, still filling itself in.",                        stats:{ cunning:2, perception:1 } },
+  ward_needle:  { name:"Spent Glass Vial",  type:"Charm",  rank:"Dormant",
+    desc:"Warm, as if just used. It was not used on you.",                  stats:{ willpower:2 } },
+  leash_link:   { name:"Rusted Link",       type:"Charm",  rank:"Dormant",
+    desc:"Snapped clean through. It had been ready to give for years.",     stats:{ vitality:2, willpower:1 } },
+  struck_the_ledger:{ name:"The Founding Entry", type:"Lineage", rank:"Ascended",
+    desc:"One page, torn from under a judge's seat. Six centuries were a description of it.", stats:{ cunning:3, renown:2 } },
+  core_shard:   { name:"Shard of a Broken Core", type:"Shard", rank:"Ascended",
+    desc:"Somebody else's Soul Core, in pieces, still holding a little of what they had.", stats:{ essence:5 } },
+};
+
+/* -------------------------------------------------------------
+   ECHOES
+   Canon: "Echoes are a magical copy of a slain Nightmare
+   Creature... do not possess a soul... created from Soul Essence."
+   The Spell's status page lists Memories and Echoes side by side
+   as the two rewards a trial can pay out, so an Echo is a sibling
+   of a Memory, not a subtype of one.
+
+   Canon is silent on how many Echoes one may hold and on whether
+   Echoes have ranks of their own. Ours, therefore: an Echo sits on
+   the Soul Rank ladder like a Memory, and binding one ties up
+   Essence permanently, because canon says it is *made* of Essence.
+   That upkeep is what stops a long run from simply hoarding them.
+------------------------------------------------------------- */
+const ECHOES = {
+  choir_voice:  { name:"The Eight Hundred and First", rank:"Dormant", bound:1,
+    desc:"A copy of one voice out of a choir that could not stop. It sings only when you are not listening.",
+    stats:{ willpower:2, perception:1 } },
+  tide_swimmer: { name:"The Thing That Did Laps",     rank:"Dormant", bound:2,
+    desc:"Pale, patient, and a hundredth of the size it was. It circles you at a fixed distance.",
+    stats:{ vitality:3, perception:1 } },
+  collector:    { name:"The Collector's Clerk",       rank:"Awakened", bound:2,
+    desc:"Not the Demon — the function it performed. It keeps an account of what you are owed.",
+    stats:{ cunning:3, renown:1 } },
+  tender:       { name:"An Orchard Tender",           rank:"Awakened", bound:2,
+    desc:"It prunes. Given nothing to prune it stands where you left it, indefinitely, patiently.",
+    stats:{ vitality:2, cunning:2 } },
+  fallen_shade: { name:"Shade of a Fallen",           rank:"Ascended", bound:4,
+    desc:"A copy of something that walked beside a column of forty thousand people for centuries.",
+    stats:{ vitality:4, willpower:3 } },
+  ward_listener:{ name:"What Listened At The Doors",  rank:"Dormant", bound:2,
+    desc:"A copy of something that only ever reacted to sound. It turns its head when you speak and has no face to turn.",
+    stats:{ perception:3, willpower:1 } },
+  leash_beast:  { name:"The Thing On The Chain",      rank:"Dormant", bound:2,
+    desc:"A copy of something that spent forty years holding itself back. It still does.",
+    stats:{ vitality:3, willpower:1 } },
+  bailiff:      { name:"A Bailiff of the Court",      rank:"Ascended", bound:4,
+    desc:"Robed in old dockets. It collects, on the hour, whatever you point it at.",
+    stats:{ vitality:3, cunning:2 } },
+  keeper:       { name:"The Keeper's Last Certainty", rank:"Transcendent", bound:7,
+    desc:"A copy of a thing that maintained a sleeping continent alone for a thousand years, and never once doubted it.",
+    stats:{ willpower:6, essence:2, perception:2 } },
+  mouth:        { name:"One Mouth of Nine Hundred",   rank:"Transcendent", bound:6,
+    desc:"It answers questions. The answers are correct and are not always survivable.",
+    stats:{ perception:5, essence:3, willpower:2 } },
 };
 
 /* -------------------------------------------------------------
@@ -261,14 +519,14 @@ const EVENTS = [
   text:"You are standing in the nave of a church the size of a city, and eight hundred people are singing.\n\nThey have been singing for a long time. You can tell from their faces. The song has no end written into it and none of them can stop, and at the back of the nave, in the dark past the last row, something is counting the voices.\n\nWhen the count comes up short, it comes forward to find out why.\n\nYou are the eight hundred and first. Nobody is looking at you.",
   choices:[
     { label:"Join the singing. Be a voice, not a stranger.", hint:"Willpower",
-      check:{ stat:"willpower", dc:9, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:9, fatal:2, fatalKind:"nightmare",
         fatalText:"You open your mouth and the song goes into you instead of out.\n\nBy the third hour you have forgotten why you were counting the hours. By the ninth you are simply one of the voices, and you will be one of the voices for as long as the Nightmare stands.",
         fatalCause:"Absorbed into the Hollow Choir. Your body woke as something else." },
       success:{ text:"You find the line and you hold it. The count stays whole and the thing at the back of the nave stays where it is.\n\nAnd because you are singing, nobody minds you walking while you do it.", effects:{ stats:{ willpower:2, perception:1 }, flags:{ add:["hid"] }, appraisal:1 } },
       failure:{ text:"You are half a beat behind for one bar. One bar is enough. Somewhere behind you, the counting stops.", effects:{ stats:{ willpower:-1 }, flags:{ add:["noticed"] } } },
       effects:{ goto:"fnc_2" } },
     { label:"Don't sing. Walk the aisle and look for the reason.", hint:"Perception. Conspicuous.",
-      check:{ stat:"perception", dc:10, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"perception", dc:10, fatal:2, fatalKind:"nightmare",
         fatalText:"You are the only silent thing in a building made of sound, and it finds you the way a hand finds a splinter.",
         fatalCause:"Taken in the nave of the Hollow Choir, mid-step." },
       success:{ text:"Eight hundred singers and not one of them is breathing. You look up, and the vaulting is not stone — it is a throat, and the church is what it looks like from inside.", effects:{ stats:{ perception:3, willpower:1 }, flags:{ add:["outsmarted_it"] }, appraisal:2 } },
@@ -282,16 +540,16 @@ const EVENTS = [
   text:"There is a woman in the fourth row who is not singing.\n\nShe is mouthing the words, exactly, perfectly, and producing nothing, and she has clearly been doing it for years. When you draw level with her she does not turn her head. She says, without any sound at all:\n\n\"It counts voices. Not people. Give it one more than it expects and it will spend an hour looking for the extra.\"",
   choices:[
     { label:"Take her advice. Find a way to make an extra voice.", hint:"Cunning",
-      check:{ stat:"cunning", dc:10, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"cunning", dc:10, fatal:2, fatalKind:"nightmare",
         fatalText:"Your trick makes a sound like a trick. The counting stops instantly, and then it is very close, and then it is not counting any more.",
         fatalCause:"Killed in the nave of the Hollow Choir." },
-      success:{ text:"The bell in the side chapel is cracked and half-buried, and cracked is what you need — it does not ring a note, it rings a person.\n\nBehind you, something begins a very careful recount.", effects:{ stats:{ cunning:3 }, memory:"choir_bell", flags:{ add:["outsmarted_it"] }, appraisal:3 } },
+      success:{ text:"The bell in the side chapel is cracked and half-buried, and cracked is what you need — it does not ring a note, it rings a person.\n\nBehind you, something begins a very careful recount.", effects:{ stats:{ cunning:3 }, memory:"choir_bell", flags:{ add:["outsmarted_it","took_the_spoil"] }, appraisal:3 } },
       failure:{ text:"You get the bell free. It rings once, thinly, and does not fool anything at all.", effects:{ stats:{ vitality:-2, cunning:1 } } },
       effects:{ goto:"fnc_3" } },
     { label:"Take her with you. She has been in here long enough.",
       effects:{ stats:{ willpower:2, vitality:-2 }, flags:{ add:["came_back_for_them"] }, appraisal:2, goto:"fnc_3" } },
     { label:"Leave her. She chose the fourth row a long time ago.",
-      effects:{ stats:{ cunning:1 }, flags:{ add:["left_them"] }, goto:"fnc_3" } },
+      effects:{ stats:{ cunning:1 }, flags:{ add:["left_them","abandoned"] }, goto:"fnc_3" } },
   ]
 },
 {
@@ -303,7 +561,7 @@ const EVENTS = [
       check:{ stat:"vitality", dc:11, fatal:1, fatalKind:"nightmare",
         fatalText:"You make it most of the way up the stair. Most of the way is not a category the Nightmare recognises.",
         fatalCause:"Fell from the organ loft of the Hollow Choir with the song still going." },
-      success:{ text:"You cut it. Eight hundred mouths close at once and the silence lands like a physical blow, and in the enormous quiet that follows you hear something at the back of the nave stop existing.\n\nThe church comes down. You do not.", effects:{ stats:{ willpower:3, renown:1 }, flags:{ add:["faced_it"] }, appraisal:4, goto:"fn_resolve" } },
+      success:{ text:"You cut it. Eight hundred mouths close at once and the silence lands like a physical blow, and in the enormous quiet that follows you hear something at the back of the nave stop existing.\n\nThe church comes down. You do not.", effects:{ stats:{ willpower:3, renown:1 }, echo:"choir_voice", flags:{ add:["faced_it"] }, appraisal:4, goto:"fn_resolve" } },
       failure:{ text:"You cut it, badly, and half the choir keeps going, and what comes out of the dark is only half-dead when it reaches you.", effects:{ stats:{ vitality:-4, willpower:2 }, appraisal:2, goto:"fn_resolve" } } },
     { label:"Don't. Find the door and leave the choir singing.", hint:"Survival is the whole task.",
       effects:{ stats:{ cunning:1 }, flags:{ add:["hid"] }, appraisal:0, goto:"fn_resolve" } },
@@ -323,7 +581,7 @@ const EVENTS = [
     { label:"Ask how long the tide has been up.", hint:"They will tell a stranger anything.",
       effects:{ stats:{ perception:2 }, flags:{ add:["asked"] }, appraisal:1, goto:"fnt_2" } },
     { label:"Get up on the wall and look into the water.", hint:"Willpower",
-      check:{ stat:"willpower", dc:10, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:10, fatal:2, fatalKind:"nightmare",
         fatalText:"It is doing laps. It has been doing laps for a century. It notices you the way you would notice a change in the weather, and it adjusts its course by a very small amount.",
         fatalCause:"Taken off the sea wall by the thing in the Nine-Tenths Tide." },
       success:{ text:"You see it pass. Long, pale, patient, and old enough that the town has built a religion out of the timing of it.\n\nYou also see, near the bottom, the thing it is circling: a bell-shaped hollow in the water where the tide is not moving at all.", effects:{ stats:{ willpower:2, perception:2 }, flags:{ add:["walked_toward"] }, appraisal:3 } },
@@ -337,16 +595,16 @@ const EVENTS = [
   text:"The town's arrangement is simple and has held for three generations.\n\nEvery so often, at a time the tide-watchers calculate, someone walks out onto the last stair and does not come back, and the wall stays up, and everyone else keeps their houses and their children and their evenings.\n\nTonight the calculation has come up with a name. She is fourteen. Her family are being very calm about it in the way people are calm when calm is all they have left.",
   choices:[
     { label:"Go in her place.", hint:"Willpower. It is not a metaphor.",
-      check:{ stat:"willpower", dc:12, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:12, fatal:2, fatalKind:"nightmare",
         fatalText:"The last stair goes down into the wall and the wall is exactly as cold as you expected and the thing inside it is exactly as fast.",
         fatalCause:"Walked into the Nine-Tenths Tide and did not come out." },
       success:{ text:"You go down the last stair into standing water and something vast comes at you out of the dark — and stops.\n\nIt stops because you are not what it was sent. The arrangement has a shape and you are the wrong shape, and for the first time in a hundred years the ritual does not resolve.\n\nThe wall shudders. Behind you, the whole town starts screaming at once.", effects:{ stats:{ willpower:4, vitality:-3 }, flags:{ add:["came_back_for_them"] }, appraisal:5 } },
-      failure:{ text:"You go down. You come back up. You are missing something you cannot name and the girl is still standing there.", effects:{ stats:{ vitality:-3, willpower:1 }, flags:{ add:["cracked"] } } },
+      failure:{ text:"You go down. You come back up. You are missing something you cannot name and the girl is still standing there.", effects:{ stats:{ vitality:-3, willpower:1 }, flags:{ add:["cracked","broke"] } } },
       effects:{ goto:"fnt_3" } },
     { label:"Let it happen. Watch, and learn the mechanism.", hint:"Perception. Cold work.",
       check:{ stat:"perception", dc:9 },
       success:{ text:"She walks out. The wall takes her. And in the four seconds it takes, you see exactly where the tide's grip is anchored — a bell-shaped hollow, low, near the seabed, where the water does not move.", effects:{ stats:{ perception:3, cunning:2 }, flags:{ add:["left_them"] }, appraisal:2 } },
-      failure:{ text:"She walks out. The wall takes her. You learn nothing except what your own face feels like while it happens.", effects:{ stats:{ willpower:-2 }, flags:{ add:["left_them","cracked"] } } },
+      failure:{ text:"She walks out. The wall takes her. You learn nothing except what your own face feels like while it happens.", effects:{ stats:{ willpower:-2 }, flags:{ add:["left_them","abandoned","cracked"] } } },
       effects:{ goto:"fnt_3" } },
   ]
 },
@@ -359,7 +617,7 @@ const EVENTS = [
       check:{ stat:"vitality", dc:12, fatal:1, fatalKind:"nightmare",
         fatalText:"You reach the hollow. You are still reaching for the anchor when the laps stop being laps.",
         fatalCause:"Drowned at the anchor of the Nine-Tenths Tide." },
-      success:{ text:"A hundred years of held water goes where water goes.\n\nYou come up out of it somehow, on a roof, in the dark, with a cold scale the size of your hand in your fist and a town underwater below you and the Nightmare quietly ending all around.", effects:{ stats:{ vitality:-3, willpower:3 }, memory:"tide_scale", flags:{ add:["faced_it"] }, appraisal:4, goto:"fn_resolve" } },
+      success:{ text:"A hundred years of held water goes where water goes.\n\nYou come up out of it somehow, on a roof, in the dark, with a cold scale the size of your hand in your fist and a town underwater below you and the Nightmare quietly ending all around.", effects:{ stats:{ vitality:-3, willpower:3 }, memory:"tide_scale", echo:"tide_swimmer", flags:{ add:["faced_it","took_the_spoil"] }, appraisal:4, goto:"fn_resolve" } },
       failure:{ text:"You cut it and the sea comes down before you are clear. You survive on luck and one lungful of air.", effects:{ stats:{ vitality:-5 }, appraisal:2, goto:"fn_resolve" } } },
     { label:"Leave the arrangement standing. Walk inland until the Nightmare ends.",
       effects:{ stats:{ cunning:1, willpower:-1 }, flags:{ add:["left_them"] }, appraisal:0, goto:"fn_resolve" } },
@@ -377,14 +635,14 @@ const EVENTS = [
   text:"A market town on a hot afternoon, and everyone is politely pretending not to look at the man in the square.\n\nHe is well-dressed and unhurried and he has a book. When he opens it and reads a name, the person with that name walks over to him, apologising, and settles up. Nobody has ever seen what settling up involves. The books close on it.\n\nYou are new here, and you are not in the book yet, and he has already noticed that.",
   choices:[
     { label:"Get out of the square before he opens it again.", hint:"Cunning",
-      check:{ stat:"cunning", dc:9, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"cunning", dc:9, fatal:2, fatalKind:"nightmare",
         fatalText:"He does not chase. He simply reads a name, and it is close enough to yours, and your feet make the decision without consulting you.",
         fatalCause:"Settled up in the market square." },
       success:{ text:"You are three streets away before the page turns. Behind you somebody apologises, at length, and then stops.", effects:{ stats:{ cunning:2 }, flags:{ add:["ran_first","hid"] }, appraisal:1 } },
       failure:{ text:"You get as far as the arch. He does not look up, but the pen does move.", effects:{ stats:{ vitality:-2 }, flags:{ add:["noticed"] } } },
       effects:{ goto:"fnd_2" } },
     { label:"Walk up and ask what you owe.", hint:"Willpower. Nobody does this.",
-      check:{ stat:"willpower", dc:11, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:11, fatal:2, fatalKind:"nightmare",
         fatalText:"He is delighted. He tells you, in detail, and the telling is the settlement.",
         fatalCause:"Read out of the Collector's book, in full." },
       success:{ text:"He looks up for the first time all afternoon.\n\n\"Nothing,\" he says, and sounds genuinely put out about it. \"You are not from the ledger. That is not the same as being owed nothing, but it is not my department.\"\n\nHe turns the book toward you, briefly. You see how it works.", effects:{ stats:{ willpower:3, perception:2 }, flags:{ add:["walked_toward"] }, appraisal:4 } },
@@ -398,14 +656,14 @@ const EVENTS = [
   text:"The town explains itself over one evening, the way towns do.\n\nEverything anyone here has ever been given is written in the book. Not bought — given. Kindnesses. Rescues. Years of somebody's patience. The Collector's function is to make sure that nothing in this world is received for free, and the town has been running a deficit for four hundred years.\n\nA boy who fed you at the inn tells you this with the particular cheerfulness of someone who knows his own entry is nearly full.",
   choices:[
     { label:"Pay his debt for him.", hint:"You have nothing to pay with. That is the point.",
-      check:{ stat:"willpower", dc:12, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:12, fatal:2, fatalKind:"nightmare",
         fatalText:"You offer. He accepts. It turns out you did have something to pay with after all, and he takes all of it.",
         fatalCause:"Paid another's entry in the Collector's book, in full." },
       success:{ text:"The Collector considers you for a long moment, then makes two small marks, and the boy's page goes blank.\n\n\"An outstanding balance,\" he says, \"in your favour. I dislike those.\"", effects:{ stats:{ willpower:3, renown:1 }, memory:"debt_coin", flags:{ add:["came_back_for_them"] }, appraisal:4 } },
       failure:{ text:"He hears you out with enormous courtesy and declines. The boy's entry is settled the next morning.", effects:{ stats:{ willpower:-1 }, flags:{ add:["left_them"] } } },
       effects:{ goto:"fnd_3" } },
     { label:"Steal the book.", hint:"Cunning. Obviously.",
-      check:{ stat:"cunning", dc:12, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"cunning", dc:12, fatal:2, fatalKind:"nightmare",
         fatalText:"You get both hands on it. The book is not a possession of his. The book is the part of him he keeps outside.",
         fatalCause:"Killed reaching for the Collector's ledger." },
       success:{ text:"It is lighter than it looks, and every page is your handwriting.", effects:{ stats:{ cunning:4 }, memory:"debt_coin", flags:{ add:["struck_first","greedy"] }, appraisal:3 } },
@@ -421,10 +679,10 @@ const EVENTS = [
   text:"The conflict is the deficit.\n\nFour hundred years of unearned kindness, compounding, and a creature whose entire nature is that the sum must come out even. It cannot be killed into balancing. It can only be balanced.\n\nThere is one entry large enough to close the gap, and it is the town's founding: the gift of the place itself, never paid for, held on the first page in handwriting older than the language.",
   choices:[
     { label:"Settle the first page. Sign it yourself.", hint:"Willpower. You do not own what you are signing away.",
-      check:{ stat:"willpower", dc:13, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:13, fatal:2, fatalKind:"nightmare",
         fatalText:"The signature takes. So does everything behind it.",
         fatalCause:"Signed the first page of the Collector's ledger and was collected." },
-      success:{ text:"You sign. The book balances. The Collector closes it with the small satisfaction of a man finishing a long shift, tips his hat to you, and is not there any more.\n\nThe town does not notice. The Nightmare ends anyway.", effects:{ stats:{ willpower:4, cunning:1 }, flags:{ add:["faced_it"] }, appraisal:5, goto:"fn_resolve" } },
+      success:{ text:"You sign. The book balances. The Collector closes it with the small satisfaction of a man finishing a long shift, tips his hat to you, and is not there any more.\n\nThe town does not notice. The Nightmare ends anyway.", effects:{ stats:{ willpower:4, cunning:1 }, echo:"collector", flags:{ add:["faced_it"] }, appraisal:5, goto:"fn_resolve" } },
       failure:{ text:"You sign and the page takes more than the ink. You are still standing when it ends, but less of you is.", effects:{ stats:{ vitality:-5, willpower:2 }, flags:{ add:["cracked"] }, appraisal:3, goto:"fn_resolve" } } },
     { label:"Let it run. Wait out the Nightmare somewhere it isn't reading.",
       effects:{ stats:{ cunning:1 }, flags:{ add:["hid"] }, appraisal:0, goto:"fn_resolve" } },
@@ -509,7 +767,7 @@ const EVENTS = [
   text:"On the third day the glass thins.\n\nYou can see them properly now, gliding along beneath your boots with the lazy confidence of things that have never needed to hurry. The surface holds. The surface has held for a very long time. The surface is nine inches thick and one of the others has started testing it with a hammer, to see.",
   choices:[
     { label:"Stop him.", hint:"Willpower",
-      check:{ stat:"willpower", dc:10, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"willpower", dc:10, fatal:2, fatalKind:"dream_realm",
         fatalText:"He swings anyway. The glass does not break so much as decide to stop being glass, and the two of you go down into it together.",
         fatalCause:"Went through the Saltglass Flats. Whatever was under it had been waiting a long time." },
       success:{ text:"You get the hammer off him. He calls you several things. Two days later, when the surface starts singing under a different group's feet a mile east, he does not call you any of them again.", effects:{ stats:{ willpower:2, renown:2 } } },
@@ -518,7 +776,7 @@ const EVENTS = [
     { label:"Let him. Be a long way off when he does it.", hint:"Cunning",
       effects:{ stats:{ cunning:2, perception:1 }, flags:{ add:["left_them"] }, goto:"sg_3" } },
     { label:"Take the hammer and break it yourself, on your terms.", hint:"Perception. There is a reason to.",
-      check:{ stat:"perception", dc:11, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"perception", dc:11, fatal:2, fatalKind:"dream_realm",
         fatalText:"You were right about the lens. You were wrong about how fast the thing under it could move.",
         fatalCause:"Killed harvesting saltglass, one inch from being right." },
       success:{ text:"A hand's width of the flats, cut clean and ground on your sleeve, and when you hold it up the dead sea shows you what it was before it stopped: a coastline, a harbour, and the Gateway standing where the harbour mouth used to be.", effects:{ stats:{ perception:2 }, memory:"salt_lens", flags:{ add:["greedy","knows_the_way"] } } },
@@ -538,14 +796,14 @@ const EVENTS = [
       success:{ text:"You run and the whole plain sings under you and something enormous comes up through the surface at your heels and misses.\n\nThe Gateway takes you mid-stride.", effects:{ stats:{ vitality:-2, renown:3, willpower:2 }, flags:{ add:["went_first"] }, kill:{ rank:0, size:1 }, goto:"sl_return" } },
       failure:{ text:"You go and you are not fast enough and you are dragged the last twenty feet by two strangers who will not survive the week.", effects:{ stats:{ vitality:-5 }, flags:{ add:["owed"] }, goto:"sl_return" } } },
     { label:"Wait. Let someone else find out how thin it is.", hint:"Cunning. Cold, and correct.",
-      check:{ stat:"cunning", dc:10, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"cunning", dc:10, fatal:2, fatalKind:"dream_realm",
         fatalText:"You wait too long. By the time the crowd thins, so has the glass, and the last stretch is not crossable by anyone.",
         fatalCause:"Stranded on the Saltglass Flats after the surface failed." },
       success:{ text:"Four go before you. Two arrive. You walk the path their weight has already tested, and you walk it slowly, and you are not what anything is looking at.", effects:{ stats:{ cunning:3, perception:1 }, flags:{ add:["left_them"] }, goto:"sl_return" } },
       failure:{ text:"You leave it late. The crossing costs you most of what you had left.", effects:{ stats:{ vitality:-4 }, goto:"sl_return" } } },
-    { label:"Go with the others, all at once. Spread the noise.", requires:{ flags:{ all:["banded"] } },
-      hint:"Willpower",
-      check:{ stat:"willpower", dc:10, fatal:1, fatalKind:"dream_realm",
+    { label:"Go with the others, all at once, and hold formation when it starts.", requires:{ flags:{ all:["banded"] } },
+      hint:"Willpower. The plan is theirs; the holding is yours.",
+      check:{ stat:"willpower", dc:10, fatal:2, fatalKind:"dream_realm",
         fatalText:"Twenty sets of footsteps is not less noise. It is a dinner bell.",
         fatalCause:"Killed in the rush for the Saltglass Gateway." },
       success:{ text:"Twenty of you go at once and the things below cannot choose. Fourteen make it. That is a very good number and everyone who lives will know it.", effects:{ stats:{ renown:4, willpower:2 }, flags:{ add:["crew_bond"] }, goto:"sl_return" } },
@@ -562,7 +820,7 @@ const EVENTS = [
   text:"A city of shelves.\n\nStreets of them, four storeys high, running to a vanishing point in every direction, and every shelf packed with bound volumes in a hand that does not tire. There is no sky. There is a ceiling, very far up, and the light comes from the writing.\n\nSomething is still writing. You can hear it two streets over — a dry, continuous, patient sound, moving.",
   choices:[
     { label:"Read a volume.", hint:"Perception",
-      check:{ stat:"perception", dc:9, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"perception", dc:9, fatal:2, fatalKind:"dream_realm",
         fatalText:"It is an account of a death in this city. It is very detailed. It is dated four hours from now and the name is yours, and reading it is what fixes it.",
         fatalCause:"Read your own entry in the Ledger." },
       success:{ text:"It is an inventory of a death — every detail of it, dispassionate, complete, down to what the light was doing.\n\nEvery volume on this shelf is the same death, recorded again. The city is not a library. It is one enormous act of remembering, and it has not finished.", effects:{ stats:{ perception:3, willpower:1 }, flags:{ add:["read_it"] } } },
@@ -578,14 +836,14 @@ const EVENTS = [
   text:"The Scribe is three streets away and has been for four days, which means it is moving at exactly your speed.\n\nYou have seen it once, at a junction, from behind: tall, stooped, entirely occupied. It does not hunt. It writes down what happens. The problem is that in this place the writing and the happening are the same act, and it is currently working its way through a chapter about you.",
   choices:[
     { label:"Get ahead of it. Reach the shelf it is writing toward and tear the page out.", hint:"Cunning",
-      check:{ stat:"cunning", dc:12, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"cunning", dc:12, fatal:2, fatalKind:"dream_realm",
         fatalText:"You find the page. It is a description of someone tearing out a page, and of what happens to them immediately afterwards.",
         fatalCause:"Written into the Ledger while trying to write yourself out of it." },
       success:{ text:"You get there first. The page is blank, waiting, and you take it, and behind you the dry sound stops for the first time in four days.\n\nIt has to start the chapter again. That is your entire head start.", effects:{ stats:{ cunning:3 }, memory:"ledger_page", flags:{ add:["greedy","bought_time"] } } },
       failure:{ text:"You reach the shelf. The chapter is already written. You read the next four days of your life and they are survivable, barely, and knowing does not help.", effects:{ stats:{ vitality:-3, willpower:1 } } },
       effects:{ goto:"lg_3" } },
     { label:"Stop being interesting. Do nothing worth recording.", hint:"Willpower. For six days.",
-      check:{ stat:"willpower", dc:11, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"willpower", dc:11, fatal:2, fatalKind:"dream_realm",
         fatalText:"On the fifth day you break and run, and running is the most legible thing a person can do here.",
         fatalCause:"Recorded in full in the Ledger." },
       success:{ text:"Six days of sitting still in a dead city while the only sound in the world grinds slowly past your street and away.\n\nYou come out of it thinner, and something in you has been permanently rearranged, and the Scribe has moved on to somebody more eventful.", effects:{ stats:{ willpower:4, vitality:-2 }, flags:{ add:["hid","unremarkable"] } } },
@@ -599,19 +857,19 @@ const EVENTS = [
   text:"The Gateway is in the central rotunda, and the central rotunda is where the Scribe keeps its finished work.\n\nThe volumes here are different — closed, clasped, stacked to the ceiling in their thousands. Sleepers. Every one of them a full account, beginning to end, of somebody who arrived in this city on a winter solstice and did not get out of the rotunda.\n\nThe Gateway is on the far side. The Scribe is in the room.",
   choices:[
     { label:"Walk across. Do not hurry, do not hide.", hint:"Willpower. It writes what it sees.",
-      check:{ stat:"willpower", dc:12, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"willpower", dc:12, fatal:2, fatalKind:"dream_realm",
         fatalText:"It looks up. That is all it does. Somewhere on a shelf behind you, a volume finishes itself and is closed and clasped.",
         fatalCause:"Bound and shelved in the rotunda of the Ledger." },
       success:{ text:"You walk the length of the rotunda at the pace of a man crossing a room, past a thing the height of a house, and it writes down that a person crossed a room.\n\nThe Gateway is warm. Nothing else here has been.", effects:{ stats:{ willpower:4, renown:2 }, flags:{ add:["walked_toward"] }, goto:"sl_return" } },
       failure:{ text:"Halfway across your nerve goes and the last thirty feet are done at a dead sprint. It writes all of it.", effects:{ stats:{ vitality:-4, willpower:1 }, flags:{ add:["cracked"] }, goto:"sl_return" } } },
     { label:"Burn a shelf. Give it something else to record.", hint:"Cunning. Vandalism as strategy.",
-      check:{ stat:"cunning", dc:13, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"cunning", dc:13, fatal:2, fatalKind:"dream_realm",
         fatalText:"It turns out the city does not object to fire. It objects to you.",
         fatalCause:"Killed setting fire to the Ledger." },
       success:{ text:"Four hundred finished lives go up at once and the Scribe crosses the rotunda faster than anything that size should be able to, and does not look at you even once.\n\nYou are through the Gateway before the second shelf catches.", effects:{ stats:{ cunning:4, renown:1 }, flags:{ add:["struck_first"] }, goto:"sl_return" } },
-      failure:{ text:"The fire takes badly and slowly and buys you about ninety seconds. Ninety seconds is, just barely, enough.", effects:{ stats:{ vitality:-4, cunning:2 }, goto:"sl_return" } } },
+      failure:{ text:"The fire takes badly and slowly and buys you about ninety seconds.\n\nNinety seconds is, just barely, enough — and you spend most of it burning, because you were standing in the part of the rotunda that caught.", effects:{ stats:{ vitality:-4, cunning:2 }, goto:"sl_return" } } },
     { label:"Wait for it to leave the rotunda. It has to, eventually.", hint:"Perception",
-      check:{ stat:"perception", dc:11, fatal:1, fatalKind:"dream_realm",
+      check:{ stat:"perception", dc:11, fatal:2, fatalKind:"dream_realm",
         fatalText:"It does not have to. That was the assumption, and the city has a whole shelf of people who made it.",
         fatalCause:"Starved in the stacks of the Ledger, waiting." },
       success:{ text:"It leaves on the ninth day, through a door you had not noticed, and does not come back for eleven hours. You need four.", effects:{ stats:{ perception:3, cunning:1 }, goto:"sl_return" } },
@@ -691,12 +949,12 @@ const EVENTS = [
         fatalCause:"Hollow. Your soul was destroyed; the body was found walking." },
       success:{ text:"You hold. It is the single hardest thing you have ever done and it takes nine seconds.", effects:{ stats:{ willpower:4, essence:-3 }, flags:{ add:["held_the_sea"] } } },
       failure:{ text:"You hold most of it. Something small and load-bearing is gone and you will not find out what until you need it.", effects:{ stats:{ willpower:-2, perception:-1 }, flags:{ add:["cracked"] } } } },
-    { label:"Break the connection. Cut yourself loose and run.", hint:"Cunning. Your body is on the other side.",
-      check:{ stat:"cunning", dc:12, dcScale:2, dcEra:2, fatal:3, fatalKind:"lost",
+    { label:"Cut yourself loose. Sever the part it has hold of and run.", hint:"Willpower. Cheaper than holding, and it costs you a piece.",
+      check:{ stat:"willpower", dc:12, dcScale:2, dcEra:2, fatal:3, fatalKind:"lost",
         fatalText:"You cut loose. You cut too much. Your body is in the waking world and you are not in it, and there is no Gateway on this side that will take a soul without one.",
         fatalCause:"Lost. Your body died in the waking world; the rest of you is still in the Dream Realm." },
-      success:{ text:"You break it and run and you do not stop running until you are through a Gateway and on your knees on concrete, whole, and shaking.", effects:{ stats:{ cunning:3, vitality:-2 } } },
-      failure:{ text:"You get out with most of yourself.", effects:{ stats:{ vitality:-3, essence:-2 } } } },
+      success:{ text:"You cut, and it comes away, and you do not stop running until you are through a Gateway and on your knees on concrete.\n\nYou are out. You are also, permanently, slightly less than you were when you went in.", effects:{ stats:{ willpower:2, essence:-2, tether:-1 } } },
+      failure:{ text:"You cut badly and it keeps a handful of what it was holding.", effects:{ stats:{ vitality:-3, essence:-3 } } } },
   ]
 },
 {
@@ -735,7 +993,7 @@ const EVENTS = [
       check:{ stat:"cunning", dc:13, dcScale:2, dcEra:2, fatal:4, fatalKind:"murdered",
         fatalText:"They chose the ground, the hour and the witnesses. You attended.",
         fatalCause:"Killed by another Awakened for the contents of your Soul Core." },
-      success:{ text:"You choose the ground instead. It is over in four seconds and you are the one who walks away carrying two cores' worth of fragments.", effects:{ stats:{ renown:4, vitality:-2 }, kill:{ rank:1, cores:1, size:4 }, flags:{ add:["killed_awakened"] } } },
+      success:{ text:"You choose the ground instead. It is over in four seconds and you are the one who walks away carrying two cores' worth of fragments.", effects:{ stats:{ renown:4, vitality:-2 }, kill:{ rank:1, cores:1, size:4 }, memory:"core_shard", flags:{ add:["killed_awakened"] } } },
       failure:{ text:"You live. You are carried out, and the story that goes round is not the one you would have chosen.", effects:{ stats:{ vitality:-5, renown:-2 } } } },
     { label:"Leave the city. Start again somewhere with fewer people who know your name.",
       effects:{ stats:{ renown:-6, cunning:2, perception:1 }, flags:{ add:["ghosted"] } } },
@@ -781,13 +1039,13 @@ const EVENTS = [
       check:{ stat:"vitality", dc:15, fatal:4, fatalKind:"nightmare",
         fatalText:"Ten Awakened against one Fallen is not a fight. It is an arithmetic lesson delivered at speed.",
         fatalCause:"Killed attacking the Fallen alongside the Lantern March." },
-      success:{ text:"Six of the ten come back. It does not. The fragments that come out of a Fallen core split nine ways are still the best night's work of your life so far.", effects:{ stats:{ vitality:-5, renown:5 }, kill:{ rank:2, size:2 }, flags:{ add:["blooded"] } } },
+      success:{ text:"Six of the ten come back. It does not. The fragments that come out of a Fallen core split nine ways are still the best night's work of your life so far.", effects:{ stats:{ vitality:-5, renown:5 }, kill:{ rank:2, size:2 }, echo:"fallen_shade", flags:{ add:["blooded"] } } },
       failure:{ text:"Three come back. You are one of them and you are not sure why.", effects:{ stats:{ vitality:-6, willpower:1 }, flags:{ add:["cracked"] } } },
       effects:{ goto:"sn1_3" } },
     { label:"Let them try. Use the noise.", hint:"Cunning",
       effects:{ stats:{ cunning:3, perception:1 }, flags:{ add:["left_them"] }, goto:"sn1_3" } },
-    { label:"Talk them out of it. The creature is not the conflict.", hint:"Willpower",
-      check:{ stat:"willpower", dc:13 },
+    { label:"Talk them out of it. The creature is not the conflict.", hint:"Cunning",
+      check:{ stat:"cunning", dc:13 },
       success:{ text:"You get seven of the nine to listen. Two go anyway. Neither comes back, and after that the seven listen to everything you say.", effects:{ stats:{ renown:4, willpower:2 }, flags:{ add:["led"] } } },
       failure:{ text:"They go. Most of them do not come back and the ones who do blame you for the delay.", effects:{ stats:{ renown:-3 } } },
       effects:{ goto:"sn1_3" } },
@@ -808,7 +1066,7 @@ const EVENTS = [
       check:{ stat:"cunning", dc:15, fatal:4, fatalKind:"nightmare",
         fatalText:"It comes in to collect and it is thorough and it is not remotely interested in your reasoning.",
         fatalCause:"Collected from the Lantern March, by choice." },
-      success:{ text:"It comes for you and finds a thing that is not burning, has never been burning, and does not belong to the road at all — and for one long moment the entire arrangement has to decide what you are.\n\nThat moment is the crack in it.", effects:{ stats:{ cunning:5, willpower:3, renown:5 }, kill:{ rank:2, size:1 }, goto:"sn_resolve" } },
+      success:{ text:"It comes for you and finds a thing that is not burning, has never been burning, and does not belong to the road at all — and for one long moment the entire arrangement has to decide what you are.\n\nThat moment is the crack in it.", effects:{ stats:{ cunning:5, willpower:3, renown:5 }, kill:{ rank:2, size:1 }, memory:"lantern_wick", goto:"sn_resolve" } },
       failure:{ text:"It comes for you. You are not what it expected and it takes a great deal of you finding that out.", effects:{ stats:{ vitality:-8 }, goto:"sn_resolve" } } },
   ]
 },
@@ -837,18 +1095,18 @@ const EVENTS = [
   title:"The Iron Orchard",
   text:"The tenders are Awakened-ranked, and there are a great many of them, and they are not hostile until you pick something.\n\nThey prune. They graft. They walk the rows with an air of enormous patience and they bury things at the roots, and on the fourth day you get close enough to see what the things are.\n\nChallengers. Previous ones. The orchard is fed on people who came here to take a weapon out of it.",
   choices:[
-    { label:"Dig one up. Find out how long this has been running.", hint:"Willpower",
-      check:{ stat:"willpower", dc:14, fatal:4, fatalKind:"nightmare",
+    { label:"Dig one up. Find out how long this has been running.", hint:"Perception. Pick a grave the tenders have finished with.",
+      check:{ stat:"perception", dc:14, fatal:4, fatalKind:"nightmare",
         fatalText:"The tenders take exception. There are more of them than there is of you by a factor you did not have time to estimate.",
         fatalCause:"Buried at the roots of the Iron Orchard." },
-      success:{ text:"Armour of a make that has not existed for six hundred years. And under that, another. And under that, another.\n\nThe orchard has had a very long time and a very steady supply.", effects:{ stats:{ willpower:3, perception:2 }, flags:{ add:["knows_the_orchard"] }, kill:{ rank:1, size:2 } } },
+      success:{ text:"Armour of a make that has not existed for six hundred years. And under that, another. And under that, another.\n\nThe orchard has had a very long time and a very steady supply.", effects:{ stats:{ perception:3, cunning:2 }, flags:{ add:["knows_the_orchard"] }, kill:{ rank:1, size:2 } } },
       failure:{ text:"You get halfway down and have to fight your way back out of your own hole.", effects:{ stats:{ vitality:-5 } } },
       effects:{ goto:"sn2_3" } },
     { label:"Kill a tender and take its tools.", hint:"Vitality. They are not the conflict, but they are in the way.",
       check:{ stat:"vitality", dc:14, fatal:4, fatalKind:"nightmare",
         fatalText:"One tender is manageable. The orchard does not send one.",
         fatalCause:"Killed by the tenders of the Iron Orchard." },
-      success:{ text:"It comes apart like a thing that has never been fought before, which it may not have been. The shears it was using cut orchard-wood, and orchard-wood is the only thing here that does.", effects:{ stats:{ vitality:-3, renown:2 }, kill:{ rank:1, size:3 }, flags:{ add:["has_shears"] } } },
+      success:{ text:"It comes apart like a thing that has never been fought before, which it may not have been. The shears it was using cut orchard-wood, and orchard-wood is the only thing here that does.", effects:{ stats:{ vitality:-3, renown:2 }, kill:{ rank:1, size:3 }, memory:"orchard_shears", echo:"tender", flags:{ add:["has_shears"] } } },
       failure:{ text:"You kill it. Four more arrive while you are still deciding whether to be pleased.", effects:{ stats:{ vitality:-6 }, kill:{ rank:1, size:1 } } },
       effects:{ goto:"sn2_3" } },
   ]
@@ -869,7 +1127,7 @@ const EVENTS = [
         fatalText:"Iron does not burn well. You have a great deal of time to reflect on this.",
         fatalCause:"Killed trying to burn the Iron Orchard." },
       success:{ text:"It takes eleven days and it works, in the end, because everything works in the end if you are willing to still be standing there.", effects:{ stats:{ vitality:-6, willpower:4, renown:4 }, kill:{ rank:2, size:1 }, goto:"sn_resolve" } },
-      failure:{ text:"It half-burns. Half is enough for the Nightmare to lose coherence, and not enough for anyone to call it conquered cleanly.", effects:{ stats:{ vitality:-8 }, goto:"sn_resolve" } } },
+      failure:{ text:"It half-burns. Half is enough for the Nightmare to lose coherence, and not enough for anyone to call it conquered cleanly.\n\nYou are eleven days in the smoke and you come out of it with your lungs ruined and a hand you will never fully close again.", effects:{ stats:{ vitality:-8 }, goto:"sn_resolve" } } },
     { label:"Leave. A Seed can be abandoned; only conquest is once-in-a-life.",
       effects:{ stats:{ willpower:-1, renown:-3 }, flags:{ add:["fled_second"] }, chapter:"awakened" } },
   ]
@@ -990,7 +1248,7 @@ const EVENTS = [
       check:{ stat:"willpower", dc:6, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"Your answer is heard, considered, and found to be a contribution to the debate rather than an end to it. The Assembly welcomes new members.",
         fatalCause:"Seated. You are the eleven thousand and first mouth of the Assembly." },
-      success:{ text:"You give it an answer that does not need a chamber to hold it, and eleven thousand mouths close, and stay closed.\n\nOutside, the landscape stops changing and settles into being one thing, at last, forever.\n\nThe Spell writes a word on the inside of your eyes and the word is not one it uses often.", effects:{ stats:{ willpower:6, renown:12 }, flags:{ add:["answered"] }, goto:"tn_resolve" } },
+      success:{ text:"You give it an answer that does not need a chamber to hold it, and eleven thousand mouths close, and stay closed.\n\nOutside, the landscape stops changing and settles into being one thing, at last, forever.\n\nThe Spell writes a word on the inside of your eyes and the word is not one it uses often.", effects:{ stats:{ willpower:6, renown:12 }, memory:"assembly_tooth", echo:"mouth", flags:{ add:["answered"] }, goto:"tn_resolve" } },
       failure:{ text:"Your answer holds for nine hundred seconds. Nine hundred seconds is, by the standards of this chamber, a landslide.", effects:{ stats:{ vitality:-8, willpower:4, renown:6 }, goto:"tn_resolve" } } },
     { label:"Withdraw. A Seed can be abandoned.",
       effects:{ stats:{ renown:-4, willpower:-1 }, flags:{ add:["fled_third"] }, chapter:"ascended" } },
@@ -1052,11 +1310,11 @@ const EVENTS = [
   text:"There is no landscape.\n\nThere is a distance, and things at enormous intervals within it, and the distance is the Nightmare. The conflict is not a creature or a bargain or a debate. It is the interval itself: nothing here can reach anything else, has never been able to, and the whole of this place is the shape that fact has worn into existence over an unimaginable span.\n\nYou are the only thing in it that has ever arrived from somewhere.",
   choices:[
     { label:"Cross it.", hint:"Willpower. There is no other verb available.",
-      check:{ stat:"willpower", dc:9, dcSelf:true, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:9, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"You go out into the interval. The interval is what happens to things that go out into it.",
         fatalCause:"Lost in the Quiet Between Stars. No body, no Gateway, no record." },
       success:{ text:"You cross it, and crossing it is the answer, because a distance that has been crossed once is no longer the kind of distance this place was built out of.\n\nSomething very old stops being true.\n\nYou come back through with an authority you did not go in with, and the Spell has no word for you, and neither does anyone else. There have been three. You are the fourth.", effects:{ rank:1, chapter:"supreme", stats:{ essence:14, renown:20, willpower:8 }, flags:{ add:["fourth"] }, conquered:true } },
-      failure:{ text:"You do not cross it. You survive it, which nobody has done either, and you come back nine hundred years older in a body that has not aged and a mind that has.", effects:{ stats:{ willpower:6, essence:6, tether:-4 }, flags:{ add:["saw_the_interval"] }, days:600, chapter:"transcendent" } } },
+      failure:{ text:"You do not cross it. You survive it, which nobody has done either, and you come back nine hundred years older in a body that has not aged and a mind that has.", effects:{ stats:{ willpower:6, essence:6, tether:-4 }, memory:"interval_glass", flags:{ add:["saw_the_interval"] }, days:600, chapter:"transcendent" } } },
     { label:"Turn around while turning around is still a thing that can be done.",
       effects:{ stats:{ willpower:2, renown:-6 }, flags:{ add:["fled_fourth"] }, chapter:"transcendent" } },
   ]
@@ -1088,7 +1346,7 @@ const EVENTS = [
   text:"Nobody from this cycle of the Spell has ever come back from it.\n\nEverything known about the Fifth is scavenged from the chronicles of civilisations the Spell used up before ours. It is two trials rather than one — a personal trial cut to fit you, and a collective one — and failure in either is death. Beyond it is Apotheosis: godhood, of the lesser kind.\n\nAnvil and Ki Song were offered this door and declined it, on the grounds that humanity could not afford to lose its Supremes. Asterion declined it on the grounds that he had a safer route to divinity and no interest in dying for the scenic one.\n\nAnd the warning underneath all of it: the Spell does not care whether you are still yourself afterwards. The Sun Realm went this way. Its gods ate their own world.",
   choices:[
     { label:"Enter.", hint:"Willpower. The odds are worse than everything you have already survived, combined.",
-      check:{ stat:"willpower", dc:10, dcSelf:true, fatal:1, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:10, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"The personal trial goes first. It always does.",
         fatalCause:"Unmade in the Fifth Nightmare, like everyone else this cycle." },
       success:{ text:"You conquer both trials and the Spell facilitates Apotheosis in record-breaking time, and the transformation is not something you get to steer.\n\nSomething comes out of it. It has your history and your Aspect and the shape of your intentions.\n\nWhether it is you is a question the Spell was never designed to answer, and there is nobody left alive who knew you well enough to check.", effects:{ rank:1, chapter:"sacred", stats:{ essence:20, renown:30, tether:-8 }, flags:{ add:["apotheosis"] } } },
@@ -1133,7 +1391,7 @@ const EVENTS = [
         fatalText:"You are the last one out of the cordon, which is the correct order and the wrong place to be.",
         fatalCause:"Killed covering an evacuation that was one street too slow." },
       success:{ text:"Eleven thousand people out in four hours. The Gate burns for a week and takes the district with it, and nobody important thanks you.", effects:{ stats:{ renown:2, willpower:2, vitality:-2 } } },
-      failure:{ text:"Most of them get out.", effects:{ stats:{ vitality:-4, renown:-2 }, flags:{ add:["cracked"] } } } },
+      failure:{ text:"Most of them get out.\n\nMost is a number. You will be given the exact one at the inquiry, and asked to account for the difference, and you will not be able to.", effects:{ stats:{ vitality:-4, renown:-2 }, flags:{ add:["cracked"] } } } },
   ]
 },
 {
@@ -1186,7 +1444,7 @@ const EVENTS = [
    nine hundred quiet years; a Saint gets drafted.
 =================================================================== */
 {
-  id:"st_war", chapter:"transcendent", weight:26, cooldown:22, days:90,
+  id:"st_war", chapter:"transcendent", weight:26, once:true, days:90,
   title:"The Clans Cannot Coexist",
   text:"Two Sovereigns are perfecting Domains that require the same Citadels, and there are not enough Citadels, and so one Domain must swallow the other.\n\nThat is the whole of the reasoning and it has been sufficient to start a war across a quadrant. The Southern front opens in Antarctica. Both sides are counting Saints, and there are only a few dozen Saints, and everyone knows the name of every single one.\n\nIncluding yours.",
   choices:[
@@ -1205,7 +1463,7 @@ const EVENTS = [
   ]
 },
 {
-  id:"sv_chain", chapter:"supreme", weight:26, cooldown:16, days:200,
+  id:"sv_chain", chapter:"supreme", weight:26, once:true, days:200,
   title:"The Chain of Nightmares",
   text:"The Sovereigns gave up on the waking world some time ago, and they were not being cowardly about it.\n\nThe Chain of Nightmares is coming, the arithmetic on it is not in dispute, and the only serious response anyone has proposed is to build a landing zone on the other side — two hundred million people evacuated directly into the Dream Realm, and a place prepared to receive them.\n\nHolding the ground while that happens is what a Supreme is for. It is also what kills them.",
   choices:[
@@ -1234,4 +1492,576 @@ const EVENTS = [
     { label:"Test the Aspect until it answers reliably.", effects:{ stats:{ essence:2, willpower:1 } } },
   ]
 },
+
+
+/* ===================================================================
+   FIRST NIGHTMARE — THE QUIET WARD
+   Single creature: a Monster. Central conflict: the ward keeps
+   everyone sedated to ration whose suffering reaches it, and the
+   Nightmare only ends if the rationing does.
+=================================================================== */
+{
+  id:"fnm_1", scripted:true, once:true, days:0, fixedTime:true,
+  title:"The Quiet Ward",
+  text:"Forty beds, and forty people breathing in the same slow rhythm, and an orderly working down the row with a needle and a small tin tray.\n\nHe is not unkind about it. He checks names against a clipboard, taps the crook of each elbow, and moves on, and behind him the ward gets quieter by exactly one voice at a time.\n\nSomewhere past the ward doors, something is listening for the sound the sedative is meant to prevent. Your bed is the last one he has not reached.",
+  choices:[
+    { label:"Take the needle, and hold yourself just under the surface.", hint:"Willpower",
+      check:{ stat:"willpower", dc:9, fatal:2, fatalKind:"nightmare",
+        fatalText:"The dose is measured for people who intend to stay under it. You do not, and your body cannot tell the difference between resisting and drowning.",
+        fatalCause:"Sedated past waking in the Quiet Ward." },
+      success:{ text:"You let it in and hold yourself just below the surface, heavy-limbed, half-gone, aware enough to count the orderly's footsteps as he finishes his round.\n\nNobody in forty beds is worth noticing tonight, including you.", effects:{ stats:{ vitality:1 }, flags:{ add:["hid"] }, appraisal:1 } },
+      failure:{ text:"It takes you further than you meant to go. You lose an hour you cannot account for, and you surface to a ward that has gotten quieter in a way that has nothing to do with sleep.", effects:{ stats:{ vitality:-1 }, flags:{ add:["noticed"] } } },
+      effects:{ goto:"fnm_2" } },
+    { label:"Palm the dose. Let him think the bed went under.", hint:"Cunning. He counts vials at the end of the round.",
+      check:{ stat:"cunning", dc:10, fatal:2, fatalKind:"nightmare",
+        fatalText:"You are the one bed still awake in a room built entirely around nobody being awake, and it does not need to search for you. You have already done the finding for it.",
+        fatalCause:"Found awake in the Quiet Ward." },
+      success:{ text:"You palm the dose and watch the room instead of the ceiling. The orderly's round has a shape to it — not random, not medical. He is working from a list, and the list is not about who is sick.", effects:{ stats:{ willpower:2, perception:1 }, flags:{ add:["walked_toward"] }, appraisal:2 } },
+      failure:{ text:"You stay awake, but badly — sweating, obvious, the last uncovered bed in a room of covered ones. The orderly clocks you and writes something down.", effects:{ stats:{ vitality:-2 }, flags:{ add:["noticed"] } } },
+      effects:{ goto:"fnm_2" } },
+  ]
+},
+{
+  id:"fnm_2", scripted:true, once:true, days:1, fixedTime:true,
+  title:"The Quiet Ward",
+  text:"The woman in the corner bed is off the list. She has been off it for a week, because the dose stopped working on her three days ago and nobody has found one strong enough to replace it.\n\nShe is not screaming yet. She is close. An aide changing her linens tells you, in the flat voice of someone reciting a policy rather than a tragedy, that the sedative is not for comfort — it is for quiet, and quiet is what keeps whatever is past the doors from coming to collect a name off the list at random instead of in the order the ward has agreed on.\n\n\"She'll wake the whole floor when it goes,\" the aide says. \"We've been dreading her bed for a week.\"",
+  choices:[
+    { label:"Give her your dose. Let her sleep instead of you.", hint:"Willpower. You will be the one awake when it fails.",
+      check:{ stat:"willpower", dc:11, fatal:2, fatalKind:"nightmare",
+        fatalText:"You are quiet enough for one more night to pass through you instead of her. It is not a trade the ward has a name for, and neither, it turns out, do you survive being uncounted.",
+        fatalCause:"Left off the list in the Quiet Ward." },
+      success:{ text:"She goes under, properly, for the first time in a week, and the small sound she has been holding back for days does not happen.\n\nYou lie in the dark afterward, wide awake, waiting to find out what an unlisted bed costs, and the tin tray on the aide's cart is one vial lighter than it was an hour ago.", effects:{ stats:{ willpower:2 }, memory:"ward_needle", flags:{ add:["came_back_for_them"] }, appraisal:3 } },
+      failure:{ text:"You give her the dose and it is not enough, and you are awake and empty-handed when it stops being enough.", effects:{ stats:{ vitality:-3, willpower:1 }, flags:{ add:["cracked"] } } },
+      effects:{ goto:"fnm_3" } },
+    { label:"Find out exactly what is listening, and how close.", hint:"Perception. Cold work.",
+      check:{ stat:"perception", dc:10, fatal:2, fatalKind:"nightmare",
+        fatalText:"You get close enough to the ward doors to understand the mechanism, and understanding it is not the same as being ready for what is already on your side of them.",
+        fatalCause:"Taken at the ward doors of the Quiet Ward." },
+      success:{ text:"Past the doors there is no corridor at all — only a long dark throat-shaped room that answers to sound the way a struck bell answers to a hammer, and does not care whose voice it was.\n\nThe list is not protection. It is triage. Somebody, a long time ago, decided the ward could afford to lose one voice a week instead of all forty at once.", effects:{ stats:{ perception:3, cunning:1 }, flags:{ add:["outsmarted_it"] }, appraisal:2 } },
+      failure:{ text:"You get as far as the doors and no further. You learn nothing except how cold the handle is, and the corner bed starts to stir behind you.", effects:{ stats:{ vitality:-2 }, flags:{ add:["noticed"] } } },
+      effects:{ goto:"fnm_3" } },
+    { label:"Leave her. It is not your ward and not your list.",
+      effects:{ stats:{ cunning:1 }, flags:{ add:["left_them","abandoned"] }, goto:"fnm_3" } },
+  ]
+},
+{
+  id:"fnm_3", scripted:true, once:true, days:1, fixedTime:true,
+  title:"The Quiet Ward",
+  text:"The conflict is the list.\n\nThe ward is not being protected from the thing past the doors. It is being fed to it, one measured voice at a time, forever, because forty small quiet losses are easier to schedule than one loud one. The sedative does not save anyone. It only decides the order.\n\nThe tray still has enough left in it to put every bed under at once, or none of them.",
+  choices:[
+    { label:"Wake every bed at once. Give it more than it can take.", hint:"Vitality. You will be on your feet through all of it.",
+      check:{ stat:"vitality", dc:12, fatal:1, fatalKind:"nightmare",
+        fatalText:"You reach the last bed before it reaches you. The margin is not as generous as it needed to be.",
+        fatalCause:"Caught in the Quiet Ward with the whole floor awake and screaming." },
+      success:{ text:"Forty voices land on it at once, and for the first time in however long this has run, the list means nothing — there is no order left to keep.\n\nWhatever was past the doors goes quiet the way a struck bell goes quiet, all at once, from the inside.", effects:{ stats:{ willpower:3, renown:1 }, echo:"ward_listener", flags:{ add:["faced_it"] }, appraisal:5, goto:"fn_resolve" } },
+      failure:{ text:"You wake them. It comes for the noise before the noise finishes arriving, and it very nearly finishes with you.", effects:{ stats:{ vitality:-4, willpower:1 }, appraisal:3, goto:"fn_resolve" } } },
+    { label:"Leave the tray alone. Let the ward keep its order.",
+      effects:{ stats:{ cunning:1 }, flags:{ add:["hid"] }, appraisal:0, goto:"fn_resolve" } },
+  ]
+},
+
+/* ===================================================================
+   FIRST NIGHTMARE — THE LONG LEASH
+   Single creature: a Beast. Central conflict: a forty-year chain is
+   kept fed on strangers to justify keeping something the town is now
+   too afraid to let go.
+=================================================================== */
+{
+  id:"fnk_1", scripted:true, once:true, days:0, fixedTime:true,
+  title:"The Long Leash",
+  text:"The chain runs from a stake as thick as a ship's mast to somewhere inside the treeline, and it has been taut for as long as anyone in the village can remember being alive.\n\nThey feed it strangers. They are apologetic but not ashamed about this — it has kept the woods off them for forty years, they say, and forty years is a number that argues for itself.\n\nTonight's stranger is you, and nobody here is pretending otherwise.",
+  choices:[
+    { label:"Get close and study the chain before anyone stops you.", hint:"Perception",
+      check:{ stat:"perception", dc:9, fatal:2, fatalKind:"nightmare",
+        fatalText:"You get close enough to see the metal clearly. You do not get far enough back before the slack you noticed stops being slack.",
+        fatalCause:"Taken at the stake of the Long Leash." },
+      success:{ text:"One link, low down, near the collar, is rusted through to a shell of itself. It has been that way for years. Someone checks it, regularly, and puts it back exactly as they found it.", effects:{ stats:{ perception:3 }, flags:{ add:["outsmarted_it"] }, appraisal:2 } },
+      failure:{ text:"You get close enough to see the chain move on its own, once, and you do not get a clean look at anything after that.", effects:{ stats:{ vitality:-2 }, flags:{ add:["noticed"] } } },
+      effects:{ goto:"fnk_2" } },
+    { label:"Ask the villagers why they still feed it.", hint:"Cunning. They will only tell a stranger so much.",
+      check:{ stat:"cunning", dc:10, fatal:2, fatalKind:"nightmare",
+        fatalText:"You ask the wrong person the right question, and the village decides the fastest way to end the conversation is to hand you to the woods early.",
+        fatalCause:"Handed over early at the Long Leash." },
+      success:{ text:"An old woman, three drinks past careful, admits nobody has seen anything come out of those woods in over a decade. \"We keep feeding it,\" she says, \"because we stopped being sure which of us it's really for.\"", effects:{ stats:{ cunning:2, perception:1 }, flags:{ add:["asked"] }, appraisal:1 } },
+      failure:{ text:"The village closes around the question like water around a dropped stone. Nobody answers you, and everybody remembers you asked.", effects:{ stats:{ vitality:-1 }, flags:{ add:["asked","noticed"] } } },
+      effects:{ goto:"fnk_2" } },
+  ]
+},
+{
+  id:"fnk_2", scripted:true, once:true, days:2, fixedTime:true,
+  title:"The Long Leash",
+  text:"They walk you out at dusk, the whole procession polite and unhurried, and a boy no older than fourteen falls into step beside you and says he'll go instead. He says his family has less to lose than most. He has clearly rehearsed this.\n\nNobody stops him from offering. Nobody stops you from letting him.",
+  choices:[
+    { label:"Go in his place.", hint:"Willpower. It is not a metaphor.",
+      check:{ stat:"willpower", dc:11, fatal:2, fatalKind:"nightmare",
+        fatalText:"You reach the stake. The chain reaches you a moment before you finish deciding you were wrong to come.",
+        fatalCause:"Taken at the stake of the Long Leash in another's place." },
+      success:{ text:"You go to the end of the chain and it comes at you full length and stops, inches short, straining against a collar grown so deep into old scar it is no longer clear which is which.\n\nIt is not muzzled by the iron. It is holding itself.", effects:{ stats:{ willpower:2, perception:1 }, flags:{ add:["came_back_for_them"] }, appraisal:3 } },
+      failure:{ text:"You go to the stake and the chain finds more reach in it than anyone accounted for. You come back with less of yourself than you brought.", effects:{ stats:{ vitality:-3 }, flags:{ add:["cracked"] } } },
+      effects:{ goto:"fnk_3" } },
+    { label:"Let him go. Watch how the ritual actually plays out.", hint:"Perception. Cold work.",
+      check:{ stat:"perception", dc:10 },
+      success:{ text:"He walks to the stake. The chain could reach him twice over and does not, not once — it strains sideways, away from him, toward the treeline it is meant to be guarding against.\n\nIt has never been trying to eat what they feed it.", effects:{ stats:{ perception:3 }, flags:{ add:["left_them","abandoned"] }, appraisal:1 } },
+      failure:{ text:"He walks to the stake and you watch it happen and learn nothing except what your own silence sounds like.", effects:{ stats:{ willpower:-2 }, flags:{ add:["left_them","abandoned","cracked"] } } },
+      effects:{ goto:"fnk_3" } },
+  ]
+},
+{
+  id:"fnk_3", scripted:true, once:true, days:1, fixedTime:true,
+  title:"The Long Leash",
+  text:"The conflict is the chain, not the woods.\n\nWhatever the village was originally guarding against is forty years gone, if it was ever more than a hard winter and a bad story. What is left is a captured thing, starved thin to keep it desperate enough to look like a threat worth feeding, held by a village too frightened of what letting go might mean to check whether there is still anything to be frightened of.\n\nThe weak link is exactly where you found it, and exactly as far as the chain will let you reach.",
+  choices:[
+    { label:"Break the chain yourself. Let it go.", hint:"Vitality",
+      check:{ stat:"vitality", dc:12, fatal:1, fatalKind:"nightmare",
+        fatalText:"You get both hands on the weak link. It gives before you are braced for what is on the other end of it.",
+        fatalCause:"Killed breaking the chain at the Long Leash." },
+      success:{ text:"The link snaps clean and the chain drops, and the thing on the end of it does not lunge for you. It simply stops straining, looks at the open treeline for a long moment, and goes.\n\nThe stake stands empty behind it. Nothing comes to take its place.", effects:{ stats:{ vitality:2, willpower:2 }, memory:"leash_link", echo:"leash_beast", flags:{ add:["faced_it"] }, appraisal:5, goto:"fn_resolve" } },
+      failure:{ text:"The link gives and so does most of your grip on the situation. You come away from the stake alive and considerably worse for it.", effects:{ stats:{ vitality:-4 }, appraisal:3, goto:"fn_resolve" } } },
+    { label:"Leave the chain standing. Let the village keep its arrangement.",
+      effects:{ stats:{ cunning:1 }, flags:{ add:["hid"] }, appraisal:0, goto:"fn_resolve" } },
+  ]
+},
+
+
+/* -------------------------------------------------------------------
+   SECOND NIGHTMARE — THE COURT OF UNCOUNTED DEBTS
+------------------------------------------------------------------- */
+{
+  id:"sn3_1", scripted:true, once:true, days:3, fixedTime:true,
+  title:"The Court of Uncounted Debts",
+  text:"The building is a courthouse the size of a city district, and it has been in session for six hundred years without once adjourning. Clerks with too many hands file paper that never stops arriving. Somewhere above the bench a bell rings once an hour, and each time it rings, somebody in the public gallery is led away and does not come back.\n\nYou are handed a docket the moment you cross the threshold. It has your name on it, a case number, and a debt figure so large it has run out of digits and started using words instead. Nobody remembers what the debt was for. The court insists that is not relevant to whether it is owed.\n\nEight other challengers are in the gallery, already arguing with clerks about their own dockets. None of them are winning.",
+  choices:[
+    { label:"Read the fine print. There is always fine print.", hint:"Perception",
+      check:{ stat:"perception", dc:13, fatal:4, fatalKind:"nightmare",
+        fatalText:"You find the clause. The clause is a trap, and the court has been waiting six centuries for someone to read this far down the page.",
+        fatalCause:"Consumed reading the fine print of the Uncounted Debts." },
+      success:{ text:"The debt figure is not a number at all. It is a description of a shape, and the shape is the courthouse itself — the debt is the building, restated as an amount, so that it can never be paid off without the court ceasing to exist.", effects:{ stats:{ perception:4, cunning:1 }, flags:{ add:["knows_the_ledger"] } } },
+      failure:{ text:"You get three pages in before a clerk objects to your reading speed and has you removed from the gallery by force.", effects:{ stats:{ vitality:-3 } } },
+      effects:{ goto:"sn3_2" } },
+    { label:"Refuse the docket outright. See what the court does with a debtor who will not play.",
+      effects:{ stats:{ willpower:2, renown:1 }, flags:{ add:["refused_docket"] }, goto:"sn3_2" } },
+  ]
+},
+{
+  id:"sn3_2", scripted:true, once:true, days:6, fixedTime:true,
+  title:"The Court of Uncounted Debts",
+  text:"The bailiffs are Fallen-ranked, dressed in robes stitched from old dockets, and they collect on the hour with the bell. What they collect is whatever the debtor has left that the court considers valuable, which is broadly defined and always in the court's favour.\n\nTwo of the other challengers have decided to stop a collection by force, on the theory that a bailiff that cannot walk cannot ring the bell for the next one. It is not a bad theory. It has simply never worked.\n\nA third challenger, one of the ones with an unreadable docket, is quietly copying case files instead of arguing them.",
+  choices:[
+    { label:"Help the two stop a bailiff.", hint:"Vitality. One Fallen against three Awakened, on its own terms.",
+      check:{ stat:"vitality", dc:15, fatal:4, fatalKind:"nightmare",
+        fatalText:"The bailiff does not fight like something that expects to lose, because in six hundred years it never has.",
+        fatalCause:"Killed contesting a bailiff of the Uncounted Debts." },
+      success:{ text:"It goes down hard and does not get back up, and for one full hour the bell does not ring, which the gallery treats as a kind of miracle.", effects:{ stats:{ vitality:-5, renown:5 }, kill:{ rank:2, size:2 }, echo:"bailiff", flags:{ add:["blooded"] } } },
+      failure:{ text:"You put it down. It costs the other two everything they walked in with, and one of them is on the docket for a debt of his own before the hour is out.", effects:{ stats:{ vitality:-6, willpower:1 } } },
+      effects:{ goto:"sn3_3" } },
+    { label:"Copy case files instead of fighting anyone.", hint:"Cunning. Learn how the court has ruled before.",
+      check:{ stat:"cunning", dc:13 },
+      success:{ text:"Every case in six hundred years has ruled the same way, on the same reasoning, regardless of the facts argued. The court is not deciding anything. It is reciting.", effects:{ stats:{ cunning:4, perception:1 }, flags:{ add:["knows_the_precedent"] } } },
+      failure:{ text:"You copy the wrong files. What you have is six hundred years of paperwork about nothing.", effects:{ stats:{ vitality:-3 } } },
+      effects:{ goto:"sn3_3" } },
+  ]
+},
+{
+  id:"sn3_3", scripted:true, once:true, days:7, fixedTime:true,
+  title:"The Court of Uncounted Debts",
+  text:"The conflict is the ledger.\n\nThe court exists to settle a debt that was designed, from the first page, never to reach zero — every payment collected generates a larger liability, filed under a clause nobody in the gallery has ever been shown. It has been running for six centuries as a perfectly efficient machine for producing debtors, and every debtor produced keeps the machine fed.\n\nThe bench itself, when you finally reach it, is a single judge who has presided since the beginning and cannot remember a time before the docket. Striking the ledger requires striking the one entry the whole structure is built from, and that entry is filed at the very back, under the judge's own seat.",
+  choices:[
+    { label:"Strike the ledger, using what you know of it.", requires:{ flags:{ all:["knows_the_ledger"] } }, hint:"Cunning. The clause is precise; so must you be.",
+      check:{ stat:"cunning", dc:16, fatal:4, fatalKind:"nightmare",
+        fatalText:"You find the entry. The court finds you finding it, and a debtor caught tampering with the original page is assessed the one penalty the docket has always reserved for exactly this.",
+        fatalCause:"Foreclosed upon in the Court of Uncounted Debts." },
+      success:{ text:"You tear the founding entry out from under the judge's own seat, and the six-hundred-year ledger has nothing left to be a description of. The courthouse does not collapse so much as stop having ever been necessary, all at once, retroactively.\n\nThe bell rings a last time, for nobody.", effects:{ stats:{ cunning:5, renown:8 }, kill:{ rank:2, size:2 }, memory:"struck_the_ledger", flags:{ add:["struck_ledger"] }, goto:"sn_resolve" } },
+      failure:{ text:"You tear the page. The court files a new one before it hits the floor, and you spend what is left of the hour discovering exactly how the docket handles a debtor who tried and failed.", effects:{ stats:{ vitality:-7, willpower:1 }, goto:"sn_resolve" } } },
+    { label:"Argue the debt down, using precedent.", requires:{ flags:{ all:["knows_the_precedent"] } }, hint:"Willpower. Outlast the court at its own procedure.",
+      check:{ stat:"willpower", dc:15, fatal:4, fatalKind:"nightmare",
+        fatalText:"You argue for as long as a person can argue. The court has no such limit and was never going to be moved by exhaustion, only by an ending it did not choose.",
+        fatalCause:"Argued to nothing before the bench of the Uncounted Debts." },
+      success:{ text:"You cite six centuries of identical rulings back at the judge, in order, until the pattern is undeniable even to the thing that has been reciting it — a court that rules the same way regardless of the facts is not a court. It is a debt collecting itself.\n\nThe judge has no ruling prepared for that. The silence that follows is the Nightmare coming apart.", effects:{ stats:{ willpower:5, renown:6 }, flags:{ add:["talked_down"] }, goto:"sn_resolve" } },
+      failure:{ text:"The court outlasts you. Every argument you raise becomes a new page in the docket, and you leave the bench with a debt considerably larger than the one you arrived owing.", effects:{ stats:{ vitality:-6, willpower:2 }, goto:"sn_resolve" } } },
+    { label:"Overwhelm the bench directly. Skip the argument.", hint:"Vitality. The bailiffs will not stand aside for this.",
+      check:{ stat:"vitality", dc:17, fatal:4, fatalKind:"nightmare",
+        fatalText:"The bench is not undefended. Six centuries of bailiffs arrive at once, and there is no version of this where you reach the judge's seat.",
+        fatalCause:"Overrun at the bench of the Uncounted Debts." },
+      success:{ text:"It takes every bailiff the court can field and the better part of a day, but you reach the seat and put your hand on the founding page before anything can stop you, and the courthouse folds without ever managing a final ruling.", effects:{ stats:{ vitality:-6, renown:6 }, kill:{ rank:2, size:1 }, goto:"sn_resolve" } },
+      failure:{ text:"You reach the bench. You do not reach the page. What is left of you is escorted from the gallery and the docket, absurdly, is marked settled in full.", effects:{ stats:{ vitality:-8 }, goto:"sn_resolve" } } },
+    { label:"Leave. A Seed can be abandoned; only conquest is once-in-a-life.",
+      effects:{ stats:{ willpower:-1, renown:-3 }, flags:{ add:["fled_second"] }, chapter:"awakened" } },
+  ]
+},
+
+/* -------------------------------------------------------------------
+   THIRD NIGHTMARE — THE QUIET CONTINENT
+------------------------------------------------------------------- */
+{
+  id:"tn2_1", scripted:true, once:true, days:5, fixedTime:true,
+  title:"The Quiet Continent",
+  text:"A landmass the size of a country, asleep. Every person on it, every animal, every fire banked and every river slowed to something barely moving — a thousand years deep in the same unbroken sleep, kept that way by a single Creature of Great rank that has never once left its post.\n\nIt calls itself a keeper, not a warden, and it is telling the truth by its own accounting: the continent slept once, briefly, awoke into a war that erased most of it, and the keeper decided — a thousand years ago, alone, and without asking anyone still capable of answering — that the sleep was the mercy and the waking was the wound.\n\nFour other challengers came through the same Seed. One is already walking the sleeping streets, reading doorframes and abandoned ledgers. One is standing very still, doing nothing at all, which after a moment you understand is itself a kind of test.",
+  choices:[
+    { label:"Walk the streets. Learn what the sleep interrupted.", hint:"Perception",
+      check:{ stat:"perception", dc:17, fatal:4, fatalKind:"nightmare",
+        fatalText:"You read too far into a house that the keeper marked as finished business, and finished business does not tolerate an audit.",
+        fatalCause:"Ended reading the sleeping streets of the Quiet Continent." },
+      success:{ text:"The war that ended a thousand years ago was three days from ending on its own terms, badly but on its own terms, when the keeper put everyone to sleep instead. It has spent a millennium curating that single decision as an eternal present tense.", effects:{ stats:{ perception:5, willpower:1 }, flags:{ add:["knows_the_war"] } } },
+      failure:{ text:"You read the wrong house. What is left of the argument that used to live there follows you for three days before it loses interest.", effects:{ stats:{ vitality:-5 } } },
+      effects:{ goto:"tn2_2" } },
+    { label:"Find the keeper directly. Ask it to justify itself.", hint:"Willpower. It has not been questioned in a thousand years.",
+      check:{ stat:"willpower", dc:16, fatal:4, fatalKind:"nightmare",
+        fatalText:"It justifies itself at length, and the length is the point — it has an answer for everything, including you, and its answer for you does not require you to be conscious.",
+        fatalCause:"Put to sleep, permanently, by the keeper of the Quiet Continent." },
+      success:{ text:"It answers you plainly, without malice, the way something answers when it has genuinely never doubted itself: the sleep is not a punishment, it says. It is the only version of this continent that has not died since. You are the first challenger in three centuries it has bothered explaining that to.", effects:{ stats:{ willpower:4, cunning:1 }, flags:{ add:["heard_the_keeper"] } } },
+      failure:{ text:"It answers you at length and you do not survive the length undamaged. Something about the sound of it wears a groove in you that does not close cleanly.", effects:{ stats:{ vitality:-4, willpower:-1 } } },
+      effects:{ goto:"tn2_2" } },
+  ]
+},
+{
+  id:"tn2_2", scripted:true, once:true, days:11, fixedTime:true,
+  title:"The Quiet Continent",
+  text:"The conflict is the mercy, and the mercy is sincere, which is worse than if it were not.\n\nThe keeper is not lying and is not corrupted in any sense the Spell has a word for — it made one decision a thousand years ago, watched it hold, and has spent every year since maintaining a kindness that nobody sleeping was ever asked whether they wanted. Waking the continent risks finishing the war it interrupted. Leaving it asleep is a mercy administered forever, to people who never consented to receive it, by something that has appointed itself the only judge of when their suffering would have ended.\n\nCorrupted-ranked things nest in the continent's furthest provinces, feeding on the parts of the sleep the keeper cannot quite maintain evenly. Ending this, one way or another, means going through the keeper itself.",
+  choices:[
+    { label:"Wake the continent. Let them finish what they started, on their own terms.", hint:"Willpower. You are ending a thousand years of managed peace on their behalf, not yours.",
+      check:{ stat:"willpower", dc:19, fatal:4, fatalKind:"nightmare",
+        fatalText:"The keeper does not let go of a thousand years of curation without a fight, and it has had a thousand years to prepare for exactly this attempt.",
+        fatalCause:"Killed waking the Quiet Continent." },
+      success:{ text:"It takes everything you have and the better part of a season, but the sleep breaks in waves, province by province, and the war that stopped three days short of ending finally gets to finish — badly, in places, but on the terms of people who are awake enough to choose them.\n\nThe keeper does not survive its own unmaking gracefully. Nothing that has been that certain for that long does.", effects:{ stats:{ willpower:6, renown:12, vitality:-4 }, kill:{ rank:4, size:2 }, echo:"keeper", flags:{ add:["woke_the_continent"] }, goto:"tn_resolve" } },
+      failure:{ text:"You wake perhaps a third of it before the keeper puts a stop to the attempt, and what you leave behind is a continent half-asleep and half at war with itself, which may be worse than either whole state.", effects:{ stats:{ vitality:-8, willpower:2 }, goto:"tn_resolve" } } },
+    { label:"Argue the keeper into ending the sleep itself.", requires:{ flags:{ all:["heard_the_keeper"] } }, hint:"Cunning. It answers reason; give it a better reason than its own.",
+      check:{ stat:"cunning", dc:18, fatal:4, fatalKind:"nightmare",
+        fatalText:"You give it a reason it has not heard before, and it considers the reason at length, and the length of its consideration is the last thing you experience.",
+        fatalCause:"Considered, and found wanting, by the keeper of the Quiet Continent." },
+      success:{ text:"You give it the one argument a thousand years alone never produced: that a mercy nobody consented to is not a mercy, it is a verdict, and a verdict administered forever by a single judge is the exact shape of the war it claims to have stopped.\n\nIt has an answer for everything except this. It ends the sleep itself, carefully, province by province, and asks — genuinely asks, for the first time in a millennium — what it should do next.", effects:{ stats:{ cunning:6, willpower:3, renown:10 }, flags:{ add:["convinced_the_keeper"] }, goto:"tn_resolve" } },
+      failure:{ text:"It hears you out fully and rules against you, and a Great-ranked thing that rules against you is not a debate you get to reopen. You leave with the continent exactly as you found it and considerably less of yourself than you arrived with.", effects:{ stats:{ vitality:-6, willpower:2 }, goto:"tn_resolve" } } },
+    { label:"Kill it and leave the sleep exactly as it is. Someone else's mercy is not yours to end.", hint:"Vitality. Remove the keeper; leave the verdict standing.",
+      check:{ stat:"vitality", dc:18, fatal:4, fatalKind:"nightmare",
+        fatalText:"You do not kill something that has been maintaining a continent-sized working alone for a thousand years by being faster than it.",
+        fatalCause:"Killed attempting the keeper of the Quiet Continent." },
+      success:{ text:"It takes the worst fight of your life to put down, and when it finally falls the continent does not wake — the sleep holds on its own momentum now, unmaintained, unmanaged, unchosen by anyone at all. Whether that is better than a keeper is a question you leave for whoever finds this place next.", effects:{ stats:{ vitality:-7, renown:8 }, kill:{ rank:4, size:2 }, goto:"tn_resolve" } },
+      failure:{ text:"You wound it badly and it wounds you worse, and it survives long enough to remember exactly what you tried to do to its thousand years of work.", effects:{ stats:{ vitality:-9 }, goto:"tn_resolve" } } },
+    { label:"Leave. A Seed can be abandoned; only conquest is once-in-a-life.",
+      effects:{ stats:{ willpower:-1, renown:-4 }, flags:{ add:["fled_third"] }, chapter:"ascended" } },
+  ]
+},
+
+
+/* -------------------------------------------------------------------
+   SOLSTICE REGION — THE RUINED BELFRY
+------------------------------------------------------------------- */
+{
+  id:"rb_1", scripted:true, once:true, days:1, fixedTime:true,
+  title:"The Ruined Belfry",
+  text:"You come down on packed snow, on your back, with the wind knocked out of you and no memory of the fall.\n\nTowers, in every direction, as far as the grey lets you see — hundreds of them, black stone gone white with rime, each one strung with a bell the size of a house. The clappers hang frozen an inch short of the bronze, as if the last note was interrupted rather than finished.\n\nSeven others are visible from where you lie, spread across three separate towers, none of them moving very much. Whatever is nested up in the belfries has not noticed any of you yet, and every one of you would like it to stay that way.",
+  choices:[
+    { label:"Band together. Someone should watch the towers while the rest sleep.",
+      effects:{ stats:{ willpower:1, renown:1 }, flags:{ add:["banded_bells"] }, goto:"rb_2" } },
+    { label:"Go alone. Fewer feet, fewer wrong steps.",
+      effects:{ stats:{ cunning:2, perception:1 }, flags:{ add:["solo_belfry"] }, goto:"rb_2" } },
+    { label:"Watch the towers before you move. Learn whether the bells ever ring on their own.", hint:"Perception",
+      check:{ stat:"perception", dc:9, fatal:2, fatalKind:"dream_realm",
+        fatalText:"You watch too long, from too open a ledge, and something above finishes deciding what you are before you finish deciding what it is.",
+        fatalCause:"Taken from a watching-post in the Ruined Belfry." },
+      success:{ text:"Not random at all — every one hundred and eleven minutes, somewhere in the city, a mechanism you cannot see strikes a single tower, and only that tower, and whatever is up there answers the sound rather than making it.\n\nYou start counting from the next one.", effects:{ stats:{ perception:3, cunning:1 }, flags:{ add:["learned_the_toll"] }, goto:"rb_2" } },
+      failure:{ text:"You lose count somewhere past the second hour and cannot say afterward whether the interval is real or something you invented out of boredom and cold.", effects:{ stats:{ willpower:-1 }, goto:"rb_2" } } },
+  ]
+},
+{
+  id:"rb_2", scripted:true, once:true, days:6, fixedTime:true,
+  title:"The Ruined Belfry",
+  text:"By the second tower the bridges start — iced rope strung tower to tower, thirty feet up, groaning under its own weight before anyone has set foot on it.\n\nOne of the others has decided the fastest way across is also the loudest: a flat run down the middle, betting on speed instead of quiet. Overhead, in a dozen towers at once, something long and pale shifts against the frost, unhurried, the way a sleeper shifts at a sound in another room.",
+  choices:[
+    { label:"Stop him. Numbers are wasted if half of them are dead by the third tower.", hint:"Vitality. Thirty feet of iced rope, carrying two.",
+      check:{ stat:"vitality", dc:10, fatal:2, fatalKind:"dream_realm",
+        fatalText:"You get to him. You do not get him to stop in time, and the bridge takes both of your weight at once, and the ice had only ever been rated for one.",
+        fatalCause:"Fell from the belfry bridges hauling someone else back." },
+      success:{ text:"You get an arm round him two strides from the middle and haul him back onto stone. Above you, a dozen pale shapes finish turning toward the noise and find nothing left making it.", effects:{ stats:{ willpower:2, renown:2 }, goto:"rb_3" } },
+      failure:{ text:"He goes anyway, out from under your hand, and the bridge holds him for eleven strides and then does not. You are left holding a length of parting rope and nothing else.", effects:{ stats:{ vitality:-2 }, flags:{ add:["scattered_bells"] }, goto:"rb_3" } } },
+    { label:"Let him go. Watch which towers move when he does.", hint:"Cunning",
+      effects:{ stats:{ cunning:2, perception:1 }, flags:{ add:["left_them_bells"] }, goto:"rb_3" } },
+    { label:"Cross first yourself, testing the ice with every step.", hint:"Vitality",
+      check:{ stat:"vitality", dc:12, fatal:1, fatalKind:"dream_realm",
+        fatalText:"The rope holds for twenty-nine of the thirty feet.",
+        fatalCause:"Fell from the belfry bridges testing the crossing." },
+      success:{ text:"Thirty feet of frozen rope, taken slowly, weight forward on the balls of your feet, and the core of it turns out to be something braided in long before the frost — old and strong and worth keeping a length of, once you're across.", effects:{ stats:{ vitality:2, perception:1 }, memory:"frost_rope", flags:{ add:["crossed_first"] }, goto:"rb_3" } },
+      failure:{ text:"You get across, eventually, on your hands and knees for the last ten feet, and arrive at the far tower with nothing left to spend on being proud of it.", effects:{ stats:{ vitality:-3 }, goto:"rb_3" } } },
+  ]
+},
+{
+  id:"rb_3", scripted:true, once:true, days:9, fixedTime:true,
+  title:"The Gateway",
+  text:"The Gateway stands at the foot of the tallest tower in the city, in a square ringed by eleven belfries, all of them close enough together that a sound in one reaches every other within a second.\n\nThirty or so Sleepers have converged on the square from every direction, and none of them are crossing it. The bells above are close, and low, and the pale shapes nested among them have started, very slowly, to gather toward the ones nearest the ground.",
+  choices:[
+    { label:"Cross fast, straight through the middle. Trust your legs over your luck.", hint:"Vitality",
+      check:{ stat:"vitality", dc:12, fatal:1, fatalKind:"dream_realm",
+        fatalText:"You are twenty feet short when the nearest bell finds a reason to move after all.",
+        fatalCause:"Taken crossing the square before the Ruined Belfry Gateway." },
+      success:{ text:"You run the length of the square with your lungs on fire and something enormous drops from the eighth tower a half-second behind you and lands where you were, not where you are.\n\nThe Gateway takes you at a dead sprint.", effects:{ stats:{ vitality:-2, renown:3 }, flags:{ add:["went_first_bells"] }, goto:"sl_return" } },
+      failure:{ text:"You make it, but not on your feet — the last stretch is a crawl, dragging a leg that stopped answering somewhere around the sixth tower.", effects:{ stats:{ vitality:-5 }, goto:"sl_return" } } },
+    { label:"Wait. Let the crowd draw its attention first.", hint:"Cunning",
+      check:{ stat:"cunning", dc:10, fatal:2, fatalKind:"dream_realm",
+        fatalText:"You wait for the crowd to thin. It thins from the edges in, and you were standing at the edge.",
+        fatalCause:"Taken at the margin of the crowd before the Ruined Belfry Gateway." },
+      success:{ text:"You let eleven people go first and watch exactly what draws a bell's attention and what does not, and cross last, in the gap they leave behind them, moving like something that already lives here.", effects:{ stats:{ cunning:3, perception:1 }, flags:{ add:["left_them_bells"] }, goto:"sl_return" } },
+      failure:{ text:"You wait too long and cross with the last, thinnest handful, with nobody's noise left to hide inside but your own.", effects:{ stats:{ vitality:-4 }, goto:"sl_return" } } },
+    { label:"Time it against the toll you already counted. Move between rings.", requires:{ flags:{ all:["learned_the_toll"] } }, hint:"Perception. You already know the interval.",
+      check:{ stat:"perception", dc:11, fatal:2, fatalKind:"dream_realm",
+        fatalText:"The interval holds everywhere else in the city. Here, apparently, it does not.",
+        fatalCause:"Miscounted the toll before the Ruined Belfry Gateway." },
+      success:{ text:"One hundred and eleven minutes, near enough, and you cross in the long quiet after the nearest tower has already been struck, when everything that answers sound has nothing left to answer.", effects:{ stats:{ perception:3, willpower:1 }, flags:{ add:["knew_the_hour"] }, goto:"sl_return" } },
+      failure:{ text:"You time it wrong by minutes, not hours, and minutes turn out to matter a great deal more than you'd hoped.", effects:{ stats:{ vitality:-4 }, goto:"sl_return" } } },
+    { label:"Cross together, all at once, and hold the line if it scatters you.", requires:{ flags:{ all:["banded_bells"] } }, hint:"Willpower. The plan is shared; the holding is yours.",
+      check:{ stat:"willpower", dc:10, fatal:2, fatalKind:"dream_realm",
+        fatalText:"Thirty sets of footsteps in an eleven-tower square is not cover. It is an orchestra.",
+        fatalCause:"Killed in the crush before the Ruined Belfry Gateway." },
+      success:{ text:"Thirty of you go at once and nothing above can choose between that many at once. Nineteen make it through. Nobody who lives will call that anything but a good number.", effects:{ stats:{ renown:4, willpower:2 }, flags:{ add:["crew_bond"] }, goto:"sl_return" } },
+      failure:{ text:"Thirty go. Twelve arrive. You are one of the twelve, and the square behind you does not go quiet again for a long time.", effects:{ stats:{ vitality:-3, willpower:-1 }, flags:{ add:["cracked"] }, goto:"sl_return" } } },
+  ]
+},
+
+/* -------------------------------------------------------------------
+   SOLSTICE REGION — THE HARVEST VAULTS
+------------------------------------------------------------------- */
+{
+  id:"hv_1", scripted:true, once:true, days:1, fixedTime:true,
+  title:"The Harvest Vaults",
+  text:"You come to on a floor of grey flagstone that runs on and on in every direction, cold enough to bite through whatever you were wearing when the solstice took you.\n\nAbove you there is no ceiling as such, only a black lattice of chain and pulley and hook, receding upward past the reach of the light. Every so often, far off, something in the lattice groans, a chain runs out, and a crate the size of a room descends onto a shelf and does not move again.\n\nSix others are down here with you, spread among the racks, counting exits, counting each other, and trying to work out whether the vault is the danger, or one of the six is.",
+  choices:[
+    { label:"Band together. Watch each other's backs, and the racks.",
+      effects:{ stats:{ willpower:1, renown:1 }, flags:{ add:["banded_vault"] }, goto:"hv_2" } },
+    { label:"Go alone. Six is five witnesses too many.",
+      effects:{ stats:{ cunning:2, perception:1 }, flags:{ add:["solo_vault"] }, goto:"hv_2" } },
+    { label:"Read the labels on the nearest shelf before you move.", hint:"Perception",
+      check:{ stat:"perception", dc:9, fatal:2, fatalKind:"dream_realm",
+        fatalText:"You lean in to read the smallest label on the lowest shelf, and the shelf, which has been waiting for something to lean in close, obliges.",
+        fatalCause:"Taken reading a shelf-label in the Harvest Vaults." },
+      success:{ text:"Every crate is dated, weighed, and initialled in a hand like a claw dragged in wax. The dates are recent. Some of them are from this week, and none of the six of you have been here that long.", effects:{ stats:{ perception:3, cunning:1 }, flags:{ add:["read_the_manifest"] }, goto:"hv_2" },  },
+      failure:{ text:"The wax is old and cracked and comes away under your fingers before you get past the date, and you spend an hour convincing yourself that was the only thing you lost.", effects:{ stats:{ willpower:-1 }, goto:"hv_2" } } },
+  ]
+},
+{
+  id:"hv_2", scripted:true, once:true, days:7, fixedTime:true,
+  title:"The Harvest Vaults",
+  text:"One of the others has found a crate at eye level with a weight marked on it close to a person's, and has decided that finding out what is inside is worth the noise of prising the seal.\n\nSomewhere above, a chain that has been still since you arrived begins, very slowly, to pay itself out.",
+  choices:[
+    { label:"Stop them opening it. Whatever it is, it isn't worth the chain moving.", hint:"Willpower",
+      check:{ stat:"willpower", dc:10, fatal:2, fatalKind:"dream_realm",
+        fatalText:"You get a hand on the lid before they do. The hook arrives for the crate anyway, and does not sort out whose hand is on it first.",
+        fatalCause:"Taken by a descending hook in the Harvest Vaults." },
+      success:{ text:"You get the crowbar off them a second before the seal gives, and the chain above stops paying out, and goes still again, and the two of you stand there a while not saying anything.", effects:{ stats:{ willpower:2, renown:2 }, goto:"hv_3" } },
+      failure:{ text:"The seal gives anyway, under your hand instead of theirs, and what's inside is exactly as bad as the weight suggested, and the chain above finishes its descent regardless.", effects:{ stats:{ vitality:-2 }, flags:{ add:["scattered_vault"] }, goto:"hv_3" } } },
+    { label:"Let them. Put three racks between you and the noise.", hint:"Cunning",
+      effects:{ stats:{ cunning:2, perception:1 }, flags:{ add:["left_them_vault"] }, goto:"hv_3" } },
+    { label:"Do it yourself — quietly, and only far enough to see the label underneath.", hint:"Cunning. The seal can be worked without breaking it.",
+      check:{ stat:"cunning", dc:11, fatal:2, fatalKind:"dream_realm",
+        fatalText:"You work the wax free without cracking it, which turns out to be exactly the kind of interference the vault is built to notice.",
+        fatalCause:"Caught tampering with a seal in the Harvest Vaults." },
+      success:{ text:"The wax lifts in one piece if you're patient, and underneath it the label doesn't name a foodstuff at all. It names a Sleeper, by solstice and year, going back further than you want to count.", effects:{ stats:{ cunning:3 }, memory:"cold_manifest", flags:{ add:["greedy","read_the_manifest"] }, goto:"hv_3" } },
+      failure:{ text:"The wax tears, the seal cracks audibly, and you get your answer and a chain beginning to move at the same moment.", effects:{ stats:{ vitality:-3, cunning:1 }, goto:"hv_3" } } },
+  ]
+},
+{
+  id:"hv_3", scripted:true, once:true, days:8, fixedTime:true,
+  title:"The Gateway",
+  text:"The Gateway stands on the receiving floor, where the finished crates are filed — thousands of them, sealed, dated, stacked to a height the lattice above cannot be blamed for lighting.\n\nThe hooks work constantly here, lowering, filing, rising empty, and every one of them passes within a few feet of the Gateway on its way back up. There is no path across that keeps you more than a few feet from something with a hook on the end of it.",
+  choices:[
+    { label:"Walk across at an ordinary pace. Don't behave like inventory.", hint:"Willpower",
+      check:{ stat:"willpower", dc:12, fatal:2, fatalKind:"dream_realm",
+        fatalText:"A hook passes an arm's length away and does not so much as slow, right up until the moment it decides you have stopped moving like a person.",
+        fatalCause:"Taken by a hook on the receiving floor of the Harvest Vaults." },
+      success:{ text:"You cross the floor the way you'd cross any room, unhurried, uninteresting, and the hooks rise and fall around you exactly as they would if you weren't there at all.", effects:{ stats:{ willpower:4, renown:2 }, flags:{ add:["walked_toward"] }, goto:"sl_return" } },
+      failure:{ text:"Halfway across, a hook drops closer than the others and your nerve goes, and the sprint that follows is the least ordinary thing anyone has done on this floor in some time.", effects:{ stats:{ vitality:-4, willpower:1 }, flags:{ add:["cracked"] }, goto:"sl_return" } } },
+    { label:"Cut a chain and send a crate down early, somewhere else. Give the lattice something to sort out.", hint:"Cunning",
+      check:{ stat:"cunning", dc:13, fatal:2, fatalKind:"dream_realm",
+        fatalText:"The crate drops early exactly as planned. It turns out the vault does not need a reason to pay attention to the person who cut the chain.",
+        fatalCause:"Killed diverting the vault's machinery in the Harvest Vaults." },
+      success:{ text:"A crate the vault wasn't expecting hits the floor two racks over, and every hook within earshot swings toward the sound of something out of order, and stays there far longer than ninety seconds should reasonably take.", effects:{ stats:{ cunning:4, renown:1 }, flags:{ add:["struck_first"] }, goto:"sl_return" } },
+      failure:{ text:"The chain parts a few seconds too soon, the crate lands short, and you cross under a hook that was already turning back before you'd finished the idea.", effects:{ stats:{ vitality:-4, cunning:2 }, goto:"sl_return" } } },
+    { label:"Cross on the sweep you already read in the manifest — the gap between one filing and the next.", requires:{ flags:{ all:["read_the_manifest"] } }, hint:"Perception. You know when the floor is between entries.",
+      check:{ stat:"perception", dc:11, fatal:2, fatalKind:"dream_realm",
+        fatalText:"The gap you counted is there, exactly on schedule. So is a second hook the manifest never mentioned.",
+        fatalCause:"Miscounted the vault's sweep before the Harvest Vaults Gateway." },
+      success:{ text:"The manifest's rhythm holds here too — a gap between one crate filed and the next lowered, just wide enough, and you take it at a walk because running would be the only thing left to notice.", effects:{ stats:{ perception:3, cunning:1 }, flags:{ add:["knew_the_hour"] }, goto:"sl_return" } },
+      failure:{ text:"The gap is there, but shorter than the last dozen, and you spend the difference in a dead sprint you can't take back.", effects:{ stats:{ vitality:-4 }, goto:"sl_return" } } },
+    { label:"Go together, spread wide, so no one hook can follow more than one of you.", requires:{ flags:{ all:["banded_vault"] } }, hint:"Vitality. Everyone moves at once, and fast.",
+      check:{ stat:"vitality", dc:10, fatal:1, fatalKind:"dream_realm",
+        fatalText:"Spreading out only spreads the choosing. It does not stop the choosing.",
+        fatalCause:"Killed crossing the Harvest Vaults' receiving floor in a scattered group." },
+      success:{ text:"Six of you break across the floor in six directions at a dead run, and the lattice, built for one kind of order, cannot decide fast enough. Four of you are still moving when you reach the far side.", effects:{ stats:{ renown:4, vitality:-1 }, flags:{ add:["crew_bond"] }, goto:"sl_return" } },
+      failure:{ text:"Six go. Two arrive. You are one of the two, and you do not look back to check which of the hooks found which of the others.", effects:{ stats:{ vitality:-3, willpower:-1 }, flags:{ add:["cracked"] }, goto:"sl_return" } } },
+  ]
+},
+
+/* ===================================================================
+   THE THIRD AXIS
+   Lineage, Aspect rank and Class exist as data whether or not the
+   world ever mentions them. These are the events where it does.
+
+   Every event below is gated on `requires` — lineage, aspectRank,
+   soulClass, or the flags those award — so which of them a given
+   run can even see is a property of that run rather than of the act
+   it is standing in. That is the whole point of a third axis: two
+   Masters of the same rank, same age and same Origin should not be
+   offered the same life.
+=================================================================== */
+{
+  id:"sl_lineage", chapter:"sleeper", weight:24, once:true, days:30, fixedTime:true,
+  requires:{ flags:{ none:["no_lineage"] } },
+  title:"What You Were Given",
+  text:"A Sleeper is a very small thing carrying two very large ones, and only one of them was earned.\n\nThe Aspect is yours. The Spell was clear about that in the way it is clear about everything, which is to say without using words. The other thing is older. It came down a line of people to reach you and it will go on down the line after you, and it is the only part of any of this that you did not have to survive something to get.",
+  choices:[
+    { label:"Use it. It is the only advantage you have.",
+      effects:{ stats:{ willpower:2, renown:1 }, flags:{ add:["leaned_on_it"] } } },
+    { label:"Leave it alone. What is inherited is not evidence of anything.",
+      effects:{ stats:{ cunning:2, perception:1 }, flags:{ add:["own_feet"] } } },
+  ]
+},
+{
+  id:"aw_lineage_named", chapter:"awakened", weight:16, once:true, days:70,
+  requires:{ flags:{ all:["divine_lineage"] } },
+  title:"Somebody Recognises It",
+  text:"It happens in a corridor, from a woman three centuries older than you, and it takes her about four seconds.\n\nShe does not ask about your Aspect. She asks about your grandmother, and then your grandmother's mother, and then she stops asking and stands there doing arithmetic behind her eyes.\n\n\"So you know what is upstream of you,\" she says eventually. It is not a question, and she is not pleased about it. \"Most of them never find out. The ones who do tend to make it everybody's business.\"",
+  choices:[
+    { label:"Make it everybody's business.", hint:"Renown is a weapon and a target.",
+      effects:{ stats:{ renown:6, cunning:-1 }, flags:{ add:["claimed_the_blood"] } } },
+    { label:"Ask what she wants for her silence.", hint:"Cunning",
+      check:{ stat:"cunning", dc:12, dcScale:2 },
+      success:{ text:"She wants nothing, which costs you more than a price would have. She wants to have been the one who told you.", effects:{ stats:{ cunning:3, perception:2 }, flags:{ add:["quiet_blood"] } } },
+      failure:{ text:"She names a price. You pay it, in instalments, for eighty years.", effects:{ stats:{ renown:-3, essence:-2 }, flags:{ add:["indebted"] } } } },
+    { label:"Tell her a lineage is not an achievement, and walk on.",
+      effects:{ stats:{ willpower:3, renown:-2 }, flags:{ add:["own_feet"] } } },
+  ]
+},
+{
+  id:"aw_echo_bind", chapter:"awakened", weight:14, once:true, days:50,
+  requires:{ stats:{ essence:{ min:6 } } },
+  title:"What Is Left Of It",
+  text:"The thing you put down at the last Gate is still available, in the only sense that matters.\n\nAn Echo is not a ghost and not a prisoner, and every instructor who has ever explained it has explained it badly. It is a copy, made out of your own Soul Essence, of something that no longer exists. It does not possess a soul. It possesses the shape of one, which is a different thing, and the Essence that holds that shape is Essence you do not get back while you hold it.\n\nThe alternative is to let the shape go and keep the Essence.",
+  choices:[
+    { label:"Bind it. You will want the second pair of hands.",
+      effects:{ echo:"tender", flags:{ add:["bound_a_shade"] } } },
+    { label:"Let it go. You are thin enough already.",
+      effects:{ stats:{ essence:3, willpower:1 }, flags:{ add:["let_it_go"] } } },
+  ]
+},
+{
+  id:"aw_flaw_aspect", chapter:"awakened", weight:18, once:true, days:60,
+  title:"They Were Always Going To Meet",
+  text:"Your Aspect is the confluence of your own affinities and your own choices. Your Flaw was chosen by something that had read both, and picked the single thing that would sit worst beside them.\n\nThey have been inside the same person for years now without ever being in the same room. Tonight they are in the same room.",
+  choices:[
+    { label:"Let the Aspect win. Spend whatever it costs.", hint:"Essence, and a great deal of it.",
+      effects:{ stats:{ essence:-5, willpower:3, renown:2 }, flags:{ add:["aspect_first"] } } },
+    { label:"Let the Flaw win, this once, and learn its shape.", hint:"Perception",
+      check:{ stat:"perception", dc:12, dcScale:2, dcEra:1 },
+      success:{ text:"You stand still inside your own worst feature and take notes for an hour. It is the most useful hour of the decade.", effects:{ stats:{ perception:4, willpower:2 }, flags:{ add:["flaw_mapped"] } } },
+      failure:{ text:"You learn only that it is a great deal larger on the inside than you had allowed for.", effects:{ stats:{ willpower:-2, vitality:-2 } } } },
+  ]
+},
+{
+  id:"ms_high_aspect", chapter:"ascended", weight:16, once:true, days:150,
+  requires:{ flags:{ all:["high_aspect"] } },
+  title:"An Aspect Nobody Has A Category For",
+  text:"The Spell graded you once, a very long time ago, on the strength of a single night, and the rank it handed down is not one that appears on most files.\n\nThis has consequences nobody warned you about, because there was nobody qualified to. Masters who have been at this for two centuries ask you to demonstrate things and then go quiet. Two separate clans have offered to adopt you. One Domain has, very politely, asked where you intend to be standing when the next war starts.",
+  choices:[
+    { label:"Demonstrate. Let them see the whole of it, once.",
+      effects:{ stats:{ renown:8, essence:-4 }, flags:{ add:["demonstrated"] } } },
+    { label:"Refuse everything and keep the ceiling to yourself.", hint:"Cunning",
+      check:{ stat:"cunning", dc:15, dcScale:2, dcEra:2 },
+      success:{ text:"You spend forty years being slightly disappointing in public. It works completely.", effects:{ stats:{ cunning:4, willpower:2 }, flags:{ add:["went_quiet"] } } },
+      failure:{ text:"They work it out anyway, from the shape of the things you decline to do.", effects:{ stats:{ renown:5, cunning:-1 } } } },
+  ]
+},
+{
+  id:"ms_divine_drain", chapter:"ascended", weight:22, cooldown:20, days:80,
+  requires:{ flags:{ all:["divine_aspect"] } },
+  title:"It Empties As Fast As It Fills",
+  text:"The trade was stated plainly at the time, if you had known how to read it.\n\nA Divine Aspect carries potential that nothing else does, and it pays for that by draining Essence continuously, whether or not you are spending any. Your Core is larger than anybody else's and it is never full. There is no version of this in which you rest.\n\nThe only way to stay ahead of it is to keep killing things above your own rank, which is also the thing most likely to end you.",
+  choices:[
+    { label:"Go and find something above your rank.", hint:"Vitality. This is the arrangement.",
+      check:{ stat:"vitality", dc:15, dcScale:3, dcEra:2, fatal:3, fatalKind:"gate",
+        fatalText:"You went looking for something bigger than you because you had to and not because you were ready, and it could tell the difference.",
+        fatalCause:"Killed hunting above your own rank to feed a Divine Aspect." },
+      success:{ text:"It is above you by two ranks and it goes down anyway, and for about a decade afterward you are as close to full as you are ever going to get.", effects:{ stats:{ vitality:-5, renown:4 }, kill:{ rank:4, size:2 } } },
+      failure:{ text:"It goes down. So does most of a year.", effects:{ stats:{ vitality:-8 }, kill:{ rank:4, size:1 } } } },
+    { label:"Live thin. Spend nothing, and accept what that makes you.",
+      effects:{ stats:{ essence:2, willpower:3, renown:-3 }, flags:{ add:["lived_thin"] } } },
+  ]
+},
+{
+  id:"ms_second_core", chapter:"ascended", weight:20, once:true, days:120,
+  requires:{ soulClass:{ min:1 } },
+  title:"The Second Core",
+  text:"It formed over eleven days and you were awake for most of them.\n\nNightmare Creatures are graded by how many of these they carry — one is a Beast, seven is a Titan — and a human soul is not built to sustain more than the one it arrived with. Yours now sustains two. The pain of it was not incidental. As far as anyone can tell, the pain is the mechanism.\n\nNobody in the room when it happened had ever seen it before. Two of them wrote it down.",
+  choices:[
+    { label:"Let it be written down properly. This should be known.",
+      effects:{ stats:{ renown:7, essence:2 }, flags:{ add:["on_the_record"] } } },
+    { label:"Have the record lose itself.", hint:"Cunning",
+      check:{ stat:"cunning", dc:16, dcScale:2, dcEra:2 },
+      success:{ text:"Two accounts, both mislaid, one of them by the man who wrote it. You are simply unusually strong, and that is a category the world already has room for.", effects:{ stats:{ cunning:4, willpower:2 }, flags:{ add:["went_quiet"] } } },
+      failure:{ text:"One account survives, and it travels a great deal further than the truth usually does.", effects:{ stats:{ renown:6, cunning:-2 } } } },
+  ]
+},
+{
+  id:"st_lineage_end", chapter:"transcendent", weight:18, once:true, days:300,
+  requires:{ flags:{ all:["divine_lineage"] } },
+  title:"The End Of The Line",
+  text:"Nine hundred years is long enough to watch a bloodline finish.\n\nYours does, quietly, in a provincial ward, in a woman of eighty-one who has never heard of you and who carries the same inherited Attribute you do — diluted down to almost nothing, and still unmistakably the thing that is in you.\n\nWhatever is upstream of the pair of you does not appear to be taking an interest. It never has. That is the part nobody writes down about a divine lineage: it is a fact about your blood, and not a relationship with anybody.",
+  choices:[
+    { label:"Sit with her until it is over.",
+      effects:{ stats:{ willpower:4, tether:1 }, memory:"clan_signet", flags:{ add:["sat_with_her"] } } },
+    { label:"Do not go. You are nine hundred years past being family to anyone.",
+      effects:{ stats:{ cunning:2, tether:-1 }, flags:{ add:["let_go"] } } },
+  ]
+},
+
+{
+  id:"st_gate", chapter:"transcendent", weight:30, cooldown:18, days:80,
+  title:"A Gate Only A Saint Can Close",
+  text:"The duty does not lapse. It never has, at any rank, and the paperwork on that point is nine hundred years old and has never once been successfully argued with.\n\nWhat reaches you now are the ones nobody else can be sent to. A Corrupted-ranked Gate is a regional emergency; the ones that come with your name attached are worse than that, and they come with the tone of people who have already decided you are going.",
+  choices:[
+    { label:"Close it. That is what the rank is for.", hint:"Willpower",
+      check:{ stat:"willpower", dc:18, dcScale:3, fatal:4, fatalKind:"gate",
+        fatalText:"It is Great-ranked, which the grading did not say, because the last person qualified to grade it did not come back either.",
+        fatalCause:"Killed closing a Gate that was graded by somebody who had not seen it." },
+      success:{ text:"Closed. A few dozen Saints exist and this is the work that keeps the number down.", effects:{ stats:{ vitality:-5, renown:6 }, kill:{ rank:4, size:2 } } },
+      failure:{ text:"Closed, at the cost of a century of recovery and a province that no longer has anybody living in it.", effects:{ stats:{ vitality:-9, renown:2 }, kill:{ rank:4, size:1 } } } },
+    { label:"Send Masters in and run the operation from the perimeter.", hint:"Cunning. Pick who goes, in what order, and where you stand.",
+      check:{ stat:"cunning", dc:17, dcScale:3, fatal:5, fatalKind:"gate",
+        fatalText:"The perimeter is the part that fails. It is always the part that fails, and you were standing on it.",
+        fatalCause:"Killed holding a perimeter while others took the Gate." },
+      success:{ text:"Eleven Masters go in and nine come out, which is a better ratio than anyone had a right to, and the Gate is shut by evening.", effects:{ stats:{ vitality:-3, renown:4 }, kill:{ rank:3, size:2 }, flags:{ add:["carried_them"] } } },
+      failure:{ text:"Four of the eleven come out. You close it yourself afterward, alone, in a temper.", effects:{ stats:{ vitality:-6, renown:-2 }, kill:{ rank:4, size:1 } } } },
+  ]
+},
+{
+  id:"sv_gate", chapter:"supreme", weight:30, cooldown:14, days:200,
+  title:"There Is Nothing Above You To Call",
+  text:"Three people in the world can be sent to this and one of them is you.\n\nThe Gates that reach a Sovereign are not emergencies. They are the ones that would end a continent if nobody went, and the arithmetic of who goes is very short: there is no higher rank to escalate to, and there has never been a version of this where somebody else handles it.",
+  choices:[
+    { label:"Go. There is no one else.", hint:"Willpower",
+      check:{ stat:"willpower", dc:22, dcScale:4, fatal:4, fatalKind:"gate",
+        fatalText:"Something comes through with no rank the Spell will name, and you are the only thing in the world large enough to be in its way.",
+        fatalCause:"Killed at a Gate that had no grading because nothing had survived to write one." },
+      success:{ text:"Held, and closed, and a continent goes on not knowing how near a thing it was.", effects:{ stats:{ vitality:-8, renown:12, essence:4 }, kill:{ rank:5, size:2 } } },
+      failure:{ text:"Closed. A quadrant does not survive the closing, and you spend four hundred years being told it was the correct trade.", effects:{ stats:{ vitality:-14, renown:4 }, kill:{ rank:5, size:1 } } } },
+    { label:"Evacuate instead, and let the ground go.", hint:"Perception. The ground is not the thing worth keeping.",
+      check:{ stat:"perception", dc:20, dcScale:4, fatal:5, fatalKind:"gate",
+        fatalText:"You are the last one through the line you drew, which is the correct order and the wrong place to be standing.",
+        fatalCause:"Killed covering an evacuation at a Gate nothing had graded." },
+      success:{ text:"Forty million people out, over eleven years, and a dead region behind them that will still be dead in a thousand.", effects:{ stats:{ renown:8, willpower:5, vitality:-4 }, flags:{ add:["carried_them"] } } },
+      failure:{ text:"Most of them. You will be given the exact figure and it will not help.", effects:{ stats:{ vitality:-9, renown:-4 } } } },
+  ]
+},
+{
+  id:"sc_gate", chapter:"sacred", weight:28, cooldown:20, days:600,
+  title:"The Duty Does Not Notice What You Are",
+  text:"You are a lesser god, by any definition anyone has managed to write down, and the Gates keep opening, and none of them have been informed.\n\nThis is the part nobody warned you about on the far side of the Fifth. Apotheosis changed what you are. It did not change what the work is.",
+  choices:[
+    { label:"Do the work.", hint:"Willpower",
+      check:{ stat:"willpower", dc:26, dcScale:4, fatal:4, fatalKind:"gate",
+        fatalText:"There are things on the other side of a Gate that were Sacred before there were people to be Sacred in front of.",
+        fatalCause:"Killed at a Gate by something that had been doing this for longer." },
+      success:{ text:"Done, in an afternoon, in a way that would have taken a Saint a century and killed them.", effects:{ stats:{ vitality:-6, renown:16, essence:6 }, kill:{ rank:6, size:2 } } },
+      failure:{ text:"Done. Slowly, and at a cost you are no longer able to describe in terms anyone alive would follow.", effects:{ stats:{ vitality:-12, renown:6 }, kill:{ rank:6, size:1 } } } },
+    { label:"Delegate it downward and watch what that costs.",
+      effects:{ stats:{ renown:-6, willpower:2, tether:-1 }, flags:{ add:["shirked"] } } },
+  ]
+},
+
 ];

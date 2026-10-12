@@ -99,7 +99,16 @@
     // behind the expander so the always-on strip stays short on a phone.
     el.runesSecondary.innerHTML = STATS.filter(d => !d.hud).map(d => runeHTML(d, S.stats[d.id] ?? 0)).join("");
     const flaw = S.flaw && FLAWS.find(f => f.id === S.flaw);
-    el.flawLine.textContent = flaw ? `Flaw — ${flaw.name}: ${flaw.desc}` : "";
+    const lin = S.lineage && LINEAGES.find(l => l.id === S.lineage);
+    const cls = Engine.soulClass(S);
+    const lines = [];
+    if (lin && lin.id !== "none") lines.push(`Lineage — ${lin.name}${lin.divine ? " (divine)" : ""}: ${lin.desc}`);
+    if (flaw) lines.push(`Flaw — ${flaw.name}: ${flaw.desc}`);
+    /* Class only earns HUD space once it stops being the default. Everyone
+       starts a Beast with one core and almost everyone stays one. */
+    if ((S.soulClass ?? 0) > 0) lines.push(`Class — ${cls.name}, ${cls.cores} Soul Cores.`);
+    if (S.echoes && S.echoes.length) lines.push(`Echoes — ${S.echoes.map(e => ECHOES[e].name).join(", ")}.`);
+    el.flawLine.textContent = lines.join("  ·  ");
   }
 
   /* ---------- event ---------- */
@@ -171,8 +180,20 @@
     const items = [];
     for (const t of S.trials ?? [])
       items.push({ name:`Conquered: ${t.name}`, desc:TRIAL_TIER_NAME[t.tier] ?? "Nightmare" });
-    if (S.aspectGrade === "Ascended" || S.aspectGrade === "Transcendent")
-      items.push({ name:`${S.aspectGrade}-Grade Aspect`, desc:"The Spell's appraisal of the First Nightmare ranked this Aspect far above the ordinary." });
+    const AR = { Ascended:"far above the ordinary", Transcendent:"rare enough to be worth a clan's attention",
+      Supreme:"vanishingly rare", Sacred:"a handful in recorded history",
+      Divine:"canon knows of three holders, ever — greater potential, and an essence that drains as fast as it fills" };
+    if (AR[S.aspectRank])
+      items.push({ name:`${S.aspectRank}-Rank Aspect`, desc:`The Spell appraised the First Nightmare and ranked this Aspect ${AR[S.aspectRank]}.` });
+    const lin0 = S.lineage && LINEAGES.find(l => l.id === S.lineage);
+    if (lin0 && lin0.divine)
+      items.push({ name:`Lineage of ${lin0.name}`, desc:"A divine lineage. Canon is explicit that this says nothing about your Aspect — and it did not." });
+    if ((S.soulClass ?? 0) > 0) {
+      const c = Engine.soulClass(S);
+      items.push({ name:`${c.name} Class`, desc:`Formed ${c.cores} Soul Cores. Human souls are not meant to carry more than one.` });
+    }
+    for (const e of S.echoes ?? [])
+      items.push({ name:`Echo: ${ECHOES[e].name}`, desc:ECHOES[e].desc });
     for (const [flag, a] of Object.entries(ACHIEVEMENTS))
       if (S.flags.includes(flag)) items.push(a);
     return items;
@@ -189,6 +210,7 @@
     const origin = Engine.ORIGINS().find(o => o.id === S.origin);
     const aspect = S.aspect && ASPECTS.find(a => a.id === S.aspect);
     const flaw = S.flaw && FLAWS.find(f => f.id === S.flaw);
+    const lineage = S.lineage && LINEAGES.find(l => l.id === S.lineage);
     const lines = [
       kind === "bug"
         ? "**What happened?**\n(describe here — what you expected vs what you saw)\n"
@@ -198,7 +220,10 @@
       `- Cause: ${S.cause ?? "—"}`,
       `- Age at end: ${Engine.years(S)}`,
       `- Origin: ${origin ? origin.name : "—"}`,
-      `- Aspect / Flaw: ${aspect ? aspect.name : "—"} / ${flaw ? flaw.name : "—"}`,
+      `- Aspect / Flaw: ${aspect ? aspect.name : "—"}${S.aspectRank ? ` (${S.aspectRank} rank)` : ""} / ${flaw ? flaw.name : "—"}`,
+      `- Lineage: ${lineage ? lineage.name : "—"}`,
+      `- Class: ${Engine.soulClass(S).name} (${Engine.soulClass(S).cores} cores), ${Math.round(S.fragments ?? 0)} fragments`,
+      `- Echoes: ${(S.echoes ?? []).map(e => ECHOES[e].name).join(", ") || "none"}`,
       `- Decisions made: ${S.eventCount ?? S.history.length}`,
       kind === "bug" ? `- Browser: ${navigator.userAgent}` : null,
     ].filter(Boolean).join("\n");
@@ -230,6 +255,7 @@
 
     const origin = Engine.ORIGINS().find(o => o.id === S.origin);
     const flaw = S.flaw ? FLAWS.find(f => f.id === S.flaw) : null;
+    const lineage = S.lineage ? LINEAGES.find(l => l.id === S.lineage) : null;
     const tiles = [
       ["Age at death", Engine.years(S).toLocaleString() + " years"],
       ["Final rank", S.rank === 0 && S.chapter === "aspirant" ? "Aspirant (never Awakened)" : `${r.name} (${r.common})`],
@@ -237,9 +263,14 @@
       ["Decisions made", S.eventCount ?? S.history.length],
       ["Soul fragments", Math.round(S.fragments ?? 0).toLocaleString()],
       ["Solstice region", S.region ?? "Never reached"],
-      ["Aspect", aspect ? `${aspect.name}${S.aspectGrade ? ` · ${S.aspectGrade} grade` : ""} — ${aspect.desc}` : "—", "wide"],
+      ["Soul Cores", `${Engine.soulClass(S).name} · ${Engine.soulClass(S).cores}`],
+      ["Aspect", aspect ? `${aspect.name}${S.aspectRank ? ` · ${S.aspectRank} rank` : ""} — ${aspect.desc}` : "—", "wide"],
       ["Flaw", flaw ? `${flaw.name} — ${flaw.desc}` : "Never paid for", "wide"],
-      ["Memories", S.memories.length ? S.memories.map(m => MEMORIES[m].name).join(", ") : "None", "wide"],
+      ["Lineage", lineage ? `${lineage.name}${lineage.divine ? " · divine" : ""} — ${lineage.desc}` : "—", "wide"],
+      ["Memories", S.memories.length
+        ? S.memories.map(m => `${MEMORIES[m].name} (${MEMORIES[m].rank} ${MEMORIES[m].type})`).join(", ") : "None", "wide"],
+      ["Echoes", (S.echoes ?? []).length
+        ? S.echoes.map(e => `${ECHOES[e].name} (${ECHOES[e].rank})`).join(", ") : "None bound", "wide"],
     ];
     el.endStats.innerHTML = tiles.map(([k, v, wide]) =>
       `<div class="stat-tile${wide ? " wide" : ""}"><b>${escape(k)}</b><span>${escape(String(v))}</span></div>`).join("");
@@ -262,7 +293,10 @@
     h += line("Natural lifespan", r.lifespan == null ? "None" : `${r.lifespan.toLocaleString()} years`);
     const org = Engine.ORIGINS().find(o => o.id === S.origin);
     if (org) h += line("Born", org.name);
-    if (S.aspectGrade) h += line("Spell's appraisal", `${S.aspectGrade} grade Aspect`);
+    if (S.aspectRank) h += line("Spell's appraisal", `${S.aspectRank}-rank Aspect`);
+    const cl = Engine.soulClass(S);
+    h += line("Class", `${cl.name} · ${cl.cores} Soul Core${cl.cores > 1 ? "s" : ""}`);
+    h += line("Soul fragments", Math.round(S.fragments ?? 0).toLocaleString());
     if (S.region) h += line("Solstice", S.region);
     h += `<div class="sheet-section">Attributes</div>`;
     h += `<div class="rune-strip">${STATS.map(d => runeHTML(d, S.stats[d.id] ?? 0)).join("")}${aspectRuneHTML(a)}</div>`;
@@ -270,9 +304,16 @@
     h += a ? line(a.name, a.desc) : line("—", "Not yet Awakened");
     h += `<div class="sheet-section">Flaw</div>`;
     h += f ? line(f.name, f.desc) : line("—", "Not yet Awakened");
+    const l = S.lineage && LINEAGES.find(x => x.id === S.lineage);
+    h += `<div class="sheet-section">Lineage</div>`;
+    h += l ? line(l.name + (l.divine ? " (divine)" : ""), l.desc) : line("—", "None");
+    if (S.echoes && S.echoes.length) {
+      h += `<div class="sheet-section">Echoes</div>`;
+      for (const e of S.echoes) h += line(`${ECHOES[e].name} · ${ECHOES[e].rank}`, ECHOES[e].desc);
+    }
     if (S.memories.length) {
       h += `<div class="sheet-section">Memories</div>`;
-      for (const m of S.memories) h += line(MEMORIES[m].name, MEMORIES[m].desc);
+      for (const m of S.memories) h += line(`${MEMORIES[m].name} · ${MEMORIES[m].rank} ${MEMORIES[m].type}`, MEMORIES[m].desc);
     }
     el.sheetBody.innerHTML = h;
     el.sheet.hidden = false;

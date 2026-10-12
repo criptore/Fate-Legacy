@@ -9,7 +9,7 @@ const ctx = { console };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(B, "data.js"), "utf8") +
   "\nglobalThis.EVENTS=EVENTS;globalThis.NIGHTMARES=NIGHTMARES;globalThis.SOLSTICE=SOLSTICE;" +
-  "globalThis.MEMORIES=MEMORIES;globalThis.ASPECTS=ASPECTS;globalThis.FLAWS=FLAWS;globalThis.RANKS=RANKS;", ctx);
+  "globalThis.MEMORIES=MEMORIES;globalThis.ASPECTS=ASPECTS;globalThis.FLAWS=FLAWS;globalThis.RANKS=RANKS;globalThis.ECHOES=ECHOES;globalThis.LINEAGES=LINEAGES;globalThis.CLASSES=CLASSES;globalThis.ASPECT_RANKS=ASPECT_RANKS;", ctx);
 const { EVENTS, NIGHTMARES, SOLSTICE, MEMORIES } = ctx;
 
 const byId = new Map(EVENTS.map(e => [e.id, e]));
@@ -66,6 +66,123 @@ for (const e of EVENTS) {
   });
 }
 
+// A Flaw's `affinity` flags are what tie it to the player's behaviour. A flag
+// that no choice ever grants is dead weight: that Flaw can only ever be drawn
+// on its base weight, which breaks "Flaws are never random".
+const granted = new Set();
+for (const e of EVENTS) for (const c of e.choices || [])
+  for (const fx of [c.effects, c.success?.effects, c.failure?.effects]) for (const f of fx?.flags?.add || []) granted.add(f);
+
+// Sharper version of the same rule. `awardFlaw` fires once, on the First
+// Nightmare's resolution node, so a flag the player cannot possibly hold by
+// then is inert for the Flaw draw no matter how many later events grant it.
+// This walks forward from the Aspirant act through the First Nightmares and
+// collects only what is reachable before that point.
+function flagsGrantedBeforeFlaw() {
+  const queue = EVENTS.filter(e => e.chapter === "aspirant").map(e => e.id);
+  const seen = new Set(), out = new Set();
+  while (queue.length) {
+    const id = queue.pop();
+    if (seen.has(id) || !byId.has(id)) continue;
+    seen.add(id);
+    for (const c of byId.get(id).choices || [])
+      for (const fx of [c.effects, c.success?.effects, c.failure?.effects]) {
+        if (!fx) continue;
+        for (const f of fx.flags?.add || []) out.add(f);
+        if (fx.goto) queue.push(fx.goto);
+        // the only chapter hop that still precedes the Flaw is into a First
+        // Nightmare; `chapter` transitions all land after it, so stop there.
+        if (fx.nightmare === "first") for (const n of NIGHTMARES.first) queue.push(n.entry);
+      }
+  }
+  return out;
+}
+const earlyFlags = flagsGrantedBeforeFlaw();
+for (const f of ctx.FLAWS) for (const tag of f.affinity || []) {
+  if (!granted.has(tag)) P("ERROR", f.id, `affinity flag "${tag}" is never granted by any choice`);
+  else if (!earlyFlags.has(tag))
+    P("ERROR", f.id, `affinity flag "${tag}" is only reachable after the Flaw is awarded, so it can never steer the draw`);
+}
+
+// Catalogue integrity for the things effects can name.
+for (const e of EVENTS) for (const [i, c] of (e.choices || []).entries())
+  for (const fx of [c.effects, c.success?.effects, c.failure?.effects])
+    if (fx?.echo && !ctx.ECHOES[fx.echo]) P("ERROR", e.id, `choice ${i} binds unknown echo "${fx.echo}"`);
+for (const [id, m] of Object.entries(MEMORIES)) {
+  if (!m.type) P("WARN", id, "memory has no `type` (canon: Armor/Charm/Utility/Garment/Weapon/Lineage/Shard)");
+  if (!m.rank) P("WARN", id, "memory has no `rank` (canon: Memories sit on the Soul Rank ladder)");
+}
+for (const [id, e] of Object.entries(ctx.ECHOES)) {
+  if (!e.rank) P("WARN", id, "echo has no `rank`");
+  if (e.bound == null) P("WARN", id, "echo has no `bound` essence cost — it would be free to hold");
+}
+const rankIds = new Set(ctx.ASPECT_RANKS.map(r => r.id));
+for (const [id, m] of Object.entries(MEMORIES))
+  if (m.rank && !rankIds.has(m.rank)) P("ERROR", id, `memory rank "${m.rank}" is not one of the seven Soul Ranks`);
+for (const [id, e] of Object.entries(ctx.ECHOES))
+  if (e.rank && !rankIds.has(e.rank)) P("ERROR", id, `echo rank "${e.rank}" is not one of the seven Soul Ranks`);
+
+// A `fatal:1` check kills on EVERY miss, because a miss means margin <= -1
+// and so does the fatal threshold. Any `failure` prose on such a choice can
+// never be shown. Vitality is exempt: heal() makes it fractional, so a
+// vitality margin can land between -1 and 0.
+for (const e of EVENTS)
+  for (const [i, c] of (e.choices || []).entries())
+    if (c.check?.fatal === 1 && c.failure && c.check.stat !== "vitality")
+      P("WARN", e.id, `choice ${i} has fatal:1 on an integer stat, so its failure branch is unreachable prose`);
+
+// `dcSelf` measures the challenger against their own stat, so the odds of a
+// fatal miss are FIXED — a high stat does not make it safer. That is the
+// point for a once-in-a-life personal trial, but on a RECURRING event it
+// compounds to certain death over a long lifespan, and silently caps how far
+// any run can get. This caught st_war and sv_chain, which between them were
+// killing every Saint before the Fourth Nightmare could come up.
+for (const e of EVENTS) {
+  if (e.once || e.scripted) continue;
+  for (const [i, c] of (e.choices || []).entries())
+    if (c.check?.dcSelf && c.check.fatal != null)
+      P("ERROR", e.id, `choice ${i} pairs dcSelf with fatal on a recurring event — a fixed death chance that repeats forever`);
+}
+
+// A Memory or Echo that no choice ever awards is dead content: it exists in
+// the catalogue, shows up in no run, and quietly rots out of sync with the
+// rest of the file. This caught six unreachable Echoes the first time it ran.
+const awarded = { memory:new Set(), echo:new Set() };
+for (const e of EVENTS) for (const c of e.choices || [])
+  for (const fx of [c.effects, c.success?.effects, c.failure?.effects]) {
+    if (fx?.memory) awarded.memory.add(fx.memory);
+    if (fx?.echo) awarded.echo.add(fx.echo);
+  }
+for (const id of Object.keys(MEMORIES))
+  if (!awarded.memory.has(id)) P("WARN", id, "memory is in the catalogue but no choice ever awards it");
+for (const id of Object.keys(ctx.ECHOES))
+  if (!awarded.echo.has(id)) P("WARN", id, "echo is in the catalogue but no choice ever binds it");
+
+// `requires` naming something that does not exist silently makes the event
+// unreachable rather than erroring, which is the worst of both worlds.
+const ids = { aspect:new Set(ctx.ASPECTS.map(a => a.id)), flaw:new Set(ctx.FLAWS.map(f => f.id)),
+              lineage:new Set(ctx.LINEAGES.map(l => l.id)), aspectRank:new Set(ctx.ASPECT_RANKS.map(r => r.id)) };
+function checkReq(id, where, req) {
+  if (!req) return;
+  for (const k of ["aspect", "flaw", "lineage", "aspectRank"])
+    for (const val of req[k] ?? [])
+      if (!ids[k].has(val)) P("ERROR", id, `${where} requires unknown ${k} "${val}"`);
+  if (req.soulClass?.min != null && req.soulClass.min >= ctx.CLASSES.length)
+    P("ERROR", id, `${where} requires soulClass.min ${req.soulClass.min}, above the top Class`);
+}
+for (const e of EVENTS) {
+  checkReq(e.id, "event", e.requires);
+  (e.choices || []).forEach((c, i) => checkReq(e.id, `choice ${i}`, c.requires));
+}
+
+// A node where every choice is gated behind `requires` can lock the run: the
+// UI disables them all and there is nothing left to click.
+for (const e of EVENTS) {
+  const open = (e.choices || []).filter(c => !c.requires);
+  if ((e.choices || []).length && !open.length)
+    P("ERROR", e.id, "every choice is gated behind `requires` — a run reaching this node can stall with nothing to click");
+}
+
 // every non-scripted event must be reachable: some chapter must lead to it
 const chapters = new Set(EVENTS.filter(e => e.chapter).map(e => e.chapter));
 const reached = new Set(["aspirant"]);
@@ -75,7 +192,13 @@ for (const ch of chapters) if (!reached.has(ch)) P("WARN", ch, "chapter is never
 // and each chapter needs a repeatable event, or its pool starves
 for (const ch of chapters) {
   const repeatable = EVENTS.filter(e => e.chapter === ch && !e.scripted && !e.once);
-  if (!repeatable.length) P("WARN", ch, "chapter has no repeatable event — its pool will starve");
+  if (repeatable.length) continue;
+  // ...unless every event in the chapter always leads somewhere else, in
+  // which case the pool is never drawn from twice and cannot starve. The
+  // Aspirant act is exactly this: a two-event chain into the First Nightmare.
+  const transient = EVENTS.filter(e => e.chapter === ch)
+    .every(e => (e.choices || []).every(c => exits(c).length));
+  if (!transient) P("WARN", ch, "chapter has no repeatable event — its pool will starve");
 }
 
 const errs = problems.filter(p => p.sev === "ERROR");

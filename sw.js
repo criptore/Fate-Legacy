@@ -1,4 +1,9 @@
-const CACHE = "fatelegacy-v0.2.3", V = CACHE.split("-v")[1];
+/* One version for the whole bundle. sw.js builds every precache URL out of V,
+   so index.html's `?v=` strings MUST be this same number — otherwise the
+   worker caches `data.js?v=<CACHE>` while the page requests `data.js?v=<other>`,
+   the precache never matches a real request, and the only thing saving the
+   offline case is the ignoreSearch fallback at the bottom of this file. */
+const CACHE = "fatelegacy-v0.3.0", V = CACHE.split("-v")[1];
 const CORE = [
   "./", "./index.html",
   `./css/tokens.css?v=${V}`, `./css/main.css?v=${V}`,

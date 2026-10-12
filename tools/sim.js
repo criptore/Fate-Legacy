@@ -12,18 +12,32 @@ function score(s,c){
   if(c.check){
     const stat=s.stats[c.check.stat]||0;
     const era=Math.floor(Engine.years(s)/20);
-    const dc=c.check.dc+(c.check.dcScale||0)*s.rank+(c.check.dcEra||0)*era;
+    // dcSelf: the bar is the challenger's own stat, so a high stat does not
+    // make a personal trial safer. Without this the oracle over-rates the
+    // Fourth and Fifth Nightmares badly.
+    const dc=c.check.dcSelf?stat+c.check.dc
+      :c.check.dc+(c.check.dcScale||0)*s.rank+(c.check.dcEra||0)*era;
     let pf=0,ps=0;
     for(let r=1;r<=10;r++){const m=r+stat-dc;
       if(m>=0)ps+=0.1; else if(c.check.fatal!=null&&m<=-c.check.fatal)pf+=0.1;}
     v += -260*pf + 30*ps;
   } else v += 12;
-  const fx=c.effects||{};
-  if(fx.rank||fx.nightmare||fx.solstice)v+=40;      // progression is the point
-  if(fx.death)v-=1000;
-  for(const[k,d]of Object.entries(fx.stats||{}))v+=(k==="vitality"?2.5:2)*d;
+  // A choice's rewards do not all live in c.effects. Every Nightmare puts its
+  // rank-up inside success.effects, so a policy that only reads c.effects
+  // sees no reason at all to conquer one and always turns around — which is
+  // why this harness used to report zero Sovereigns.
+  const fx=c.effects||{}, sfx=(c.success&&c.success.effects)||{}, ffx=(c.failure&&c.failure.effects)||{};
+  const climbs=[fx,sfx,ffx].some(x=>x.rank||x.nightmare||x.solstice);
+  // How much a policy wants to climb. Priced correctly, the personal trials
+  // are genuinely bad bets, so `skilled` weighs them only slightly and
+  // `climber` takes them anyway — the two answer different questions.
+  if(climbs)v+=(POL==="climber"?260:40);
+  if(fx.death||sfx.death||ffx.death)v-=1000;
+  for(const src of [fx,sfx])
+    for(const[k,d]of Object.entries(src.stats||{}))v+=(k==="vitality"?2.5:2)*d;
   return v;
 }
+// policy: random | skilled | climber  (see score() for the difference)
 const POL=process.argv[2]||"skilled", ORIGIN=process.argv[3]||"citadel", N=+(process.argv[4]||6000);
 const ranks={},died={},kinds={},ages=[],ev=[];
 for(let i=0;i<N;i++){

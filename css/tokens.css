@@ -1,6 +1,11 @@
 :root{
   --bg:#08080c; --bg-2:#0f1018; --bg-3:#161826;
-  --ink:#e8e6f0; --ink-dim:#9a97ad; --ink-faint:#5d5a70;
+  --ink:#e8e6f0; --ink-dim:#9a97ad;
+  /* Was #5d5a70, which is 3.01:1 on --bg — under WCAG AA's 4.5:1 for body
+     text, in the default theme. It carries the HUD's secondary line (Flaw,
+     Lineage, Class) and every choice hint, so it has to be read, not just
+     sensed. This is 5.13:1. The light-mode value below had the same fault. */
+  --ink-faint:#827e98;
   --line:#242536;
   --accent:#7b5cff;      /* soul essence violet */
   --accent-2:#c9a227;    /* memory gold — also the Aspect rune's colour */
@@ -34,7 +39,12 @@ body[data-rank="divine"]      { --rank:#fff6c9; }
 ------------------------------------------------------------- */
 html[data-theme="light"]{
   --bg:#f6f3ec; --bg-2:#ffffff; --bg-3:#ece6d6;
-  --ink:#241f2e; --ink-dim:#5c5468; --ink-faint:#8b8496;
+  --ink:#241f2e; --ink-dim:#5c5468;
+  /* --ink-faint was #8b8496, which is only 3.25:1 against this background —
+     under WCAG AA's 4.5:1 for body text. It carries the HUD's secondary line
+     (Flaw, Lineage, Class), so it has to be legible, not decorative. This is
+     5.7:1. Verified in a real browser, not by eye. */
+  --ink-faint:#625b70;
   --line:#ddd5c0;
   --accent:#5b3fd6;
   --accent-2:#9a6f0e;

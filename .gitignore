@@ -2,3 +2,7 @@
 *.bak
 node_modules/
 CLAUDE.md
+.env
+.env.*
+.audit-cache.json
+.claude/launch.json

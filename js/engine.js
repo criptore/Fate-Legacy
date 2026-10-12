@@ -13,10 +13,21 @@ const Engine = (() => {
   const years = s => Math.floor(s.ageDays / DAYS_PER_YEAR);
   const shown = v => Math.round(v * 10) / 10;
 
-  function clampStat(id, v) {
+  function statMax(id, s) {
+    const d = statDef(id);
+    if (!d) return Infinity;
+    /* Canon, on Divine Aspect holders: "Unlike all other Awakened, there was
+       no limit to the capacity to store essence." Ours is not literally no
+       limit — an unbounded number would break the HUD and the balance — but
+       it is far above everyone else's. */
+    if (id === "essence" && s && s.aspectRank === "Divine") return 240;
+    return d.max;
+  }
+
+  function clampStat(id, v, s) {
     const d = statDef(id);
     if (!d) return v;
-    return Math.max(d.min, Math.min(d.max, v));
+    return Math.max(d.min, Math.min(statMax(id, s), v));
   }
 
   function roll(sides) { return 1 + Math.floor(Math.random() * sides); }
@@ -42,7 +53,11 @@ const Engine = (() => {
       flags: [],
       memories: [],
       aspect: null,
+      aspectRank: "Dormant",   // canon: Aspect Rank uses the Soul Rank ladder
       flaw: null,
+      lineage: null,           // third axis; canon says it does not touch the Aspect
+      soulClass: 0,            // index into CLASSES. Everyone starts a Beast.
+      echoes: [],              // canon: a reward in its own right, not a Memory
       seen: {},        // id -> times seen
       lastSeen: {},    // id -> ageDays at last draw
       current: null,   // id of the event on screen
@@ -53,8 +68,12 @@ const Engine = (() => {
       cause: null,
       causeKind: null,
     };
-    for (const [id, d] of Object.entries(o.stats)) s.stats[id] = clampStat(id, (s.stats[id] ?? 0) + d);
+    for (const [id, d] of Object.entries(o.stats)) s.stats[id] = clampStat(id, (s.stats[id] ?? 0) + d, s);
     for (const f of o.flags ?? []) s.flags.push(f);
+    /* Order matters only for readability — these two deliberately do not
+       consult one another. Canon: "Possessing a lineage of a certain divine
+       creature doesn't mean their aspect has to be related to it as well." */
+    awardLineage(s);
     awardAspect(s);
     return s;
   }
@@ -78,6 +97,7 @@ const Engine = (() => {
     const days = Math.round(base * mult);
     s.ageDays += days;
     heal(s, days);
+    drainDivine(s, days);
     checkLifespan(s);
   }
 
@@ -85,12 +105,26 @@ const Engine = (() => {
      been in. Training raises the ceiling; a bad Gate does not permanently
      lower it. Story beats (fixedTime) still pass real days, so you do heal
      between the nodes of a Nightmare — just very little. */
+  /* Canon on Divine Aspects: "their immense power came at the cost of rapidly
+     depleting essence." So the bonus is not free — it bleeds, and a Divine
+     Aspect holder has to keep killing to stay topped up.
+
+     The per-event cap is a mechanical necessity, not canon: `days` is already
+     multiplied by the rank's timeScale, so a single Saint-scale decision spans
+     thousands of days and an uncapped per-day rate would empty the Core in one
+     event. Ours: at most three points of Essence per decision. */
+  function drainDivine(s, days) {
+    if (s.dead || s.aspectRank !== "Divine") return;
+    const loss = Math.min(days * 0.004, 3);
+    s.stats.essence = clampStat("essence", s.stats.essence - loss, s);
+  }
+
   function heal(s, days) {
     if (s.dead) return;
     s.vitCap = Math.max(s.vitCap ?? 0, s.stats.vitality);
     const room = s.vitCap - s.stats.vitality;
     if (room <= 0) return;
-    s.stats.vitality = clampStat("vitality", s.stats.vitality + Math.min(room, days / 50));
+    s.stats.vitality = clampStat("vitality", s.stats.vitality + Math.min(room, days / 50), s);
   }
 
   function checkLifespan(s) {
@@ -129,6 +163,13 @@ const Engine = (() => {
     }
     if (req.aspect && (!s.aspect || !req.aspect.includes(s.aspect))) return false;
     if (req.flaw && (!s.flaw || !req.flaw.includes(s.flaw))) return false;
+    if (req.lineage && (!s.lineage || !req.lineage.includes(s.lineage))) return false;
+    if (req.aspectRank && !req.aspectRank.includes(s.aspectRank)) return false;
+    if (req.soulClass) {
+      const c = s.soulClass ?? 0;
+      if (req.soulClass.min != null && c < req.soulClass.min) return false;
+      if (req.soulClass.max != null && c > req.soulClass.max) return false;
+    }
     return true;
   }
 
@@ -196,7 +237,7 @@ const Engine = (() => {
     if (fx.stats) {
       for (const [id, d] of Object.entries(fx.stats)) {
         const before = s.stats[id] ?? 0;
-        const after = clampStat(id, before + d);
+        const after = clampStat(id, before + d, s);
         s.stats[id] = after;
         if (after !== before) deltas.push({ id, d: after - before });
       }
@@ -210,10 +251,21 @@ const Engine = (() => {
       const m = MEMORIES[fx.memory];
       if (m && m.stats) {
         for (const [id, d] of Object.entries(m.stats)) {
-          s.stats[id] = clampStat(id, (s.stats[id] ?? 0) + d);
+          s.stats[id] = clampStat(id, (s.stats[id] ?? 0) + d, s);
           deltas.push({ id, d });
         }
       }
+    }
+    /* Canon: an Echo is "a magical copy of a slain Nightmare Creature" that
+       "do[es] not possess a soul" and is "created from Soul Essence" — so
+       binding one ties up Essence permanently. Canon sets no cap on how many
+       a person may hold, so that cost is the only thing limiting a hoard. */
+    if (fx.echo && ECHOES[fx.echo] && !s.echoes.includes(fx.echo)) {
+      const e = ECHOES[fx.echo];
+      s.echoes.push(fx.echo);
+      applyStatBlock(s, e.stats, deltas);
+      s.stats.essence = clampStat("essence", s.stats.essence - (e.bound ?? 0), s);
+      deltas.push({ id:"essence", d:-(e.bound ?? 0) });
     }
     if (fx.awardFlaw) awardFlaw(s, deltas);
     /* Canon: "First Nightmares are unique because each of them is tailored
@@ -245,7 +297,7 @@ const Engine = (() => {
       /* Canon: each rank shifts the balance away from the waking world.
          Masters leave a tether behind; Saints are miniature Gateways;
          Supremes are tied to the Dream Realm instead of Earth. */
-      s.stats.tether = clampStat("tether", s.stats.tether - rank(s).tetherLoss);
+      s.stats.tether = clampStat("tether", s.stats.tether - rank(s).tetherLoss, s);
     }
     if (fx.chapter) s.chapter = fx.chapter;
     if (fx.days) advance(s, fx.days, false);
@@ -261,9 +313,23 @@ const Engine = (() => {
 
   function applyStatBlock(s, block, deltas) {
     for (const [id, d] of Object.entries(block ?? {})) {
-      s.stats[id] = clampStat(id, (s.stats[id] ?? 0) + d);
+      s.stats[id] = clampStat(id, (s.stats[id] ?? 0) + d, s);
       if (deltas) deltas.push({ id, d });
     }
+  }
+
+  /* Lineage: inherited, so it is drawn from where you were born and from
+     nothing else. Canon calls lineage a hereditary Attribute, "especially
+     true for Great Clans whose scions inherited the same lineage Attribute",
+     and is explicit that carrying the lineage of a divine creature says
+     nothing about what your Aspect will be. This function therefore never
+     looks at s.aspect, and awardAspect never looks at s.lineage. */
+  function awardLineage(s, deltas) {
+    const pool = LINEAGES.map(l => ({ l, w: l.weight?.[s.origin] ?? 1 }));
+    const l = weighted(pool).l;
+    s.lineage = l.id;
+    applyStatBlock(s, l.stats, deltas);
+    for (const f of l.flags ?? []) if (!s.flags.includes(f)) s.flags.push(f);
   }
 
   /* Aspect: drawn at infection, weighted by origin. Dormant rank, no ability
@@ -287,15 +353,69 @@ const Engine = (() => {
     s.flaw = f.id;
     applyStatBlock(s, f.stats, deltas);
 
-    /* The Spell appraises the trial: a bolder run yields a better Aspect rank.
-       ("The Aspect can rank up after the trial is over, depending on the
-       appraisal the Spell gives.") */
+    /* The Spell appraises the trial and ranks the Aspect on it. Canon: "The
+       Aspect can rank up after the trial is over, depending on the appraisal
+       the Spell gives", "Aspect Rank is not fixed and can evolve depend[ing]
+       on one's feat", and the rank itself is "Same as Soul Rank" — the same
+       seven-rung ladder, not a separate grade track. Canon also ties the
+       appraisal to deviation: "The Spell's appraisals were tied to how far
+       one deviated from their destined path", which is why an outskirts
+       survivor is graded more generously than a clan scion.
+
+       Where the ladder is cut — and everything above Transcendent — is ours.
+       Canon never says how a Divine Aspect comes about, only that it exists
+       and that the wiki knows of exactly three holders. So the top three
+       rungs need an extraordinary trial AND a rare draw, and the draw is
+       deliberately NOT gated on lineage: canon says the two are unrelated. */
     const deviation = s.origin === "outskirts" ? 2 : s.origin === "clan" ? -1 : 0;
     const graded = s.appraisal + deviation;
-    s.aspectGrade = graded >= 8 ? "Transcendent" : graded >= 5 ? "Ascended"
-                  : graded >= 2 ? "Awakened" : "Dormant";
-    const bonus = { Dormant:0, Awakened:1, Ascended:3, Transcendent:6 }[s.aspectGrade];
-    if (bonus) applyStatBlock(s, { essence: bonus, willpower: Math.ceil(bonus / 2) }, deltas);
+    let rankIndex = graded >= 8 ? 3 : graded >= 5 ? 2 : graded >= 2 ? 1 : 0;
+    if (rankIndex === 3) {
+      /* Only a trial already good enough for Transcendent is even considered,
+         and then it is mostly a matter of luck. Tuned against tools/sim.js so
+         that a Divine Aspect stays about as rare as canon implies. */
+      const r = Math.random();
+      if (graded >= 13 && r < 0.008) rankIndex = 6;       // Divine  ~0.04% of survivors
+      else if (graded >= 13 && r < 0.05) rankIndex = 5;   // Sacred  ~0.2%
+      else if (graded >= 11 && r < 0.12) rankIndex = 4;   // Supreme ~1%
+    }
+    const def = ASPECT_RANKS[rankIndex];
+    s.aspectRank = def.id;
+    applyStatBlock(s, def.bonus, deltas);
+    if (rankIndex >= 4 && !s.flags.includes("high_aspect")) s.flags.push("high_aspect");
+    if (rankIndex === 6 && !s.flags.includes("divine_aspect")) s.flags.push("divine_aspect");
+  }
+
+  /* Class is a second axis, separate from Soul Rank: canon grades Nightmare
+     Creatures as Beast (1 core), Monster (2), Demon (3), Devil (4), Tyrant
+     (5), Terror (6), Titan (7).
+
+     Canon says "Human souls are not meant to have many cores or sustain
+     them", that some Awakened can nonetheless "form multiple soul cores
+     similar to Nightmare Creatures", and that for a Divine Aspect holder
+     "the birth of a new core brings immense pain". It stops short of stating
+     that an ordinary human is capped at one core forever — that cap is OUR
+     inference, and so is every fragment threshold in CLASSES. */
+  function maxClassFor(s) {
+    /* Divine Aspect: canon says such a soul sustains more than one core, and
+       sets no ceiling on it. Anyone else: ours — one extra core, ever. */
+    return s.aspectRank === "Divine" ? CLASSES.length - 1 : 1;
+  }
+
+  function maybeFormCore(s, deltas) {
+    const next = CLASSES[s.soulClass + 1];
+    if (!next || s.soulClass + 1 > maxClassFor(s)) return;
+    if (s.fragments < next.fragments) return;
+    s.soulClass++;
+    s.soulCores = next.cores;
+    /* The pain is canon ("the birth of a new core brings immense pain"); the
+       numbers are ours, and it hurts an ordinary soul more, because canon
+       says a human soul is "not meant to have many cores or sustain them". */
+    const divine = s.aspectRank === "Divine";
+    applyStatBlock(s, divine ? { vitality: -6, essence: 10, willpower: 2 }
+                             : { vitality: -12, essence: 6 }, deltas);
+    if (!s.flags.includes("formed_core")) s.flags.push("formed_core");
+    s.classUps = (s.classUps ?? 0) + 1;
   }
 
   /* Soul fragments from a kill. Canon formula from the wiki FAQ:
@@ -309,6 +429,7 @@ const Engine = (() => {
     const essence = Math.max(1, Math.round(gained / 3));
     const deltas = [];
     applyStatBlock(s, { essence }, deltas);
+    maybeFormCore(s, deltas);
     return deltas;
   }
 
@@ -371,6 +492,8 @@ const Engine = (() => {
 
   return {
     newRun, draw, choose, choiceAvailable, applyEffects, harvest, ORIGINS: () => ORIGINS,
+    soulClass: s => CLASSES[s.soulClass ?? 0],
+    maxClassFor,
     rank, years, lifeRemaining, lifespanYears, statDef, shown,
     DAYS_PER_YEAR,
     eventById: id => EVENTS.find(e => e.id === id),

@@ -4,7 +4,7 @@
    which on mobile is how most people actually leave. */
 const Save = (() => {
   const KEY = "fatelegacy.save";
-  const VERSION = 2;   // state shape changed: origins, appraisal, tether, trials
+  const VERSION = 3;   // state shape changed: lineage, aspectRank, soulClass, echoes
 
   function write(state) {
     try {
