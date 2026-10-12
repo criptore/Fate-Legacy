@@ -80,6 +80,12 @@
     const m = MEMORIES[id];
     return [statBlock(m.stats), MEMORY_USE[m.type]].filter(Boolean).join(" · ");
   }
+  /* The Weaver's Weave devours the lineage you were born with. */
+  function lineageBefore(st) {
+    const b = st.lineageBefore && LINEAGES.find(l => l.id === st.lineageBefore);
+    return b ? ` (It devoured: ${b.name}.)` : "";
+  }
+
   /* Your organization (issue #10), on the Status page and, with what became
      of it, on the end screen. */
   const ORG_KIND = { company:"a company of Awakened", order:"an order", refuge:"a landing zone in the Dream Realm" };
@@ -368,7 +374,7 @@
       ["Soul Cores", `${Engine.soulClass(S).name} · ${Engine.soulClass(S).cores}`],
       ["Aspect", aspect ? `${aspect.name}${S.aspectRank ? ` · ${S.aspectRank} rank` : ""} — ${aspect.desc}${aspectGift(aspect)}` : "—", "wide"],
       ["Flaw", flaw ? `${flaw.name} — ${flaw.desc} ${flawCost(flaw)}.` : "Never paid for", "wide"],
-      ["Lineage", lineage ? `${lineage.name}${lineage.divine ? " · divine" : ""} — ${lineage.desc}` : "—", "wide"],
+      ["Lineage", lineage ? `${lineage.name}${lineage.divine ? " · divine" : ""} — ${lineage.desc}${lineageBefore(S)}` : "—", "wide"],
       ["Memories", S.memories.length
         ? S.memories.map(m => `${MEMORIES[m].name} (${MEMORIES[m].rank} ${MEMORIES[m].type}: ${memoryEffect(m)})`).join("; ") : "None", "wide"],
       ["Echoes", (S.echoes ?? []).length
@@ -411,7 +417,7 @@
     h += f ? line(f.name, `${f.desc} ${flawCost(f)}.`) : line("—", "Not yet Awakened");
     const l = S.lineage && LINEAGES.find(x => x.id === S.lineage);
     h += `<div class="sheet-section">Lineage</div>`;
-    h += l ? line(l.name + (l.divine ? " (divine)" : ""), l.desc) : line("—", "None");
+    h += l ? line(l.name + (l.divine ? " (divine)" : ""), l.desc + lineageBefore(S)) : line("—", "None");
     if (S.org) {
       h += `<div class="sheet-section">Your organization</div>`;
       h += line(S.org.name, orgLine(S.org));

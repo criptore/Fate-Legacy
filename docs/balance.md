@@ -65,6 +65,33 @@ moved:
 Reaching Master or higher by origin, random play: clan 31.4%, citadel 22.5%,
 outskirts 16.6%.
 
+## Divine lineages
+
+Chance of being born with each, 200 000 draws per origin:
+
+```
+            War    Beast  Storm  Sun    Heart  Shadow   any divine at birth
+outskirts   0.20%  0.19%  0.20%  0.15%  0.08%  0.11%    0.9%
+citadel     1.02%  0.95%  0.99%  0.20%  0.16%  0.11%    3.4%
+clan       19.8%  20.0%  17.7%   0.59%  0.31%  0.13%   58.5%
+```
+
+The Weaver is never inherited. It comes only from `ev_weave`, which needs a
+lineage to devour (so "No Lineage" can never see it) and is the
+lowest-weight event in the game. 100 000 random-play lives per origin:
+
+```
+            event appears   Weaver gained (random play)
+outskirts   0.016%          0.007%
+citadel     0.044%          0.024%
+clan        0.103%          0.062%
+```
+
+A player who always accepts it gets the Weaver about as often as the event
+appears (refusing can fail, and then it takes you anyway). `skilled` and
+`climber` refuse it, so `tools/sim.js` reports 0% for them. In every origin
+the Weaver is rarer than the rarest birth lineage there.
+
 Aspect rank from the First Nightmare's appraisal comes out at roughly
 Supreme 1%, Sacred 0.2% and Divine 0.04% of survivors.
 

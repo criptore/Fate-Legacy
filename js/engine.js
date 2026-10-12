@@ -298,6 +298,7 @@ const Engine = (() => {
       deltas.push({ id:"essence", d:-(e.bound ?? 0) });
     }
     if (fx.org) applyOrg(s, fx.org);
+    if (fx.lineage) rewriteLineage(s, fx.lineage, deltas);
     if (fx.awardFlaw) awardFlaw(s, deltas);
     /* Canon: "First Nightmares are unique because each of them is tailored
        individually" — so a fresh scenario is drawn every run, and the same is
@@ -395,11 +396,30 @@ const Engine = (() => {
      nothing about what your Aspect will be. This function therefore never
      looks at s.aspect, and awardAspect never looks at s.lineage. */
   function awardLineage(s, deltas) {
-    const pool = LINEAGES.map(l => ({ l, w: l.weight?.[s.origin] ?? 1 }));
+    /* `eventOnly` lineages (the Weaver) are never inherited at birth. */
+    const pool = LINEAGES.filter(l => !l.eventOnly).map(l => ({ l, w: l.weight?.[s.origin] ?? 1 }));
     const l = weighted(pool).l;
     s.lineage = l.id;
     applyStatBlock(s, l.stats, deltas);
     for (const f of l.flags ?? []) if (!s.flags.includes(f)) s.flags.push(f);
+  }
+
+  /* `lineage:"id"` in effects: the new lineage devours the old one. Its
+     stats and flags are taken back first, then the new one's are applied.
+     Canon precedent: [Blood Weave] devoured the Shadow God's ichor
+     (ch. 551). The old id is kept for the end screen. */
+  function rewriteLineage(s, id, deltas) {
+    const next = LINEAGES.find(l => l.id === id);
+    if (!next || s.lineage === id) return;
+    const old = LINEAGES.find(l => l.id === s.lineage);
+    if (old) {
+      applyStatBlock(s, Object.fromEntries(Object.entries(old.stats ?? {}).map(([k, v]) => [k, -v])), deltas);
+      s.flags = s.flags.filter(f => !(old.flags ?? []).includes(f));
+      s.lineageBefore = old.id;
+    }
+    s.lineage = next.id;
+    applyStatBlock(s, next.stats, deltas);
+    for (const f of next.flags ?? []) if (!s.flags.includes(f)) s.flags.push(f);
   }
 
   /* Aspect: drawn at infection, weighted by origin. Dormant rank, no ability

@@ -39,7 +39,8 @@ reference before anyone relies on it.
 | Lineage and Aspect are unrelated | *Aspect* / *Divine Lineage*: "Possessing a lineage of a certain divine creature doesn't mean their aspect has to be related to it as well" (Mordret: War God lineage, Aspect of mirrors; Sunny: Weaver, Shadow God Aspect; Nephis: Sun God, Nephilim Aspect) | ✅ |
 | Lineage is hereditary, and clan scions share one | *Legacy Clans*: "great clans whose scions inherited the same lineage attribute" | ✅ |
 | The Great Clans each carry a divine lineage | *Divine Lineage*: Valor (War God), Immortal Flame (Sun God, ch. 577), House of Night (Storm God; ch. 2603, taken from a Memory), Song (Beast God: Ki Song earned the Lineage Memory; ch. 1924). The game's Valor, Song and Night lineages are these | ✅ |
-| The divine lineages are a closed set: six gods and the Weaver | *Divine Lineage*. Sun God: Nephis is the last carrier. Heart God: Asterion alone (ch. 1613). Shadow God: devoured by [Blood Weave] (ch. 550–551). Weaver, the Demon of Fate: "Why have the gods forbidden us seven to sire offspring?" (ch. 1752). None of these four is drawable | ✅ |
+| The divine lineages are a closed set: six gods and the Weaver | *Divine Lineage*. Sun God: Nephis is the last known carrier. Heart God: Asterion alone (ch. 1613). Shadow God: unclaimed (ch. 1613); Sunny's drop devoured by [Blood Weave] (ch. 550–551). Weaver, the Demon of Fate: "Why have the gods forbidden us seven to sire offspring?" (ch. 1752). All seven are in the game and nothing else divine is | ✅ |
+| A Weave can devour another lineage | [Blood Weave] devoured the Shadow God's ichor (ch. 551). This is the precedent for `ev_weave`, the only way to the Weaver's lineage | ✅ |
 | A Nightmare ends in conquest or death | *Nightmares*: "Each Nightmare contains a central conflict that has to be resolved for the Nightmare to end". No canon line says outright that a Second+ Nightmare cannot be abandoned, but nothing shows anyone walking out, and ch. 1228 has only "a few dozen" of "hundreds and hundreds" returning from the Third. So no Second+ Nightmare offers a way out here, and a failed decisive check is death | ⚠️ |
 | Hollow and Lost are different things | *Hollow*: the soul is destroyed and an empty body is left. *Lost*: the body dies in the waking world and the soul is stranded in the Dream Realm, unable to return unless it reaches Master. `org_lost` uses the second | ✅ |
 | A destroyed Echo is gone for good | *Echo*: a damaged Echo heals, a destroyed one does not return. Ch. 47: Echoes are "extremely rare" and "much more precious than Memories" | ✅ |
@@ -75,6 +76,13 @@ it might be canon:
   rare draw, deliberately *not* gated on lineage) is invented.
 - **The four invented divine lineages** (the Salt Queen, the Long Sleeper,
   the Cartographer, the Unmade Smith) were removed in v0.4.0 (issue #4).
+- **How a player can carry the Sun, Heart, Shadow or Weaver lineage.** In
+  canon each belongs to one named character or a dead line. The game frames
+  them as an unknown branch (Sun, Heart), a trace that arrived nobody knows
+  how (Shadow), or a loose Weave that devours your own lineage (Weaver,
+  never inherited at birth because the gods forbade the daemons offspring).
+  The player is never Nephis, Asterion or Sunny. All of their rates are
+  ours; see balance.md.
 - **The "A Legacy Clan" lineage.** Canon has lesser Legacy Clans (Aegis
   Rose, Dagonet, Han Li, Maharana, Pandavar, White Feather...) with
   hereditary Attributes; the player's family is deliberately none of them.

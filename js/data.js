@@ -166,19 +166,28 @@ const FLAWS = [
    taking it), Song the Beast God's (Ki Song earned the Lineage
    Memory after Awakening; ch. 1924 she gives its blood to Seishan),
    and Immortal Flame the Sun God's (ch. 577). So the clan lineages
-   below ARE the divine ones (issue #4). Until v0.4.0 the game had
-   four invented divine lineages instead; canon's set is closed — six
-   gods and the Weaver, the Demon of Fate — so they are gone.
+   below ARE the divine ones (issue #4). Canon's set is closed: six
+   gods and the Weaver, the Demon of Fate. All seven are in the game,
+   and nothing else divine is.
 
-   Not offered, on purpose:
-   - Sun God: Immortal Flame fell, and Nephis is its last carrier.
-   - Heart God: Asterion is its sole inheritor (ch. 1613).
-   - Shadow God: meant for Sunny, devoured by [Blood Weave] (ch. 551).
+   Four of them belong, in canon, to one named character or a dead
+   line. A player drawing one is therefore framed as an unknown branch,
+   never as that character. These framings are OURS, not canon:
+   - Sun God: Immortal Flame fell, and Nephis is its last KNOWN carrier.
+     Yours is a branch that left before the fall and kept quiet.
+   - Heart God: Asterion is its sole KNOWN inheritor (ch. 1613).
+     Yours is a branch he does not know about.
+   - Shadow God: canon calls it unclaimed (ch. 1613); Sunny's drop was
+     devoured by [Blood Weave] (ch. 551). Yours is a trace that reached
+     your family some other way, nobody knows how.
    - Weaver: "Why have the gods forbidden us seven to sire offspring?"
-     (ch. 1752). Its Weaves belong to Sunny alone.
-   A random player drawing any of these would contradict canon.
+     (ch. 1752). So it is NEVER inherited at birth (`eventOnly`). It can
+     only arrive by the event `ev_weave`, where a Weave of its lineage
+     devours the one you were born with, the way [Blood Weave] devoured
+     the Shadow God's ichor. It is the rarest of the seven.
 
-   Every stat number here is ours.
+   Every stat number and every weight here is ours. The weights are out
+   of roughly 100 per origin; measured rates are in docs/balance.md.
 ------------------------------------------------------------- */
 const LINEAGES = [
   { id:"none",   name:"No Lineage", short:"—",
@@ -188,21 +197,33 @@ const LINEAGES = [
     desc:"Something four generations back, diluted almost to nothing, and still faintly there.",
     stats:{ willpower:1, perception:1 }, weight:{ outskirts:26, citadel:30, clan:12 } },
   /* Canon: the lesser Legacy Clans (Aegis Rose, Dagonet, Han Li, Maharana,
-     Pandavar, White Feather...) pass down a hereditary Attribute of their
-     own, and serve a Great Clan. Which clan is left unnamed: the player's
-     family is not one of the novel's. */
+     Pandavar, Sorrow, White Feather...) pass down a hereditary Attribute of
+     their own, and some serve a Great Clan. Which clan is left unnamed: the
+     player's family is not one of the novel's. */
   { id:"legacy", name:"A Legacy Clan", short:"Legacy",
     desc:"A lesser Legacy Clan, sworn to one of the Great ones. The Attribute is real, and so is the oath that came with it.",
     stats:{ vitality:1, willpower:1, perception:1 }, flags:["legacy_clan"], weight:{ outskirts:1, citadel:5, clan:24 } },
   { id:"valor",  name:"Valor · the War God", short:"Valor", divine:true,
     desc:"The Great Clan born from the Lineage of War. The god is long dead; the blood still makes you very hard to move.",
-    stats:{ vitality:3, willpower:2, essence:1 }, flags:["divine_lineage"], weight:{ outskirts:0, citadel:1, clan:20 } },
+    stats:{ vitality:3, willpower:2, essence:1 }, flags:["divine_lineage", "clan_lineage"], weight:{ outskirts:0.2, citadel:1, clan:20 } },
   { id:"song",   name:"Song · the Beast God", short:"Song", divine:true,
     desc:"Ki Song's clan, and the Beast God's blood she won for it. Your family hears the shape of a room before it walks in.",
-    stats:{ perception:3, willpower:1, essence:1, renown:1 }, flags:["divine_lineage"], weight:{ outskirts:0, citadel:1, clan:20 } },
+    stats:{ perception:3, willpower:1, essence:1, renown:1 }, flags:["divine_lineage", "clan_lineage"], weight:{ outskirts:0.2, citadel:1, clan:20 } },
   { id:"night",  name:"House of Night · the Storm God", short:"Night", divine:true,
     desc:"The Great Clan born from the Lineage of Storm. The founders took it from a Memory, and not all of them lived through taking it.",
-    stats:{ cunning:3, perception:1, essence:1, willpower:1 }, flags:["divine_lineage"], weight:{ outskirts:0, citadel:1, clan:18 } },
+    stats:{ cunning:3, perception:1, essence:1, willpower:1 }, flags:["divine_lineage", "clan_lineage"], weight:{ outskirts:0.2, citadel:1, clan:18 } },
+  { id:"sun",    name:"the Sun God", short:"Sun", divine:true,
+    desc:"Immortal Flame's lineage, from a branch that left the clan before it fell and never said so. The fire in your blood is the reason you keep quiet.",
+    stats:{ essence:3, willpower:2, vitality:1 }, flags:["divine_lineage", "hidden_lineage"], weight:{ outskirts:0.15, citadel:0.2, clan:0.6 } },
+  { id:"heart",  name:"the Heart God", short:"Heart", divine:true,
+    desc:"Asterion is supposed to be its only heir. Your family is a branch nobody wrote down, and you would very much like it to stay that way.",
+    stats:{ cunning:2, willpower:2, renown:1, essence:1 }, flags:["divine_lineage", "hidden_lineage"], weight:{ outskirts:0.08, citadel:0.15, clan:0.3 } },
+  { id:"shadow", name:"the Shadow God", short:"Shadow", divine:true,
+    desc:"The lineage nobody claimed. A trace of it reached your family somehow, and the shadows have stood a little closer to you ever since.",
+    stats:{ perception:3, cunning:2, essence:1 }, flags:["divine_lineage", "hidden_lineage"], weight:{ outskirts:0.12, citadel:0.12, clan:0.12 } },
+  { id:"weaver", name:"the Weaver · Demon of Fate", short:"Weaver", divine:true, eventOnly:true,
+    desc:"A Weave of the lineage the gods forbade. It was not born in you: it ate the blood you were born with and took its place.",
+    stats:{ essence:4, cunning:3, perception:2, willpower:2 }, flags:["divine_lineage", "weaver"] },
 ];
 
 /* -------------------------------------------------------------
@@ -464,6 +485,7 @@ const ACHIEVEMENTS = {
   stopped_the_march:  { name:"Stopped the March",  desc:"Stood in the road until forty thousand lanterns went out, and the Nightmare had nothing left to collect." },
   saw_the_interval:   { name:"Saw the Interval",   desc:"Failed to cross the Quiet Between Stars, kept going anyway, and crossed it on the second attempt." },
   great_order:        { name:"Founder",            desc:"Built an organization of Awakened large enough that the Great Clans had to count it." },
+  weaver:             { name:"The Forbidden Thread", desc:"A Weave of the Demon of Fate's lineage devoured the one you were born with. The gods forbade the Weaver heirs; you happened anyway." },
   went_quiet:         { name:"Went Quiet",         desc:"Vanished from Sovereign attention for forty years, on purpose, and came back unnoticed." },
   neutral:            { name:"Neutral Ground",     desc:"Refused both Domains during their war, and survived refusing them." },
   killed_awakened:    { name:"Blood Price",        desc:"Killed another Awakened for the contents of their Soul Core." },
@@ -1497,6 +1519,23 @@ const EVENTS = [
   ]
 },
 
+{
+  /* The only way to the Weaver's lineage (see LINEAGES). It needs a
+     lineage to devour, so a life with "No Lineage" can never see it, and
+     it is the lowest-weight event in the game. Rates: docs/balance.md. */
+  id:"ev_weave", weight:0.006, once:true, days:20,
+  requires:{ chapter:["awakened", "ascended", "transcendent", "supreme"], flags:{ none:["no_lineage", "weaver"] } },
+  title:"A Thread That Should Not Exist",
+  text:"The creature you killed at the Gate leaves no Soul Shard. It leaves a thread: one fine, dark strand lying across the ground, which the Spell refuses to name.\n\nWhen you pick it up it goes into your hand, and from your hand into your blood, and you can feel it reach the lineage you were born with and start to eat it.\n\nThe gods forbade the Weaver heirs. This is not an heir. It is a piece of the Weaver's lineage, loose in the world, looking for blood to replace.",
+  choices:[
+    { label:"Let it finish. Let it replace the blood you were born with.", effects:{ lineage:"weaver", stats:{ vitality:-4 }, flags:{ add:["weaver"] } },
+      text:"It takes a week. When it is done, the Attribute your family gave you is gone, and something older is in its place: the lineage of the Demon of Fate, which no living thing was ever supposed to carry." },
+    { label:"Burn it out of your blood before it finishes.", hint:"Willpower. It does not want to leave.",
+      check:{ stat:"willpower", dc:14, dcScale:2 },
+      success:{ text:"You burn it out. Your own lineage is still there, a little scarred. You will wonder about the thread for the rest of your life.", effects:{ stats:{ willpower:3, vitality:-2 } } },
+      failure:{ text:"You cannot burn it out. It finishes anyway, and the lineage you were born with is gone.", effects:{ lineage:"weaver", stats:{ vitality:-6 }, flags:{ add:["weaver"] } } } },
+  ]
+},
 /* ===================================================================
    YOUR ORGANIZATION (issue #10)
    Only drawn once you have founded one (Master: "Found a company",
@@ -2267,7 +2306,7 @@ const EVENTS = [
 },
 {
   id:"aw_lineage_named", chapter:"awakened", weight:16, once:true, days:70,
-  requires:{ flags:{ all:["divine_lineage"] } },
+  requires:{ flags:{ all:["clan_lineage"] } },
   title:"Whose Blood It Is",
   text:"Everyone in your clan knows the name of the god the lineage came from. Almost nobody outside it is supposed to know what that lineage actually does.\n\nA woman three centuries older than you watches you fight in a training hall, for about four seconds, and then names the god out loud, in front of everyone.\n\nThe gods are dead. Their blood is not, and the other clans keep very careful count of who carries it.",
   choices:[
@@ -2352,7 +2391,7 @@ const EVENTS = [
 },
 {
   id:"st_lineage_end", chapter:"transcendent", weight:18, once:true, days:300,
-  requires:{ flags:{ all:["divine_lineage"] } },
+  requires:{ flags:{ all:["divine_lineage"], none:["weaver"] } },
   title:"The End Of The Line",
   text:"Nine hundred years is long enough to watch a bloodline finish.\n\nA branch of yours does, quietly, in a provincial ward, in a woman of eighty-one who left the clan before you were born and who carries the same inherited Attribute you do, diluted down to almost nothing and still unmistakably the thing that is in you.\n\nThe god it came from has been dead for longer than anyone has records. That is the part nobody writes down about a divine lineage: it is a fact about your blood, and not a relationship with anybody.",
   choices:[
