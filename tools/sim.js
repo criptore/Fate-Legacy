@@ -17,9 +17,14 @@ function score(s,c){
     // Fourth and Fifth Nightmares badly.
     const dc=c.check.dcSelf?stat+c.check.dc
       :c.check.dc+(c.check.dcScale||0)*s.rank+(c.check.dcEra||0)*era;
+    // Memories and Echoes in a fight (issue #9): a Weapon's flat bonus, the
+    // Echo's d4, and an Echo that dies in your place on a fatal miss.
+    const aid=Engine.checkAid(s,c), dice=aid.echoDie?aid.echoDie:1;
+    const shield=Engine.isCombat(c)&&(s.echoes||[]).length>0;
     let pf=0,ps=0;
-    for(let r=1;r<=10;r++){const m=r+stat-dc;
-      if(m>=0)ps+=0.1; else if(c.check.fatal!=null&&m<=-c.check.fatal)pf+=0.1;}
+    for(let e=1;e<=dice;e++)for(let r=1;r<=10;r++){
+      const w=0.1/dice, m=r+stat+aid.weapon+(aid.echoDie?e:0)-dc;
+      if(m>=0)ps+=w; else if(c.check.fatal!=null&&m<=-c.check.fatal&&!shield)pf+=w;}
     v += -260*pf + 30*ps;
   } else v += 12;
   // A choice's rewards do not all live in c.effects. Every Nightmare puts its

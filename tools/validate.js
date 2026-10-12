@@ -57,7 +57,8 @@ for (const e of EVENTS) {
       // A check with success/failure branches must lead onward on BOTH sides.
       if (c.check && !c.effects?.goto && !c.effects?.chapter && !c.effects?.rank) {
         const sOK = c.success?.effects && (c.success.effects.goto || c.success.effects.chapter || c.success.effects.rank);
-        const fOK = c.failure?.effects && (c.failure.effects.goto || c.failure.effects.chapter || c.failure.effects.rank);
+        // A failure that kills is a way out too: a Nightmare ends in conquest or death.
+        const fOK = c.failure?.effects && (c.failure.effects.goto || c.failure.effects.chapter || c.failure.effects.rank || c.failure.effects.death);
         if (!sOK || !fOK) P("ERROR", e.id, `choice ${i} has a check whose ${!sOK ? "success" : "failure"} branch leads nowhere`);
       }
     }
