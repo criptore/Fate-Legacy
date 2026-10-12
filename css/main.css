@@ -179,6 +179,7 @@ body{
 .sheet h3{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 16px}
 .sheet-line{display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid var(--line);font-family:ui-sans-serif,system-ui,sans-serif;font-size:14px}
 .sheet-line span:last-child{color:var(--ink-dim);text-align:right}
+.sheet-note{margin:4px 0 6px;color:var(--ink-dim);font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;line-height:1.45}
 .sheet-section{margin:20px 0 8px;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
 .sheet .btn{margin-top:20px;text-align:center}
 

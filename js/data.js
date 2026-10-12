@@ -457,7 +457,7 @@ const ACHIEVEMENTS = {
   built_refuge:       { name:"Landing Zone",       desc:"Built a refuge in the Dream Realm for two hundred million people." },
   answered:           { name:"Silenced the Assembly", desc:"Gave the Assembly of Mouths an answer that did not need a chamber to hold it." },
   stopped_the_march:  { name:"Stopped the March",  desc:"Stood in the road until forty thousand lanterns went out, and the Nightmare had nothing left to collect." },
-  saw_the_interval:   { name:"Saw the Interval",   desc:"Survived the Quiet Between Stars without crossing it. Nobody else has done even that." },
+  saw_the_interval:   { name:"Saw the Interval",   desc:"Failed to cross the Quiet Between Stars, kept going anyway, and crossed it on the second attempt." },
   went_quiet:         { name:"Went Quiet",         desc:"Vanished from Sovereign attention for forty years, on purpose, and came back unnoticed." },
   neutral:            { name:"Neutral Ground",     desc:"Refused both Domains during their war, and survived refusing them." },
   killed_awakened:    { name:"Blood Price",        desc:"Killed another Awakened for the contents of their Soul Core." },
@@ -1207,13 +1207,13 @@ const EVENTS = [
   ]
 },
 {
-  id:"ms_ancient", chapter:"ascended", weight:8, once:true, days:300,
-  requires:{ stats:{ essence:{ min:30 }, willpower:{ min:26 } } },
+  id:"ms_ancient", chapter:"ascended", weight:5, once:true, days:300,
+  requires:{ stats:{ essence:{ min:34 }, willpower:{ min:30 } } },
   title:"The Ancient Path",
   text:"Canon leaves a door open that almost nobody uses: the Path of Ascension could reach Transcendence without conquering a Third Nightmare.\n\nThe Spell is training wheels. It is a fast, harrowing, streamlined road, and it exists because the older methods — soul-refining techniques, patiently applied over centuries — were mostly lost. Mostly.\n\nYou have found a fragment of one. It will take two hundred years and it may not work.",
   choices:[
     { label:"Take the slow road.", hint:"Willpower. Two centuries of it.",
-      check:{ stat:"willpower", dc:22, fatal:7, fatalKind:"ascension",
+      check:{ stat:"willpower", dc:28, fatal:7, fatalKind:"ascension",
         fatalText:"Reforming a soul core by hand, without the Spell holding the shape, goes wrong somewhere in the second century. There is no dramatic moment. You simply do not finish.",
         fatalCause:"Unmade attempting the ancient soul-refining path." },
       success:{ text:"Two hundred and ten years, alone, refining essence by hand.\n\nYou come out of it Transcendent without the Spell ever having graded you, which is a thing perhaps four people alive can say, and none of them advertise it.", effects:{ rank:1, chapter:"transcendent", stats:{ essence:8, willpower:6, renown:2 }, flags:{ add:["ancient_path"] } } },
@@ -1223,8 +1223,12 @@ const EVENTS = [
 },
 {
   /* Same reasoning as aw_second: "Wait for a better Seed" must lead to one. */
-  id:"ms_third", chapter:"ascended", weight:24, cooldown:150, days:250,
-  requires:{ stats:{ willpower:{ min:24 }, essence:{ min:20 } }, flags:{ none:["clan_owned"] } },
+  /* Issue #7: Saints are rare in canon ("hundreds attempted the Third
+     Nightmare in recent decades, but only a few dozen humans returned"), so
+     a Third Seed is not offered to any Master who merely survived: it takes
+     a name (Renown) as well as strength, and comes round more slowly. */
+  id:"ms_third", chapter:"ascended", weight:18, cooldown:220, days:250,
+  requires:{ stats:{ willpower:{ min:26 }, essence:{ min:22 }, renown:{ min:16 } }, flags:{ none:["clan_owned"] } },
   title:"A Third Seed",
   text:"There are a few dozen Saints in the world. That is the whole population, across every clan and citadel and quadrant, and each of them is a force that reshapes the map around wherever they happen to stand.\n\nA Third Seed is maturing. Conquer it and you are Transcendent — nine hundred years, a Transformation, and a place on a list short enough to memorise.\n\nAlmost everyone who tries this is already the best Master anyone has ever seen, and most of them do not come back.",
   choices:[
@@ -1259,13 +1263,11 @@ const EVENTS = [
   text:"The conflict is the motion, and the motion cannot be won, because winning it would end the Assembly and the Assembly is what is doing the arguing.\n\nThe only resolution is to answer the question in a way that does not require the chamber. And the chamber is listening, now, because you are the first thing in an age to say something it had not already said to itself.",
   choices:[
     { label:"Answer it. Properly. Once.", hint:"Willpower. There is no second attempt.",
-      check:{ stat:"willpower", dc:6, dcSelf:true, fatal:2, fatalKind:"nightmare",
+      check:{ stat:"willpower", dc:7, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"Your answer is heard, considered, and found to be a contribution to the debate rather than an end to it. The Assembly welcomes new members.",
         fatalCause:"Seated. You are the eleven thousand and first mouth of the Assembly." },
       success:{ text:"You give it an answer that does not need a chamber to hold it, and eleven thousand mouths close, and stay closed.\n\nOutside, the landscape stops changing and settles into being one thing, at last, forever.\n\nThe Spell writes a word on the inside of your eyes and the word is not one it uses often.", effects:{ stats:{ willpower:6, renown:12 }, memory:"assembly_tooth", echo:"mouth", flags:{ add:["answered"] }, goto:"tn_resolve" } },
-      failure:{ text:"Your answer holds for nine hundred seconds. Nine hundred seconds is, by the standards of this chamber, a landslide.", effects:{ stats:{ vitality:-8, willpower:4, renown:6 }, goto:"tn_resolve" } } },
-    { label:"Withdraw. A Seed can be abandoned.",
-      effects:{ stats:{ renown:-4, willpower:-1 }, flags:{ add:["fled_third"] }, chapter:"ascended" } },
+      failure:{ effects:{ death:{ kind:"nightmare", text:"Your answer held for nine hundred seconds, and then the Assembly moved to the next item. You are the eleven thousand and first mouth of the Assembly." } } } },
   ]
 },
 {
@@ -1328,9 +1330,28 @@ const EVENTS = [
         fatalText:"You go out into the interval. The interval is what happens to things that go out into it.",
         fatalCause:"Lost in the Quiet Between Stars. No body, no Gateway, no record." },
       success:{ text:"You cross it, and crossing it is the answer, because a distance that has been crossed once is no longer the kind of distance this place was built out of.\n\nSomething very old stops being true.\n\nYou come back through with an authority you did not go in with, and the Spell has no word for you, and neither does anyone else. There have been three. You are the fourth.", effects:{ rank:1, chapter:"supreme", stats:{ essence:14, renown:20, willpower:8 }, flags:{ add:["fourth"] }, conquered:true } },
-      failure:{ text:"You do not cross it. You survive it, which nobody has done either, and you come back nine hundred years older in a body that has not aged and a mind that has.", effects:{ stats:{ willpower:6, essence:6, tether:-4 }, memory:"interval_glass", flags:{ add:["saw_the_interval"] }, days:600, chapter:"transcendent" } } },
-    { label:"Turn around while turning around is still a thing that can be done.",
-      effects:{ stats:{ willpower:2, renown:-6 }, flags:{ add:["fled_fourth"] }, chapter:"transcendent" } },
+      failure:{ text:"You do not cross it. You do not die of it either, not yet, and that is the only distinction the interval recognises.\n\nThere is no way back. There was never going to be: a Nightmare ends when it is conquered or when you are.", effects:{ stats:{ willpower:3, tether:-4 }, goto:"qn1_2" } } },
+  ]
+},
+/* Until v0.4.0 a failed crossing, or turning around, sent a Saint home alive
+   and un-ascended, which breaks the rule that a Nightmare ends in conquest or
+   death (the same exit was removed from the Second Nightmares in v0.3.4).
+   It also stranded the life: st_fourth is `once`, so a tester spent the rest
+   of a 900-year life alternating two events (issue #6). The second attempt
+   below is the only one there is. */
+{
+  id:"qn1_2", scripted:true, once:true, days:30, fixedTime:true,
+  title:"The Quiet Between Stars",
+  text:"The road you took into the interval is still under you, and it does not end, and it has started to feel like it was never going to.\n\nYou have been walking for what your body insists is a month. Your Soul Core says nine hundred years. They are both right, here.\n\nYou get one more attempt at this, the way a falling thing gets one more breath.",
+  choices:[
+    { label:"Keep walking, and stop expecting the far side.", hint:"Willpower. The distance is only a distance if you are waiting for it to end.",
+      check:{ stat:"willpower", dc:8, dcSelf:true, fatalKind:"nightmare" },
+      success:{ text:"You stop waiting for the far side, and the far side is where you are.\n\nYou come back through with an authority you did not go in with, carrying a lens ground out of the quiet you crossed. There have been three. You are the fourth, and the only one of the four who was turned back once first.", effects:{ rank:1, chapter:"supreme", stats:{ essence:14, renown:20, willpower:6 }, memory:"interval_glass", flags:{ add:["fourth", "saw_the_interval"] }, conquered:true } },
+      failure:{ effects:{ death:{ kind:"nightmare", text:"Lost on the road through the Quiet Between Stars. It did not end, and in the end neither did the walking; only you did." } } } },
+    { label:"Look for what is at the other end of the interval.", hint:"Perception. Something is that far away for a reason.",
+      check:{ stat:"perception", dc:8, dcSelf:true, fatalKind:"nightmare" },
+      success:{ text:"There is something at the far end, very small and very old, and the whole distance is the shape of it keeping away from everything. You see it, and a thing that has been seen is no longer infinitely far.\n\nYou come back through with an authority you did not go in with, carrying a lens ground out of the quiet you crossed. There have been three. You are the fourth.", effects:{ rank:1, chapter:"supreme", stats:{ essence:14, renown:20, perception:6 }, memory:"interval_glass", flags:{ add:["fourth", "saw_the_interval"] }, conquered:true } },
+      failure:{ effects:{ death:{ kind:"nightmare", text:"Lost in the Quiet Between Stars, looking for its far end. No body, no Gateway, no record." } } } },
   ]
 },
 
@@ -1735,25 +1756,23 @@ const EVENTS = [
   text:"The conflict is the mercy, and the mercy is sincere, which is worse than if it were not.\n\nThe keeper is not lying and is not corrupted in any sense the Spell has a word for — it made one decision a thousand years ago, watched it hold, and has spent every year since maintaining a kindness that nobody sleeping was ever asked whether they wanted. Waking the continent risks finishing the war it interrupted. Leaving it asleep is a mercy administered forever, to people who never consented to receive it, by something that has appointed itself the only judge of when their suffering would have ended.\n\nCorrupted-ranked things nest in the continent's furthest provinces, feeding on the parts of the sleep the keeper cannot quite maintain evenly. Ending this, one way or another, means going through the keeper itself.",
   choices:[
     { label:"Wake the continent. Let them finish what they started, on their own terms.", hint:"Willpower. You are ending a thousand years of managed peace on their behalf, not yours.",
-      check:{ stat:"willpower", dc:19, fatal:4, fatalKind:"nightmare",
+      check:{ stat:"willpower", dcSelf:true, dc:7, fatal:2, fatalKind:"nightmare",
         fatalText:"The keeper does not let go of a thousand years of curation without a fight, and it has had a thousand years to prepare for exactly this attempt.",
         fatalCause:"Killed waking the Quiet Continent." },
       success:{ text:"It takes everything you have and the better part of a season, but the sleep breaks in waves, province by province, and the war that stopped three days short of ending finally gets to finish — badly, in places, but on the terms of people who are awake enough to choose them.\n\nThe keeper does not survive its own unmaking gracefully. Nothing that has been that certain for that long does.", effects:{ stats:{ willpower:6, renown:12, vitality:-4 }, kill:{ rank:4, size:2 }, echo:"keeper", flags:{ add:["woke_the_continent"] }, goto:"tn_resolve" } },
-      failure:{ text:"You wake perhaps a third of it before the keeper puts a stop to the attempt, and what you leave behind is a continent half-asleep and half at war with itself, which may be worse than either whole state.", effects:{ stats:{ vitality:-8, willpower:2 }, goto:"tn_resolve" } } },
+      failure:{ effects:{ death:{ kind:"nightmare", text:"You woke a third of the Quiet Continent before the keeper stopped you. It put you to sleep with the rest, and you are still there." } } } },
     { label:"Argue the keeper into ending the sleep itself.", requires:{ flags:{ all:["heard_the_keeper"] } }, hint:"Cunning. It answers reason; give it a better reason than its own.",
-      check:{ stat:"cunning", dc:18, fatal:4, fatalKind:"nightmare",
+      check:{ stat:"cunning", dcSelf:true, dc:7, fatal:2, fatalKind:"nightmare",
         fatalText:"You give it a reason it has not heard before, and it considers the reason at length, and the length of its consideration is the last thing you experience.",
         fatalCause:"Considered, and found wanting, by the keeper of the Quiet Continent." },
       success:{ text:"You give it the one argument a thousand years alone never produced: that a mercy nobody consented to is not a mercy, it is a verdict, and a verdict administered forever by a single judge is the exact shape of the war it claims to have stopped.\n\nIt has an answer for everything except this. It ends the sleep itself, carefully, province by province, and asks — genuinely asks, for the first time in a millennium — what it should do next.", effects:{ stats:{ cunning:6, willpower:3, renown:10 }, flags:{ add:["convinced_the_keeper"] }, goto:"tn_resolve" } },
-      failure:{ text:"It hears you out fully and rules against you, and a Great-ranked thing that rules against you is not a debate you get to reopen. You leave with the continent exactly as you found it and considerably less of yourself than you arrived with.", effects:{ stats:{ vitality:-6, willpower:2 }, goto:"tn_resolve" } } },
+      failure:{ effects:{ death:{ kind:"nightmare", text:"Heard out, and ruled against, by the keeper of the Quiet Continent. A Great-ranked thing does not let a verdict be reopened." } } } },
     { label:"Kill it and leave the sleep exactly as it is. Someone else's mercy is not yours to end.", hint:"Vitality. Remove the keeper; leave the verdict standing.",
-      check:{ stat:"vitality", dc:18, fatal:4, fatalKind:"nightmare",
+      check:{ stat:"vitality", dcSelf:true, dc:7, fatal:2, fatalKind:"nightmare",
         fatalText:"You do not kill something that has been maintaining a continent-sized working alone for a thousand years by being faster than it.",
         fatalCause:"Killed attempting the keeper of the Quiet Continent." },
       success:{ text:"It takes the worst fight of your life to put down, and when it finally falls the continent does not wake — the sleep holds on its own momentum now, unmaintained, unmanaged, unchosen by anyone at all. Whether that is better than a keeper is a question you leave for whoever finds this place next.", effects:{ stats:{ vitality:-7, renown:8 }, kill:{ rank:4, size:2 }, goto:"tn_resolve" } },
-      failure:{ text:"You wound it badly and it wounds you worse, and it survives long enough to remember exactly what you tried to do to its thousand years of work.", effects:{ stats:{ vitality:-9 }, goto:"tn_resolve" } } },
-    { label:"Leave. A Seed can be abandoned; only conquest is once-in-a-life.",
-      effects:{ stats:{ willpower:-1, renown:-4 }, flags:{ add:["fled_third"] }, chapter:"ascended" } },
+      failure:{ effects:{ death:{ kind:"nightmare", text:"You wounded the keeper of the Quiet Continent badly. It wounded you worse, and it had a thousand years of practice at outlasting things." } } } },
   ]
 },
 

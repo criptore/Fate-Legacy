@@ -68,6 +68,23 @@
   /* Shown only once the Flaw exists: that is when the Aspect's stats apply. */
   function aspectGift(a) { const b = statBlock(a.stats); return b && S && S.flaw ? ` Grants: ${b}.` : ""; }
 
+  /* What a Memory or an Echo actually does (issue #8). Before this the Status
+     page listed name, rank and flavour only, and a tester could not tell
+     what owning one was for. The fight rules are in engine.js (checkAid). */
+  const MEMORY_USE = {
+    Weapon:  "+1 on dangerous checks (two Weapons at most)",
+    Armor:   "takes 2 Vitality off a failed check's damage",
+    Garment: "takes 2 Vitality off a failed check's damage",
+  };
+  function memoryEffect(id) {
+    const m = MEMORIES[id];
+    return [statBlock(m.stats), MEMORY_USE[m.type]].filter(Boolean).join(" · ");
+  }
+  function echoEffect(id) {
+    const e = ECHOES[id];
+    return [statBlock(e.stats), e.bound ? `binds ${e.bound} ESS` : ""].filter(Boolean).join(" · ");
+  }
+
   function renderPips(container, rankIndex) {
     let h = "";
     for (let i = 0; i < RANKS.length; i++) h += `<i class="${i <= rankIndex ? "on" : ""}"></i>`;
@@ -201,7 +218,9 @@
     if (out.rollInfo) {
       const r = out.rollInfo;
       const label = Engine.statDef(r.statId)?.short ?? r.statId;
-      parts.push(`<div class="choice-hint">${r.die} + ${label} ${r.stat} vs ${r.dc} — ${out.ok ? "success" : "failure"}</div>`);
+      const extra = (r.weapon ? ` + Weapon ${r.weapon}` : "") + (r.echoDie ? ` + Echo d${r.echoDie} (${r.echoRoll})` : "");
+      parts.push(`<div class="choice-hint">${r.die} + ${label} ${r.stat}${extra} vs ${r.dc} — ${out.ok ? "success" : "failure"}</div>`);
+      if (out.soaked) parts.push(`<div class="choice-hint">Armor took ${out.soaked} Vitality of it.</div>`);
     }
     if (out.text) parts.push(escape(out.text).replace(/\n/g, "<br>"));
     if (out.deltas.length) {
@@ -328,9 +347,11 @@
       ["Flaw", flaw ? `${flaw.name} — ${flaw.desc} ${flawCost(flaw)}.` : "Never paid for", "wide"],
       ["Lineage", lineage ? `${lineage.name}${lineage.divine ? " · divine" : ""} — ${lineage.desc}` : "—", "wide"],
       ["Memories", S.memories.length
-        ? S.memories.map(m => `${MEMORIES[m].name} (${MEMORIES[m].rank} ${MEMORIES[m].type})`).join(", ") : "None", "wide"],
+        ? S.memories.map(m => `${MEMORIES[m].name} (${MEMORIES[m].rank} ${MEMORIES[m].type}: ${memoryEffect(m)})`).join("; ") : "None", "wide"],
       ["Echoes", (S.echoes ?? []).length
-        ? S.echoes.map(e => `${ECHOES[e].name} (${ECHOES[e].rank})`).join(", ") : "None bound", "wide"],
+        ? S.echoes.map(e => `${ECHOES[e].name} (${ECHOES[e].rank}: ${echoEffect(e)})`).join("; ") : "None bound", "wide"]
+        .concat([]),
+      ...(S.echoesLost ? [["Echoes lost", `${S.echoesLost} died in your place`]] : []),
     ];
     el.endStats.innerHTML = tiles.map(([k, v, wide]) =>
       `<div class="stat-tile${wide ? " wide" : ""}"><b>${escape(k)}</b><span>${escape(String(v))}</span></div>`).join("");
@@ -369,11 +390,12 @@
     h += l ? line(l.name + (l.divine ? " (divine)" : ""), l.desc) : line("—", "None");
     if (S.echoes && S.echoes.length) {
       h += `<div class="sheet-section">Echoes</div>`;
-      for (const e of S.echoes) h += line(`${ECHOES[e].name} · ${ECHOES[e].rank}`, ECHOES[e].desc);
+      h += `<p class="sheet-note">An Echo fights beside you: +d4 on dangerous checks. If a check would kill you, your strongest Echo dies in your place instead.</p>`;
+      for (const e of S.echoes) h += line(`${ECHOES[e].name} · ${ECHOES[e].rank}`, `${ECHOES[e].desc} ${echoEffect(e)}.`);
     }
     if (S.memories.length) {
       h += `<div class="sheet-section">Memories</div>`;
-      for (const m of S.memories) h += line(`${MEMORIES[m].name} · ${MEMORIES[m].rank} ${MEMORIES[m].type}`, MEMORIES[m].desc);
+      for (const m of S.memories) h += line(`${MEMORIES[m].name} · ${MEMORIES[m].rank} ${MEMORIES[m].type}`, `${MEMORIES[m].desc} ${memoryEffect(m)}.`);
     }
     el.sheetBody.innerHTML = h;
     el.sheet.hidden = false;
@@ -429,7 +451,11 @@
       First Nightmare and the Spell adds a <b>Flaw</b>, its price: a permanent
       penalty to some runes, shaped by how you played. Tap the gold Aspect
       rune to read both.
-      Later you may gain Memories, Echoes, and more Soul Cores.</p>` },
+      Later you may gain Memories, Echoes, and more Soul Cores.</p>
+      <p><b>Memories</b> give permanent bonuses; a Weapon also helps on dangerous
+      checks and Armor softens a failed one. An <b>Echo</b> gives bonuses, fights
+      beside you (+d4 on dangerous checks), and dies in your place once if a
+      check would kill you. Status lists exactly what each one gives.</p>` },
     { title:"Status, saves, the end", body:() => `
       <p><b>Status</b> (bottom of the screen) opens your full Spell status page:
       Aspect, Flaw, Lineage, Memories, Echoes.</p>

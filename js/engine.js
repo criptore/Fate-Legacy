@@ -474,12 +474,77 @@ const Engine = (() => {
     return pool[pool.length - 1];
   }
 
+  /* ---------- Memories and Echoes in a fight ----------
+     Canon has Memories summoned and Echoes commanded in battle; until
+     v0.4.0 both were only permanent stat bonuses here (issue #9). Now:
+
+     - A Weapon Memory adds +1 to a dangerous check (cap +2).
+     - Armor and Garment Memories soak 2 Vitality off a failed check's
+       damage each (cap 4).
+     - A bound Echo fights beside you: one d4 on a dangerous check, however
+       many you hold (more Echoes do not mean more dice; it keeps a hoard
+       from turning every check into a formality).
+     - An Echo can die in your place: a fatal miss on a dangerous check
+       destroys your strongest Echo instead, and you take the ordinary
+       failure. The Echo's bonus is lost with it, and the Essence it was
+       made of is spent, not refunded.
+
+     "Dangerous" means a check that can kill and is a fight: Gates,
+     Nightmares, the Dream Realm, war. Personal trials (`dcSelf`) take
+     none of this: they are measured against you alone, which is also what
+     keeps the Fourth and Fifth Nightmares the spike they are meant to be.
+     All numbers are ours. */
+  const COMBAT_KINDS = ["gate", "nightmare", "dream_realm", "war", "chain"];
+
+  function isCombat(c) {
+    return !!(c.check && c.check.fatal != null && !c.check.dcSelf &&
+      COMBAT_KINDS.includes(c.check.fatalKind ?? "killed"));
+  }
+
+  function countMemories(s, types) {
+    return s.memories.filter(m => types.includes(MEMORIES[m]?.type)).length;
+  }
+
+  function weaponBonus(s) { return Math.min(2, countMemories(s, ["Weapon"])); }
+  function armorSoak(s)   { return Math.min(4, 2 * countMemories(s, ["Armor", "Garment"])); }
+
+  /* What a check would add before the die is rolled. The simulator and the
+     UI hint read this too, so it has to stay deterministic: the Echo die is
+     reported as a die, not rolled. */
+  function checkAid(s, c) {
+    if (!isCombat(c)) return { weapon: 0, echoDie: 0 };
+    return { weapon: weaponBonus(s), echoDie: (s.echoes?.length ?? 0) > 0 ? 4 : 0 };
+  }
+
+  function strongestEcho(s) {
+    return [...(s.echoes ?? [])].sort((a, b) => (ECHOES[b].bound ?? 0) - (ECHOES[a].bound ?? 0))[0];
+  }
+
+  function loseEcho(s, id, deltas) {
+    s.echoes = s.echoes.filter(e => e !== id);
+    const neg = Object.fromEntries(Object.entries(ECHOES[id].stats ?? {}).map(([k, v]) => [k, -v]));
+    applyStatBlock(s, neg, deltas);
+    s.echoesLost = (s.echoesLost ?? 0) + 1;
+  }
+
+  /* A failure branch's Vitality loss, after armor. Never turns a loss into a
+     gain, and never touches the check's own deaths. */
+  function soaked(s, fx) {
+    const soak = armorSoak(s);
+    const v = fx?.stats?.vitality;
+    if (!soak || v == null || v >= 0) return { fx, soak: 0 };
+    const nv = Math.min(0, v + soak);
+    return { fx: { ...fx, stats: { ...fx.stats, vitality: nv } }, soak: nv - v };
+  }
+
   /* ---------- resolving a choice ---------- */
   function choose(s, ev, index) {
     const c = ev.choices[index];
     const out = { text: null, ok: null, deltas: [] };
 
     if (c.check) {
+      const aid = checkAid(s, c);
+      const echoRoll = aid.echoDie ? roll(aid.echoDie) : 0;
       const r = roll(10);
       const stat = s.stats[c.check.stat] ?? 0;
       /* Recurring duties scale with rank: a Master is not sent to the Gates an
@@ -501,21 +566,32 @@ const Engine = (() => {
       const dc = c.check.dcSelf
         ? (s.stats[c.check.stat] ?? 0) + c.check.dc
         : c.check.dc + (c.check.dcScale ?? 0) * s.rank + (c.check.dcEra ?? 0) * era;
-      const margin = (r + stat) - dc;
+      const margin = (r + stat + aid.weapon + echoRoll) - dc;
       out.ok = margin >= 0;
-      out.rollInfo = { die: r, stat, dc, statId: c.check.stat, margin };
+      out.rollInfo = { die: r, stat, dc, statId: c.check.stat, margin,
+                       weapon: aid.weapon, echoDie: aid.echoDie, echoRoll };
 
       // A catastrophic miss is fatal. This is where the game's lethality lives.
       if (!out.ok && c.check.fatal != null && margin <= -c.check.fatal) {
-        out.fatal = true;
-        out.text = c.check.fatalText ?? "It goes as badly as it can go.";
-        kill(s, c.check.fatalCause ?? out.text, c.check.fatalKind ?? "killed");
-        return out;
+        const shield = isCombat(c) ? strongestEcho(s) : null;
+        if (!shield) {
+          out.fatal = true;
+          out.text = c.check.fatalText ?? "It goes as badly as it can go.";
+          kill(s, c.check.fatalCause ?? out.text, c.check.fatalKind ?? "killed");
+          return out;
+        }
+        out.echoLost = shield;
+        loseEcho(s, shield, out.deltas);
       }
       const branch = out.ok ? c.success : c.failure;
       if (branch) {
+        let fx = branch.effects;
+        if (!out.ok) { const a = soaked(s, fx); fx = a.fx; out.soaked = a.soak; }
         out.text = branch.text ?? null;
-        out.deltas.push(...applyEffects(s, branch.effects));
+        if (out.echoLost) out.text = `${ECHOES[out.echoLost].name} steps into what was meant for you, and is unmade.` + (out.text ? `\n\n${out.text}` : "");
+        out.deltas.push(...applyEffects(s, fx));
+      } else if (out.echoLost) {
+        out.text = `${ECHOES[out.echoLost].name} steps into what was meant for you, and is unmade.`;
       }
     }
     out.deltas.push(...applyEffects(s, c.effects));
@@ -526,6 +602,7 @@ const Engine = (() => {
 
   return {
     newRun, draw, choose, choiceAvailable, applyEffects, harvest, ORIGINS: () => ORIGINS,
+    checkAid, isCombat, weaponBonus, armorSoak,
     soulClass: s => CLASSES[s.soulClass ?? 0],
     maxClassFor,
     rank, years, lifeRemaining, lifespanYears, statDef, shown, eventText,
