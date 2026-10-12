@@ -165,6 +165,11 @@ const Engine = (() => {
     if (req.flaw && (!s.flaw || !req.flaw.includes(s.flaw))) return false;
     if (req.lineage && (!s.lineage || !req.lineage.includes(s.lineage))) return false;
     if (req.aspectRank && !req.aspectRank.includes(s.aspectRank)) return false;
+    if (req.org) {
+      const n = orgSize(s);
+      if (req.org.min != null && n < req.org.min) return false;
+      if (req.org.max != null && n > req.org.max) return false;
+    }
     if (req.soulClass) {
       const c = s.soulClass ?? 0;
       if (req.soulClass.min != null && c < req.soulClass.min) return false;
@@ -292,6 +297,7 @@ const Engine = (() => {
       s.stats.essence = clampStat("essence", s.stats.essence - (e.bound ?? 0), s);
       deltas.push({ id:"essence", d:-(e.bound ?? 0) });
     }
+    if (fx.org) applyOrg(s, fx.org);
     if (fx.awardFlaw) awardFlaw(s, deltas);
     /* Canon: "First Nightmares are unique because each of them is tailored
        individually" — so a fresh scenario is drawn every run, and the same is
@@ -340,6 +346,45 @@ const Engine = (() => {
     for (const [id, d] of Object.entries(block ?? {})) {
       s.stats[id] = clampStat(id, (s.stats[id] ?? 0) + d, s);
       if (deltas) deltas.push({ id, d });
+    }
+  }
+
+  /* ---------- your organization (issue #10) ----------
+     Canon gives the templates: an Awakened company like the First
+     Evacuation Army's Irregulars, a Saint's own order and Citadel like the
+     Lord of Shadows', a lesser clan's stronghold that grew into Ravenheart.
+     It also gives the threat: "The great clans have been suppressing the
+     Transcendence of independent Awakened for decades" (ch. 1229).
+     The organization itself, its name and every number are ours.
+
+     `org:{ found:"company" }` starts one if you have none; `kind` upgrades
+     it as you climb; `grow:n` changes its size (members, in rough hundreds).
+     At size 0 it is gone, and stays gone. */
+  const ORG_KINDS = ["company", "order", "refuge"];
+  const ORG_NAMES = [
+    "the Lantern Company", "the Second Watch", "the Salt Road Company", "the Long Night Watch",
+    "the Hollow Bell", "the Grey Banner", "the Ninth Gate Company", "the Quiet Hand",
+    "the Ash Road", "the Unslept",
+  ];
+  function orgSize(s) { return s.org && !s.org.gone ? s.org.size : 0; }
+
+  function applyOrg(s, o) {
+    if (!s.org && o.found) {
+      s.org = { name: pickRandom(ORG_NAMES), kind: o.found, size: 1, peak: 1, founded: years(s) };
+      if (!s.flags.includes("has_org")) s.flags.push("has_org");
+    }
+    if (!s.org || s.org.gone) return;
+    if (o.kind && ORG_KINDS.indexOf(o.kind) > ORG_KINDS.indexOf(s.org.kind)) s.org.kind = o.kind;
+    if (o.grow) {
+      s.org.size = Math.max(0, Math.min(12, s.org.size + o.grow));
+      s.org.peak = Math.max(s.org.peak, s.org.size);
+      if (s.org.peak >= 6 && !s.flags.includes("great_order")) s.flags.push("great_order");
+    }
+    if (o.sworn) s.org.sworn = o.sworn;
+    if (s.org.size === 0) {
+      s.org.gone = true;
+      s.flags = s.flags.filter(f => f !== "has_org");
+      if (!s.flags.includes("org_gone")) s.flags.push("org_gone");
     }
   }
 
@@ -603,7 +648,7 @@ const Engine = (() => {
 
   return {
     newRun, draw, choose, choiceAvailable, applyEffects, harvest, ORIGINS: () => ORIGINS,
-    checkAid, isCombat, weaponBonus, armorSoak,
+    checkAid, isCombat, weaponBonus, armorSoak, orgSize,
     soulClass: s => CLASSES[s.soulClass ?? 0],
     maxClassFor,
     rank, years, lifeRemaining, lifespanYears, statDef, shown, eventText,

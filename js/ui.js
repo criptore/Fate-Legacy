@@ -80,6 +80,24 @@
     const m = MEMORIES[id];
     return [statBlock(m.stats), MEMORY_USE[m.type]].filter(Boolean).join(" · ");
   }
+  /* Your organization (issue #10), on the Status page and, with what became
+     of it, on the end screen. */
+  const ORG_KIND = { company:"a company of Awakened", order:"an order", refuge:"a landing zone in the Dream Realm" };
+  function orgLine(o) {
+    if (!o) return "";
+    if (o.gone) return `${o.name}, ${ORG_KIND[o.kind]}. Gone.`;
+    return `${o.name}, ${ORG_KIND[o.kind]} · about ${(o.size * 100).toLocaleString()} people` +
+      (o.sworn ? " · sworn to a Great Clan" : " · independent");
+  }
+  function orgEpilogue(o) {
+    if (!o) return "";
+    if (o.gone) return `${o.name} did not outlive you. It was gone before you were.`;
+    if (o.sworn) return `${o.name} was folded into the clan it swore to within a generation. Its banner still hangs in their hall, under theirs.`;
+    if (o.kind === "refuge") return `${o.name} outlived you. People who never learned your name were still landing there centuries later.`;
+    if (o.size >= 6) return `${o.name} outlived you by centuries, and argued about what you would have wanted for every one of them.`;
+    if (o.size >= 3) return `${o.name} held together for about a generation without you, then split three ways.`;
+    return `${o.name} lasted a few years after you, then its last members joined other companies.`;
+  }
   function echoEffect(id) {
     const e = ECHOES[id];
     return [statBlock(e.stats), e.bound ? `binds ${e.bound} ESS` : ""].filter(Boolean).join(" · ");
@@ -305,6 +323,7 @@
       `- Origin: ${origin ? origin.name : "—"}`,
       `- Aspect / Flaw: ${aspect ? aspect.name : "—"}${S.aspectRank ? ` (${S.aspectRank} rank)` : ""} / ${flaw ? flaw.name : "—"}`,
       `- Lineage: ${lineage ? lineage.name : "—"}`,
+      ...(S.org ? [`- Organization: ${orgLine(S.org)}`] : []),
       `- Class: ${Engine.soulClass(S).name} (${Engine.soulClass(S).cores} cores), ${Math.round(S.fragments ?? 0)} fragments`,
       `- Echoes: ${(S.echoes ?? []).map(e => ECHOES[e].name).join(", ") || "none"}`,
       `- Decisions made: ${S.eventCount ?? S.history.length}`,
@@ -356,6 +375,7 @@
         ? S.echoes.map(e => `${ECHOES[e].name} (${ECHOES[e].rank}: ${echoEffect(e)})`).join("; ") : "None bound", "wide"]
         .concat([]),
       ...(S.echoesLost ? [["Echoes lost", `${S.echoesLost} died in your place`]] : []),
+      ...(S.org ? [["Your organization", orgEpilogue(S.org), "wide"]] : []),
     ];
     el.endStats.innerHTML = tiles.map(([k, v, wide]) =>
       `<div class="stat-tile${wide ? " wide" : ""}"><b>${escape(k)}</b><span>${escape(String(v))}</span></div>`).join("");
@@ -392,6 +412,10 @@
     const l = S.lineage && LINEAGES.find(x => x.id === S.lineage);
     h += `<div class="sheet-section">Lineage</div>`;
     h += l ? line(l.name + (l.divine ? " (divine)" : ""), l.desc) : line("—", "None");
+    if (S.org) {
+      h += `<div class="sheet-section">Your organization</div>`;
+      h += line(S.org.name, orgLine(S.org));
+    }
     if (S.echoes && S.echoes.length) {
       h += `<div class="sheet-section">Echoes</div>`;
       h += `<p class="sheet-note">An Echo fights beside you: +d4 on dangerous checks. If a check would kill you, your strongest Echo dies in your place instead.</p>`;
