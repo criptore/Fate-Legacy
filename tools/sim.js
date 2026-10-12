@@ -44,7 +44,7 @@ function score(s,c){
 }
 // policy: random | skilled | climber  (see score() for the difference)
 const POL=process.argv[2]||"skilled", ORIGIN=process.argv[3]||"citadel", N=+(process.argv[4]||6000);
-const ranks={},died={},kinds={},ages=[],ev=[];
+const ranks={},died={},kinds={},ages=[],ev=[];let weaver=0;
 for(let i=0;i<N;i++){
   const s=Engine.newRun(ORIGIN);let g=0;
   while(!s.dead&&g++<4000){
@@ -58,10 +58,11 @@ for(let i=0;i<N;i++){
   }
   ranks[Engine.rank(s).common]=(ranks[Engine.rank(s).common]||0)+1;
   died[s.diedIn]=(died[s.diedIn]||0)+1;kinds[s.causeKind]=(kinds[s.causeKind]||0)+1;
-  ages.push(Engine.years(s));ev.push(s.eventCount);
+  ages.push(Engine.years(s));ev.push(s.eventCount);if(s.lineage==="weaver")weaver++;
 }
 const pc=v=>(v/N*100).toFixed(2)+"%";
 const med=a=>[...a].sort((x,y)=>x-y)[Math.floor(N/2)];
 console.log(`policy=${POL} origin=${ORIGIN} n=${N}  age median=${med(ages)} max=${Math.max(...ages)}  events median=${med(ev)}`);
 console.log("  furthest:", RANKS.filter(r=>ranks[r.common]).map(r=>`${r.common} ${pc(ranks[r.common])}`).join("  "));
 console.log("  cause   :", Object.entries(kinds).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k} ${pc(v)}`).join("  "));
+console.log("  weaver  :", (weaver/N*100).toFixed(3)+"%", "(the only lineage gained in play, via ev_weave)");

@@ -64,6 +64,8 @@ for (const e of EVENTS) {
     }
     for (const fx of [c.effects, c.success?.effects, c.failure?.effects])
       if (fx?.memory && !MEMORIES[fx.memory]) P("ERROR", e.id, `choice ${i} awards unknown memory "${fx.memory}"`);
+    for (const fx of [c.effects, c.success?.effects, c.failure?.effects])
+      if (fx?.lineage && !ctx.LINEAGES.some(l => l.id === fx.lineage)) P("ERROR", e.id, `choice ${i} grants unknown lineage "${fx.lineage}"`);
   });
 }
 

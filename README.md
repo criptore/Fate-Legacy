@@ -45,9 +45,9 @@ home screen and the in-game toolbar.
 ## Features
 
 - The full Soul Rank ladder, from Aspirant to Divine
-- 3 Origins, 14 Aspects, 14 Flaws and 6 Lineages (including the War, Beast
-  and Storm God lineages of the novel's Great Clans), for thousands of
-  possible characters
+- 3 Origins, 14 Aspects, 14 Flaws and 10 Lineages, including all seven
+  divine lineages of the novel (the Weaver's can only be gained in play, and
+  is the rarest), for thousands of possible characters
 - Choices that only appear for your own Aspect or Flaw
 - 11 hand-written Nightmares and 4 solstice regions, all original and built
   inside the novel's rules
