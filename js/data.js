@@ -1000,8 +1000,13 @@ const EVENTS = [
   ]
 },
 {
-  id:"aw_second", chapter:"awakened", weight:26, once:true, days:90,
-  requires:{ stats:{ willpower:{ min:14 }, essence:{ min:10 } } },
+  /* Not `once`: "Not yet. There will be other Seeds." has to be true, or a
+     player who waits is stranded at Awakened with only Gate duty left (a
+     tester reported exactly that as an endless loop). The cooldown spaces
+     the Seeds out; "Never" is the only permanent refusal. Conquering moves
+     you out of the awakened chapter, so it cannot re-offer after that. */
+  id:"aw_second", chapter:"awakened", weight:26, cooldown:150, days:90,
+  requires:{ stats:{ willpower:{ min:14 }, essence:{ min:10 } }, flags:{ none:["declined_second"] } },
   title:"A Seed Is Growing",
   text:"Word comes through the clans first and everyone else about a week later: a Seed of Nightmare is maturing in the Dream Realm, and while it grows, anyone may challenge it.\n\nThe Second Nightmare is not tailored to you. It is bigger, longer and harder than the first, populated by Creatures of the Awakened and Fallen ranks, and the unlucky meet something Corrupted. Conquering it makes you a Master — three hundred years, another Aspect Ability, and a place in a category of person that most Awakened only ever see from a distance.\n\nAnd you may only ever do it once. Conquer a Nightmare of a given Rank and no Seed of that Rank will ever open to you again.",
   choices:[
@@ -1128,8 +1133,6 @@ const EVENTS = [
         fatalCause:"Killed trying to burn the Iron Orchard." },
       success:{ text:"It takes eleven days and it works, in the end, because everything works in the end if you are willing to still be standing there.", effects:{ stats:{ vitality:-6, willpower:4, renown:4 }, kill:{ rank:2, size:1 }, goto:"sn_resolve" } },
       failure:{ text:"It half-burns. Half is enough for the Nightmare to lose coherence, and not enough for anyone to call it conquered cleanly.\n\nYou are eleven days in the smoke and you come out of it with your lungs ruined and a hand you will never fully close again.", effects:{ stats:{ vitality:-8 }, goto:"sn_resolve" } } },
-    { label:"Leave. A Seed can be abandoned; only conquest is once-in-a-life.",
-      effects:{ stats:{ willpower:-1, renown:-3 }, flags:{ add:["fled_second"] }, chapter:"awakened" } },
   ]
 },
 {
@@ -1209,7 +1212,8 @@ const EVENTS = [
   ]
 },
 {
-  id:"ms_third", chapter:"ascended", weight:24, once:true, days:250,
+  /* Same reasoning as aw_second: "Wait for a better Seed" must lead to one. */
+  id:"ms_third", chapter:"ascended", weight:24, cooldown:150, days:250,
   requires:{ stats:{ willpower:{ min:24 }, essence:{ min:20 } }, flags:{ none:["clan_owned"] } },
   title:"A Third Seed",
   text:"There are a few dozen Saints in the world. That is the whole population, across every clan and citadel and quadrant, and each of them is a force that reshapes the map around wherever they happen to stand.\n\nA Third Seed is maturing. Conquer it and you are Transcendent — nine hundred years, a Transformation, and a place on a list short enough to memorise.\n\nAlmost everyone who tries this is already the best Master anyone has ever seen, and most of them do not come back.",
@@ -1684,8 +1688,6 @@ const EVENTS = [
         fatalCause:"Overrun at the bench of the Uncounted Debts." },
       success:{ text:"It takes every bailiff the court can field and the better part of a day, but you reach the seat and put your hand on the founding page before anything can stop you, and the courthouse folds without ever managing a final ruling.", effects:{ stats:{ vitality:-6, renown:6 }, kill:{ rank:2, size:1 }, goto:"sn_resolve" } },
       failure:{ text:"You reach the bench. You do not reach the page. What is left of you is escorted from the gallery and the docket, absurdly, is marked settled in full.", effects:{ stats:{ vitality:-8 }, goto:"sn_resolve" } } },
-    { label:"Leave. A Seed can be abandoned; only conquest is once-in-a-life.",
-      effects:{ stats:{ willpower:-1, renown:-3 }, flags:{ add:["fled_second"] }, chapter:"awakened" } },
   ]
 },
 

@@ -128,23 +128,27 @@ policies, because they answer three different questions:
   rank ceiling; `skilled` is not, because optimal survival means not climbing.
 
 ```
-random  play, 8000 runs   furthest rank: Sleeper 30.2%  Awakened 61.3%
-                                         Master 7.9%  Saint 0.7%
-        cause: gate 62.5%  nightmare 22.5%  dream realm 8.7%  age 1.5%
+random  play, 8000 runs   furthest rank: Sleeper 31.5%  Awakened 55.3%
+                                         Master 11.6%  Saint 1.5%
+        cause: gate 59.5%  nightmare 25.2%  dream realm 8.3%  age 1.5%
 
-skilled play, 8000 runs   furthest rank: Sleeper 1.6%  Awakened 10.3%
-                                         Master 50.0%  Saint 38.2%
-        cause: gate 47.2%  age 30.4%  wounds 10.0%  nightmare 3.6%
+skilled play, 8000 runs   furthest rank: Sleeper 1.6%  Awakened 4.6%
+                                         Master 53.5%  Saint 40.4%
+        cause: gate 50.2%  age 25.2%  wounds 9.0%  nightmare 6.2%
 
-climber play, 8000 runs   furthest rank: Sleeper 1.7%  Awakened 11.0%
-                                         Master 50.0%  Saint 31.1%
-                                         Sovereign 5.7%  Sacred 0.5%
-        cause: gate 47.0%  nightmare 29.3%  age 13.0%  chain 1.1%
+climber play, 8000 runs   furthest rank: Sleeper 1.6%  Awakened 4.0%
+                                         Master 53.8%  Saint 34.1%
+                                         Sovereign 5.9%  Sacred 0.7%
+        cause: gate 50.5%  nightmare 34.5%  age 4.0%  chain 1.0%
 ```
 
-Reaching Master by origin, random play: clan 11.0%, citadel 7.2%, outskirts 4.7%.
+(Citadel origin. Measured after the Second/Third Seed offers stopped being
+one-shot — before that, answering "Not yet" stranded a life at its rank for
+good, which is most of why `skilled` used to end 10% of lives at Awakened.)
 
-**On `skilled`'s 30% age deaths.** The two design rules above say almost
+Reaching Master or higher by origin, random play: clan 21.1%, citadel 13.2%, outskirts 8.5%.
+
+**On `skilled`'s 25% age deaths.** The two design rules above say almost
 nobody dies of old age, and under `random` play that holds (1.5%). Under
 `skilled` it does not, and the reason is worth stating plainly: once the
 personal trials are priced correctly, conquering a Nightmare is a bad bet, so
