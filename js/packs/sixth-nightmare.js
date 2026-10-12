@@ -118,6 +118,8 @@ Pack.add({
   ],
 
   patch() {
+    /* The end screen's headline for the Divine ending. */
+    Hooks.on("endTitle", (title, S) => S.causeKind === "woven" ? "Woven Into The Law" : title);
     /* Divine is the most impressive thing a life can do, so its achievement
        goes first on the end screen (ACHIEVEMENTS is shown in key order). */
     const rest = Object.entries(ACHIEVEMENTS).filter(([k]) => k !== "divine");
