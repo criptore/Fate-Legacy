@@ -71,10 +71,11 @@
   /* What a Memory or an Echo actually does (issue #8). Before this the Status
      page listed name, rank and flavour only, and a tester could not tell
      what owning one was for. The fight rules are in engine.js (checkAid). */
+  const A = Engine.AID;
   const MEMORY_USE = {
-    Weapon:  "+1 on dangerous checks (two Weapons at most)",
-    Armor:   "takes 2 Vitality off a failed check's damage",
-    Garment: "takes 2 Vitality off a failed check's damage",
+    Weapon:  `+${A.weaponEach} on dangerous checks (up to +${A.weaponCap})`,
+    Armor:   `takes ${A.soakEach} Vitality off a failed fight's damage`,
+    Garment: `takes ${A.soakEach} Vitality off a failed fight's damage`,
   };
   function memoryEffect(id) {
     const m = MEMORIES[id];
@@ -225,7 +226,9 @@
       /* A choice written for one Aspect or Flaw is hidden from everyone else,
          not greyed out: there are fourteen of each, and a wall of other
          people's options would bury the ones that are yours. */
-      if (!ok && (c.requires?.aspect || c.requires?.flaw)) return;
+      const notMine = (c.requires?.aspect && !c.requires.aspect.includes(S.aspect)) ||
+                      (c.requires?.flaw && !c.requires.flaw.includes(S.flaw));
+      if (notMine) return;
       const b = document.createElement("button");
       b.className = "btn";
       b.disabled = !ok;
@@ -378,8 +381,7 @@
       ["Memories", S.memories.length
         ? S.memories.map(m => `${MEMORIES[m].name} (${MEMORIES[m].rank} ${MEMORIES[m].type}: ${memoryEffect(m)})`).join("; ") : "None", "wide"],
       ["Echoes", (S.echoes ?? []).length
-        ? S.echoes.map(e => `${ECHOES[e].name} (${ECHOES[e].rank}: ${echoEffect(e)})`).join("; ") : "None bound", "wide"]
-        .concat([]),
+        ? S.echoes.map(e => `${ECHOES[e].name} (${ECHOES[e].rank}: ${echoEffect(e)})`).join("; ") : "None bound", "wide"],
       ...(S.echoesLost ? [["Echoes lost", `${S.echoesLost} died in your place`]] : []),
       ...(S.org ? [["Your organization", orgEpilogue(S.org), "wide"]] : []),
     ];
@@ -424,7 +426,7 @@
     }
     if (S.echoes && S.echoes.length) {
       h += `<div class="sheet-section">Echoes</div>`;
-      h += `<p class="sheet-note">An Echo fights beside you: +d4 on dangerous checks. If a check would kill you, your strongest Echo dies in your place instead.</p>`;
+      h += `<p class="sheet-note">An Echo fights beside you: +d${A.echoDie} on dangerous checks. If a fight would kill you, your strongest Echo dies in your place instead.</p>`;
       for (const e of S.echoes) h += line(`${ECHOES[e].name} · ${ECHOES[e].rank}`, `${ECHOES[e].desc} ${echoEffect(e)}.`);
     }
     if (S.memories.length) {
@@ -486,10 +488,10 @@
       penalty to some runes, shaped by how you played. Tap the gold Aspect
       rune to read both.
       Later you may gain Memories, Echoes, and more Soul Cores.</p>
-      <p><b>Memories</b> give permanent bonuses; a Weapon also helps on dangerous
-      checks and Armor softens a failed one. An <b>Echo</b> gives bonuses, fights
-      beside you (+d4 on dangerous checks), and dies in your place once if a
-      check would kill you. Status lists exactly what each one gives.</p>` },
+      <p><b>Memories</b> give permanent bonuses; in a fight a Weapon also helps
+      your roll and Armor softens a failed one. An <b>Echo</b> gives bonuses,
+      fights beside you (+d${Engine.AID.echoDie} in a fight), and dies in your place once if
+      a fight would kill you. Status lists exactly what each one gives.</p>` },
     { title:"Status, saves, the end", body:() => `
       <p><b>Status</b> (bottom of the screen) opens your full Spell status page:
       Aspect, Flaw, Lineage, Memories, Echoes.</p>
@@ -564,7 +566,7 @@
   }
 
   function resume(state) {
-    S = state;
+    S = Engine.migrate(state);
     show("game");
     const ev = S.current && Engine.eventById(S.current);
     if (ev) renderEvent(ev); else step();
