@@ -23,6 +23,8 @@
      sheet(S) -> html[]             appended to the Status page
      endTiles(S) -> [k, v, wide][]  extra end-screen tiles
      endExtra(S) -> Element[]       below the end-screen tiles
+     endTitle(title, S) -> title    the end screen's headline (e.g. for a new
+                                    death kind added by a pack)
      home(container)                the home screen, on boot
    ============================================================= */
 const Hooks = (() => {
