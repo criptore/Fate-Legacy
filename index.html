@@ -43,8 +43,8 @@
 <meta name="description" content="A narrative life-sim in a world of Nightmares. Awaken, survive your trials, and climb the Soul Ranks — if your lifespan lets you." />
 <meta name="theme-color" content="#0a0a0f" />
 <link rel="icon" href="data:," />
-<link rel="stylesheet" href="css/tokens.css?v=0.3.0" />
-<link rel="stylesheet" href="css/main.css?v=0.3.0" />
+<link rel="stylesheet" href="css/tokens.css?v=0.3.1" />
+<link rel="stylesheet" href="css/main.css?v=0.3.1" />
 </head>
 <body>
 <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle day mode" title="Toggle day mode">☾</button>
@@ -57,6 +57,7 @@
       <div class="stack">
         <button class="btn btn-primary" id="btn-continue" hidden>Continue</button>
         <button class="btn" id="btn-new">New Life</button>
+        <button class="btn btn-ghost btn-guide" id="btn-guide-home" type="button">How to play</button>
       </div>
       <p class="fineprint" id="home-save-info"></p>
     </div>
@@ -105,6 +106,7 @@
 
     <footer class="toolbar">
       <button class="btn btn-ghost" id="btn-sheet">Status</button>
+      <button class="btn btn-ghost" id="btn-guide-game" type="button">Guide</button>
       <button class="btn btn-ghost" id="btn-quit">Abandon</button>
     </footer>
   </section>
@@ -147,12 +149,29 @@
       <button class="btn" id="btn-sheet-close">Close</button>
     </div>
   </div>
+
+  <!-- GUIDE: shown once on first launch, reopenable from Home / the toolbar.
+       Pages are built in ui.js from STATS/RANKS, so they never drift from
+       the actual numbers. -->
+  <div class="sheet-backdrop" id="guide" hidden>
+    <div class="sheet guide" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <h3 id="guide-step"></h3>
+      <h2 class="guide-title" id="guide-title"></h2>
+      <div class="guide-body" id="guide-body"></div>
+      <div class="guide-dots" id="guide-dots"></div>
+      <div class="guide-nav">
+        <button class="btn btn-ghost" id="guide-skip" type="button">Skip</button>
+        <button class="btn btn-ghost" id="guide-back" type="button">Back</button>
+        <button class="btn btn-primary" id="guide-next" type="button">Next</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<script src="js/data.js?v=0.3.0"></script>
-<script src="js/save.js?v=0.3.0"></script>
-<script src="js/engine.js?v=0.3.0"></script>
-<script src="js/ui.js?v=0.3.0"></script>
+<script src="js/data.js?v=0.3.1"></script>
+<script src="js/save.js?v=0.3.1"></script>
+<script src="js/engine.js?v=0.3.1"></script>
+<script src="js/ui.js?v=0.3.1"></script>
 <script>
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });

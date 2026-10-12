@@ -20,6 +20,8 @@
     endAchv:$("end-achv"), endStats:$("end-stats"),
     linkBug:$("link-bug"), linkFeedback:$("link-feedback"),
     themeToggle:$("theme-toggle"),
+    guide:$("guide"), guideStep:$("guide-step"), guideTitle:$("guide-title"), guideBody:$("guide-body"),
+    guideDots:$("guide-dots"), guideSkip:$("guide-skip"), guideBack:$("guide-back"), guideNext:$("guide-next"),
   };
 
   const REPO_URL = "https://github.com/criptore/Fate-Legacy";
@@ -319,6 +321,106 @@
     el.sheet.hidden = false;
   }
 
+  /* ---------- guide ----------
+     First-launch primer, asked for in player feedback: the stat system was
+     liked but hard to read. Shown once (flag kept outside the save, like the
+     theme, so finishing or abandoning a life never re-triggers it) and
+     reopenable from Home and the in-game toolbar. Stat and rank text is
+     generated from STATS/RANKS so the guide cannot drift from the data. */
+  const GUIDE_KEY = "fatelegacy.guideSeen";
+  const GUIDE = [
+    { title:"The Spell chose you", body:() => `
+      <p>You have been infected by the Nightmare Spell. Until you survive your
+      <b>First Nightmare</b> you are only an <em>Aspirant</em>.</p>
+      <p>Each game is <b>one life</b>. Survive, Awaken, and climb the
+      <b>Soul Ranks</b> for as long as you can — most lives end early, and
+      that is part of the story.</p>
+      <p>Your <b>Origin</b> is the difficulty setting: the Outskirts are hard,
+      a Great Clan is gentle.</p>` },
+    { title:"Choices and rolls", body:() => `
+      <p>Every event offers choices. Some are plain decisions; others are
+      <b>checks</b>, and the small line under the choice names the attribute
+      it leans on.</p>
+      <p class="guide-formula">d10 &nbsp;+&nbsp; attribute &nbsp;≥&nbsp; difficulty</p>
+      <p>The result shows the exact roll, e.g. <span class="guide-code">7 + WIL 6 vs 12 — success</span>.
+      Missing <b>badly</b> on a dangerous check can kill you outright.</p>
+      <p>Greyed-out choices need something you don't have yet. Difficulty rises
+      with your rank <i>and</i> with the years you've lived — staying put is
+      never perfectly safe.</p>` },
+    { title:"Your runes", body:() => `
+      <p>Your attributes, as the Spell writes them. Higher is better; changes
+      appear in green or red after each choice.</p>
+      <div class="guide-runes">${STATS.map(d => `
+        <div class="guide-rune">
+          <span class="rune"><span class="rune-glyph">${GLYPH[d.id] ?? "●"}</span><span class="rune-label">${escape(d.short)}</span></span>
+          <span><b>${escape(d.name)}</b>${d.hud ? "" : ` <span class="guide-tag">More runes</span>`}<br>${escape(d.desc)}</span>
+        </div>`).join("")}
+      </div>
+      <p class="guide-note">Runes tagged <i>More runes</i> sit behind <b>More runes ▾</b> under the HUD.
+      Hover a rune (or open Status) to see its meaning again.</p>` },
+    { title:"Rank, lifespan, Aspect", body:() => `
+      <p>The <b>badge</b> top-left is your Soul Rank, the dots its place on the
+      ladder: ${RANKS.map(r => escape(r.common)).join(" → ")}.</p>
+      <p>The thin <b>bar</b> under it is your remaining lifespan. Each rank lives
+      far longer — but years pass faster the higher you climb, and your
+      <b>Tether</b> to the waking world thins.</p>
+      <p>Survive the First Nightmare and the Spell grants an <b>Aspect</b>
+      (your power) and a <b>Flaw</b> (its price), shaped by how you played it.
+      Later you may gain Memories, Echoes, and more Soul Cores.</p>` },
+    { title:"Status, saves, the end", body:() => `
+      <p><b>Status</b> (bottom of the screen) opens your full Spell status page:
+      Aspect, Flaw, Lineage, Memories, Echoes.</p>
+      <p>The game <b>saves automatically</b> after every choice — close the tab
+      and <i>Continue</i> from the home screen.</p>
+      <p>When the life ends you'll see how far you got, what you achieved, and
+      links to report a bug or leave feedback. Then begin again: every life
+      draws a different Nightmare, Aspect and fate.</p>
+      <p class="guide-note">This guide is always available from <b>Guide</b> in the
+      toolbar or <b>How to play</b> on the home screen.</p>` },
+  ];
+  let guidePage = 0;
+
+  function renderGuide() {
+    const p = GUIDE[guidePage], last = guidePage === GUIDE.length - 1;
+    el.guideStep.textContent = `How to play · ${guidePage + 1} / ${GUIDE.length}`;
+    el.guideTitle.textContent = p.title;
+    el.guideBody.innerHTML = p.body();
+    el.guideDots.innerHTML = GUIDE.map((_, i) => `<i class="${i === guidePage ? "on" : ""}"></i>`).join("");
+    el.guideBack.hidden = guidePage === 0;
+    el.guideSkip.hidden = last;
+    el.guideNext.textContent = last ? "Begin" : "Next";
+    el.guideBody.scrollTop = 0;
+    el.guide.querySelector(".sheet").scrollTop = 0;
+  }
+
+  function openGuide() {
+    guidePage = 0;
+    renderGuide();
+    el.guide.hidden = false;
+    el.guideNext.focus();
+  }
+
+  function closeGuide() {
+    el.guide.hidden = true;
+    try { localStorage.setItem(GUIDE_KEY, "1"); } catch (e) {}
+  }
+
+  el.guideNext.onclick = () => {
+    if (guidePage === GUIDE.length - 1) return closeGuide();
+    guidePage++; renderGuide();
+  };
+  el.guideBack.onclick = () => { if (guidePage > 0) { guidePage--; renderGuide(); } };
+  el.guideSkip.onclick = closeGuide;
+  el.guide.onclick = e => { if (e.target === el.guide) closeGuide(); };
+  addEventListener("keydown", e => {
+    if (el.guide.hidden) return;
+    if (e.key === "Escape") closeGuide();
+    else if (e.key === "ArrowRight") el.guideNext.click();
+    else if (e.key === "ArrowLeft") el.guideBack.click();
+  });
+  $("btn-guide-home").onclick = openGuide;
+  $("btn-guide-game").onclick = openGuide;
+
   /* ---------- boot ---------- */
   function chooseOrigin() {
     show("origin");
@@ -399,4 +501,8 @@
     }
   }
   boot();
+
+  let guideSeen = false;
+  try { guideSeen = localStorage.getItem(GUIDE_KEY) === "1"; } catch (e) {}
+  if (!guideSeen) openGuide();
 })();

@@ -180,3 +180,32 @@ body{
 .sheet-line span:last-child{color:var(--ink-dim);text-align:right}
 .sheet-section{margin:20px 0 8px;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
 .sheet .btn{margin-top:20px;text-align:center}
+
+/* --- guide (first-launch primer) ---
+   Reuses the sheet backdrop, but centred rather than bottom-docked: it is
+   the first thing a new player sees, so it reads as a page, not a drawer. */
+#guide{align-items:center;padding:16px;z-index:40}
+.guide{border-radius:var(--radius);max-height:88dvh;display:flex;flex-direction:column;overflow:hidden}
+.guide h3{margin-bottom:6px}
+.guide-title{font-size:22px;margin:0 0 12px}
+.guide-body{font-size:15px;line-height:1.6;flex:1;min-height:0;overflow:auto}
+.guide-body p{margin:0 0 12px}
+.guide-body em{color:var(--accent-2)}
+.guide-formula{
+  text-align:center;font-family:ui-sans-serif,system-ui,sans-serif;font-weight:700;
+  letter-spacing:.04em;padding:10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg)
+}
+.guide-code{font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;color:var(--ink-dim);white-space:nowrap}
+.guide-note{font-size:13px;color:var(--ink-faint)}
+.guide-runes{display:flex;flex-direction:column;gap:10px;margin:4px 0 14px}
+.guide-rune{display:flex;gap:12px;align-items:flex-start;font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;color:var(--ink-dim)}
+.guide-rune b{color:var(--ink)}
+.guide-rune .rune{flex:none}
+.guide-tag{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);border:1px solid var(--line);border-radius:99px;padding:1px 6px}
+.guide-dots{display:flex;justify-content:center;gap:6px;margin:8px 0 4px}
+.guide-dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.guide-dots i.on{background:var(--accent)}
+.guide-nav{display:flex;align-items:center;gap:8px;margin-top:12px}
+.guide-nav .btn{margin-top:0}
+.guide-nav .btn-primary{width:auto;margin-left:auto;padding:11px 26px}
+.btn-guide{align-self:center}

@@ -384,6 +384,10 @@ it: the site stays static and needs no key.
   glyphs for Vitality/Willpower/Perception/Essence and your Aspect, an
   expandable row for Cunning/Renown/Tether + your Flaw's text.
 - **Day mode**, opt-in, persisted, applied before first paint.
+- **First-launch guide** — a five-page "How to play" (premise, rolls,
+  runes, rank/lifespan/Aspect, saves and the end screen), shown once and
+  reopenable from Home or the in-game toolbar. Rune text is generated from
+  `STATS`, so it never drifts from the data.
 - **End-of-run feedback links** — "Report a bug" / "Leave feedback" open a
   pre-filled GitHub issue with the run's details.
 - **PWA / offline play** via the service worker, and a **save/continue**
