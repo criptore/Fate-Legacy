@@ -197,9 +197,13 @@
     el.choices.innerHTML = "";
 
     ev.choices.forEach((c, i) => {
+      const ok = Engine.choiceAvailable(S, c);
+      /* A choice written for one Aspect or Flaw is hidden from everyone else,
+         not greyed out: there are fourteen of each, and a wall of other
+         people's options would bury the ones that are yours. */
+      if (!ok && (c.requires?.aspect || c.requires?.flaw)) return;
       const b = document.createElement("button");
       b.className = "btn";
-      const ok = Engine.choiceAvailable(S, c);
       b.disabled = !ok;
       const hint = shownHint(c);
       b.innerHTML = escape(c.label) + (hint ? `<span class="choice-hint">${escape(hint)}</span>` : "");

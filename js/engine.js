@@ -595,6 +595,7 @@ const Engine = (() => {
       }
     }
     out.deltas.push(...applyEffects(s, c.effects));
+    if (!c.check && c.text) out.text = c.text;   // a plain choice may narrate its outcome
     return out;
   }
 

@@ -160,49 +160,49 @@ const FLAWS = [
    it (see `awardAspect` and `awardLineage` in engine.js, which
    deliberately do not consult one another).
 
-   Valor, Song and the House of Night are the canon Great Clans;
-   Immortal Flame is canon as a *fallen* Great Clan. The four
-   divine lineages below are INVENTED — the three canon ones belong
-   to named characters, and this project does not put the player in
-   their shoes. Every stat number here is ours.
+   Canon (wiki: Divine Lineage) ties each Great Clan to a god: Valor
+   carries the War God's lineage, the House of Night the Storm God's
+   (ch. 2603: taken from a Memory, and some of the founders died
+   taking it), Song the Beast God's (Ki Song earned the Lineage
+   Memory after Awakening; ch. 1924 she gives its blood to Seishan),
+   and Immortal Flame the Sun God's (ch. 577). So the clan lineages
+   below ARE the divine ones (issue #4). Until v0.4.0 the game had
+   four invented divine lineages instead; canon's set is closed — six
+   gods and the Weaver, the Demon of Fate — so they are gone.
+
+   Not offered, on purpose:
+   - Sun God: Immortal Flame fell, and Nephis is its last carrier.
+   - Heart God: Asterion is its sole inheritor (ch. 1613).
+   - Shadow God: meant for Sunny, devoured by [Blood Weave] (ch. 551).
+   - Weaver: "Why have the gods forbidden us seven to sire offspring?"
+     (ch. 1752). Its Weaves belong to Sunny alone.
+   A random player drawing any of these would contradict canon.
+
+   Every stat number here is ours.
 ------------------------------------------------------------- */
 const LINEAGES = [
   { id:"none",   name:"No Lineage", short:"—",
     desc:"Nothing in the blood. Like almost everyone.",
-    stats:{}, flags:["no_lineage"], weight:{ outskirts:70, citadel:60, clan:6 } },
+    stats:{}, flags:["no_lineage"], weight:{ outskirts:72, citadel:62, clan:6 } },
   { id:"thin",   name:"A Thin Lineage", short:"Thin",
     desc:"Something four generations back, diluted almost to nothing, and still faintly there.",
-    stats:{ willpower:1, perception:1 }, weight:{ outskirts:26, citadel:32, clan:14 } },
-  { id:"valor",  name:"Valor", short:"Valor",
-    desc:"The clan's inherited Attribute is stubbornness made structural. It does not make you brave. It makes you hard to move.",
-    stats:{ vitality:3, willpower:1 }, weight:{ outskirts:1, citadel:3, clan:22 } },
-  { id:"song",   name:"Song", short:"Song",
-    desc:"Your family hears the shape of a room before it walks into it, and has traded on that for nine hundred years.",
-    stats:{ perception:3, renown:1 }, weight:{ outskirts:1, citadel:3, clan:22 } },
-  { id:"night",  name:"House of Night", short:"Night",
-    desc:"An inherited talent for being where the account of events does not place you.",
-    stats:{ cunning:3, perception:1 }, weight:{ outskirts:1, citadel:2, clan:22 } },
-  /* Canon: Immortal Flame is a Great Clan that fell. A scion of a fallen
-     clan inherits the Attribute and none of the standing. */
-  { id:"flame",  name:"Immortal Flame", short:"Flame",
-    desc:"A dead clan's lineage. The Attribute still works. The name is a liability in every room that recognises it.",
-    stats:{ essence:3, willpower:2, renown:-4 }, flags:["fallen_clan"], weight:{ outskirts:2, citadel:2, clan:9 } },
-
-  /* --- Divine lineages: invented, and rare on purpose. Canon does not say
-     how common the lineage of a divine creature is, only that it exists and
-     that it is inherited. These do NOT confer a Divine Aspect. --- */
-  { id:"salt_queen", name:"the Salt Queen", short:"Salt", divine:true,
-    desc:"Something drowned and enormous is upstream of you, and salt water has never once frightened you.",
-    stats:{ vitality:3, willpower:3, essence:1 }, flags:["divine_lineage"], weight:{ outskirts:1, citadel:1, clan:2 } },
-  { id:"long_sleeper", name:"the Long Sleeper", short:"Sleeper", divine:true,
-    desc:"Your bloodline descends from a thing that has not woken up yet. Nobody in your family has ever needed much sleep.",
-    stats:{ willpower:4, essence:2 }, flags:["divine_lineage"], weight:{ outskirts:1, citadel:1, clan:2 } },
-  { id:"cartographer", name:"the Cartographer", short:"Chart", divine:true,
-    desc:"Something in your line mapped the Dream Realm before it had regions in it. You have never been lost.",
-    stats:{ perception:4, cunning:2 }, flags:["divine_lineage"], weight:{ outskirts:1, citadel:1, clan:2 } },
-  { id:"unmade_smith", name:"the Unmade Smith", short:"Smith", divine:true,
-    desc:"The first Memory was made by something that spent itself doing it, and a little of what was left is in you.",
-    stats:{ essence:4, vitality:1, cunning:1 }, flags:["divine_lineage"], weight:{ outskirts:1, citadel:1, clan:2 } },
+    stats:{ willpower:1, perception:1 }, weight:{ outskirts:26, citadel:30, clan:12 } },
+  /* Canon: the lesser Legacy Clans (Aegis Rose, Dagonet, Han Li, Maharana,
+     Pandavar, White Feather...) pass down a hereditary Attribute of their
+     own, and serve a Great Clan. Which clan is left unnamed: the player's
+     family is not one of the novel's. */
+  { id:"legacy", name:"A Legacy Clan", short:"Legacy",
+    desc:"A lesser Legacy Clan, sworn to one of the Great ones. The Attribute is real, and so is the oath that came with it.",
+    stats:{ vitality:1, willpower:1, perception:1 }, flags:["legacy_clan"], weight:{ outskirts:1, citadel:5, clan:24 } },
+  { id:"valor",  name:"Valor · the War God", short:"Valor", divine:true,
+    desc:"The Great Clan born from the Lineage of War. The god is long dead; the blood still makes you very hard to move.",
+    stats:{ vitality:3, willpower:2, essence:1 }, flags:["divine_lineage"], weight:{ outskirts:0, citadel:1, clan:20 } },
+  { id:"song",   name:"Song · the Beast God", short:"Song", divine:true,
+    desc:"Ki Song's clan, and the Beast God's blood she won for it. Your family hears the shape of a room before it walks in.",
+    stats:{ perception:3, willpower:1, essence:1, renown:1 }, flags:["divine_lineage"], weight:{ outskirts:0, citadel:1, clan:20 } },
+  { id:"night",  name:"House of Night · the Storm God", short:"Night", divine:true,
+    desc:"The Great Clan born from the Lineage of Storm. The founders took it from a Memory, and not all of them lived through taking it.",
+    stats:{ cunning:3, perception:1, essence:1, willpower:1 }, flags:["divine_lineage"], weight:{ outskirts:0, citadel:1, clan:18 } },
 ];
 
 /* -------------------------------------------------------------
@@ -378,8 +378,9 @@ const MEMORIES = {
      down through a bloodline". This one is handed over, not looted. */
   clan_signet:  { name:"Clan Signet",       type:"Lineage", rank:"Awakened",
     desc:"Your family's Attribute, worn where people can see whose it is.",  stats:{ renown:4, willpower:1 } },
-  /* Canon: a Shard Memory is built around "a physical manifestation of a
-     broken Soul Core that contains remnant Soul Essence". */
+  /* Canon: a Soul Shard is "a physical manifestation of a broken Soul Core
+     that contains remnant Soul Essence". "Shard" is not a Memory type, so the
+     item that holds one is typed as a Charm. */
   frost_rope:   { name:"Frost-Cored Rope",  type:"Utility", rank:"Dormant",
     desc:"Cut from the belfry bridges. Does not fray, and does not fully thaw.", stats:{ vitality:3 } },
   cold_manifest:{ name:"Cold Manifest Leaf", type:"Charm",   rank:"Dormant",
@@ -390,7 +391,7 @@ const MEMORIES = {
     desc:"Snapped clean through. It had been ready to give for years.",     stats:{ vitality:2, willpower:1 } },
   struck_the_ledger:{ name:"The Founding Entry", type:"Lineage", rank:"Ascended",
     desc:"One page, torn from under a judge's seat. Six centuries were a description of it.", stats:{ cunning:3, renown:2 } },
-  core_shard:   { name:"Shard of a Broken Core", type:"Shard", rank:"Ascended",
+  core_shard:   { name:"Shard of a Broken Core", type:"Charm", rank:"Ascended",
     desc:"Somebody else's Soul Core, in pieces, still holding a little of what they had.", stats:{ essence:5 } },
 };
 
@@ -504,7 +505,7 @@ const EVENTS = [
   title:"The Last Waking Hour",
   text:"In the end it takes you sitting down, mid-sentence, in the middle of an ordinary afternoon.\n\nThe Spell is not cruel about it. It is not anything about it. It is, as the researchers keep insisting, less a creature than a function.",
   choices:[
-    { label:"Go under.", effects:{ nightmare:"first" } },
+    { label:"Fall asleep and let the First Nightmare take you.", effects:{ nightmare:"first" } },
   ]
 },
 
@@ -684,7 +685,7 @@ const EVENTS = [
         fatalCause:"Signed the first page of the Collector's ledger and was collected." },
       success:{ text:"You sign. The book balances. The Collector closes it with the small satisfaction of a man finishing a long shift, tips his hat to you, and is not there any more.\n\nThe town does not notice. The Nightmare ends anyway.", effects:{ stats:{ willpower:4, cunning:1 }, echo:"collector", flags:{ add:["faced_it"] }, appraisal:5, goto:"fn_resolve" } },
       failure:{ text:"You sign and the page takes more than the ink. You are still standing when it ends, but less of you is.", effects:{ stats:{ vitality:-5, willpower:2 }, flags:{ add:["cracked"] }, appraisal:3, goto:"fn_resolve" } } },
-    { label:"Let it run. Wait out the Nightmare somewhere it isn't reading.",
+    { label:"Do nothing. Hide somewhere it isn't reading and wait.",
       effects:{ stats:{ cunning:1 }, flags:{ add:["hid"] }, appraisal:0, goto:"fn_resolve" } },
   ]
 },
@@ -701,7 +702,7 @@ const EVENTS = [
   title:"Appraisal",
   text:"You wake on the floor of a room in the waking world with your heart going like a hammer and the taste of somewhere else still in your mouth.\n\nYou are alive, which puts you in a minority.\n\nThere is a weight under your ribs that was not there before — small, cold, turning. And the Spell is writing on the inside of your eyes: a judgement of what you did in there, an ability you did not have yesterday, and the price it has decided to charge you for it.",
   choices:[
-    { label:"Read the price.",
+    { label:"Read your Flaw: the price the Spell sets.",
       effects:{ awardFlaw:true, flags:{ add:["sleeper"] }, chapter:"sleeper", conquered:true } },
   ]
 },
@@ -738,7 +739,7 @@ const EVENTS = [
   title:"Winter Solstice",
   text:"It happens to every Sleeper in the world on the same night, at the same moment, wherever they are and whatever they are doing.\n\nThere is no ceremony. There is a cold like a door opening.",
   choices:[
-    { label:"Go.", effects:{ flags:{ add:["went_solstice"] }, solstice:true } },
+    { label:"Sleep through the solstice and go to the Dream Realm.", effects:{ flags:{ add:["went_solstice"] }, solstice:true } },
   ]
 },
 
@@ -819,7 +820,7 @@ const EVENTS = [
   title:"The Ledger",
   text:"A city of shelves.\n\nStreets of them, four storeys high, running to a vanishing point in every direction, and every shelf packed with bound volumes in a hand that does not tire. There is no sky. There is a ceiling, very far up, and the light comes from the writing.\n\nSomething is still writing. You can hear it two streets over — a dry, continuous, patient sound, moving.",
   choices:[
-    { label:"Read a volume.", hint:"Perception",
+    { label:"Open one of the books and read it.", hint:"Perception",
       check:{ stat:"perception", dc:9, fatal:2, fatalKind:"dream_realm",
         fatalText:"It is an account of a death in this city. It is very detailed. It is dated four hours from now and the name is yours, and reading it is what fixes it.",
         fatalCause:"Read your own entry in the Ledger." },
@@ -885,7 +886,7 @@ const EVENTS = [
   title:"Awakened",
   text:"You come out on the other side of a Gateway in the waking world, on your knees, on concrete, in the cold.\n\nSomething finishes turning under your ribs. The Spell writes a single line across the inside of your eyes and the word it uses is one you have heard your whole life and never once expected to be applied to you.\n\nYou can feel your own soul essence now. You could not, yesterday. You have a second Aspect Ability and no idea yet what it does.\n\nAnd you have about a hundred and forty years, which sounds like a great many until you meet somebody who has already used three hundred.",
   choices:[
-    { label:"Stand up.",
+    { label:"Stand up. You are Awakened.",
       effects:{ rank:1, chapter:"awakened", stats:{ essence:4, renown:2 } } },
   ]
 },
@@ -924,6 +925,91 @@ const EVENTS = [
         fatalCause:"Killed charging a Gate creature above your rank." },
       success:{ text:"It is Awakened-ranked and it is faster than you and you take it anyway, and the fragments that come out of it are worth four ordinary nights.", effects:{ stats:{ vitality:-2, renown:3 }, kill:{ rank:1, size:2 } } },
       failure:{ text:"You put it down. It puts most of you down first.", effects:{ stats:{ vitality:-5, renown:1 }, kill:{ rank:1, size:1 } } } },
+    /* One choice per Aspect, shown only to its holder (issue #3). */
+    { label:"Stay out of the light and reach it before it knows you are there.", requires:{ aspect:["shadow"] }, hint:"Perception. Your Aspect.",
+      check:{ stat:"perception", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"It never sees you. The fight lasts as long as one step.", effects:{ stats:{ renown:2, perception:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Burn it down before it finds its footing.", requires:{ aspect:["ember"] }, hint:"Essence. Your Aspect.",
+      check:{ stat:"essence", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"It burns. You keep burning a little longer than you needed to.", effects:{ stats:{ renown:2, essence:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Let it hit you. Every wound makes your Aspect sharper.", requires:{ aspect:["thorn"] }, hint:"Vitality. Your Aspect.",
+      check:{ stat:"vitality", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"It tears you open and you close sharper each time. By the end it is the one bleeding.", effects:{ stats:{ renown:2, vitality:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Listen for what it will do, a moment before it does it.", requires:{ aspect:["echo"] }, hint:"Perception. Your Aspect.",
+      check:{ stat:"perception", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"You hear every move a heartbeat early, and you are never where it strikes.", effects:{ stats:{ renown:2, perception:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Give ground until it overreaches, then take it all back.", requires:{ aspect:["tide"] }, hint:"Willpower. Your Aspect.",
+      check:{ stat:"willpower", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"You retreat until it is stretched thin, then come back over it like the tide.", effects:{ stats:{ renown:2, willpower:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Plant yourself in front of the Gate and let it break on you.", requires:{ aspect:["iron"] }, hint:"Vitality. Your Aspect.",
+      check:{ stat:"vitality", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"It hits you like a wall, and you are the wall.", effects:{ stats:{ renown:2, vitality:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Light up the whole area so everyone can see where it is.", requires:{ aspect:["lantern"] }, hint:"Perception. Your Aspect.",
+      check:{ stat:"perception", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"Once everyone can see it, it has nowhere to hide and no chance.", effects:{ stats:{ renown:2, perception:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Let it hunt you, and lead it exactly where you want it.", requires:{ aspect:["quarry"] }, hint:"Cunning. Your Aspect.",
+      check:{ stat:"cunning", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"It chases you for an hour, straight into the place you picked.", effects:{ stats:{ renown:2, cunning:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Hold the ground. Whatever it touches, you keep.", requires:{ aspect:["salt"] }, hint:"Willpower. Your Aspect.",
+      check:{ stat:"willpower", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"You do not give up an inch, and the ground you held stays held.", effects:{ stats:{ renown:2, willpower:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Check what it is and what it is owed, then plan exactly that much force.", requires:{ aspect:["ledger"] }, hint:"Cunning. Your Aspect.",
+      check:{ stat:"cunning", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"You plan for exactly what came through, and exactly that much is enough.", effects:{ stats:{ renown:2, cunning:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Calm the crowd and get everyone out first, then turn to face it.", requires:{ aspect:["hearth"] }, hint:"Willpower. Your Aspect.",
+      check:{ stat:"willpower", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"Nobody panics, nobody gets trampled, and the thing finds an empty street and you.", effects:{ stats:{ renown:2, willpower:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Take hold of the Gate itself and keep it from opening any wider.", requires:{ aspect:["gate"] }, hint:"Essence. Your Aspect.",
+      check:{ stat:"essence", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"The Gate fights you, then closes on your terms, and cuts the thing in half doing it.", effects:{ stats:{ renown:2, essence:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Dig in. Turn the ground over and fight it on terrain you made.", requires:{ aspect:["harrow"] }, hint:"Cunning. Your Aspect.",
+      check:{ stat:"cunning", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"It comes at you across ground you turned over, and the ground is on your side.", effects:{ stats:{ renown:2, cunning:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
+    { label:"Decide that it ends here, and say so out loud.", requires:{ aspect:["verdict"] }, hint:"Willpower. Your Aspect.",
+      check:{ stat:"willpower", dc:9, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"Your Aspect does what it always does. The thing on the other side of the Gate was ready for exactly that.",
+        fatalCause:"Killed at a Gate by a creature that had met your kind of power before." },
+      success:{ text:"You say it ends here. It ends there.", effects:{ stats:{ renown:2, willpower:1 }, kill:{ rank:1, size:2 } } },
+      failure:{ text:"Your Aspect gets you through it, barely, and you pay for the part it did not cover.", effects:{ stats:{ vitality:-3 } } } },
     { label:"Don't answer.", hint:"There is a word for Awakened who do this.",
       effects:{ stats:{ renown:-5, willpower:-1 }, flags:{ add:["shirked"] } } },
   ]
@@ -949,7 +1035,7 @@ const EVENTS = [
   title:"Something Reaches For The Soul, Not The Body",
   text:"Canon is blunt about this: only Awakened below the Master rank can become Hollow or Lost. Above that the soul is too well anchored. Below it, there are things in the Dream Realm that do not bother with the body at all.\n\nYou meet one on an ordinary sweep, in an ordinary ruin, and it goes straight past your guard to the part of you that does the guarding.",
   choices:[
-    { label:"Hold the Soul Sea shut.", hint:"Willpower. Nothing else will help here.",
+    { label:"Hold your Soul Sea shut by will alone.", hint:"Willpower. Nothing else will help here.",
       check:{ stat:"willpower", dc:13, dcScale:2, dcEra:2, fatal:3, fatalKind:"hollow",
         fatalText:"It goes in. What walks out of the ruin has your face and your hands and your gait, and none of the rest of it, and it will be three days before anyone realises.",
         fatalCause:"Hollow. Your soul was destroyed; the body was found walking." },
@@ -977,7 +1063,7 @@ const EVENTS = [
   id:"aw_flaw", chapter:"awakened", weight:16, cooldown:150, days:60,
   requires:{ flags:{ none:["flaw_worked"] } },
   title:"The Price",
-  text:"Canon is specific about Flaws: they are never random, they are tied to something fundamental about the person carrying them, and they present an insurmountable challenge — but, like a mountain, one that can be worked around rather than overcome.\n\nYours picks a bad moment, because that is what fundamental means.",
+  text:"Your Flaw was not chosen at random. It is tied to who you are, and you cannot get rid of it. You can only learn to live around it, the way a road goes around a mountain.\n\nToday it shows up at a bad moment, in front of people who matter.",
   choices:[
     { label:"Cover it. Nobody needs to know what you are carrying.", hint:"Cunning",
       check:{ stat:"cunning", dc:11, dcScale:2, dcEra:2 },
@@ -987,6 +1073,48 @@ const EVENTS = [
       check:{ stat:"willpower", dc:14, dcScale:2, dcEra:2 },
       success:{ text:"You spend a decade building around your own weakness like a river around a stone. It has not gone anywhere. You simply do not walk into it any more.", effects:{ stats:{ willpower:4, essence:2 }, flags:{ add:["flaw_worked"] }, days:60 } },
       failure:{ text:"You learn only that it goes deeper than you thought and further back.", effects:{ stats:{ willpower:-1, vitality:-2 } } } },
+    /* One choice per Flaw, shown only to its holder (issue #3): the Flaw
+       becomes something you can work with, not only a penalty. */
+    { label:"Take the night watches nobody else can stay awake for.", requires:{ flaw:["sleepless"] },
+      effects:{ stats:{ renown:3, vitality:-2 }, flags:{ add:["flaw_used"] } }, text:"You never sleep properly anyway. Three years of night watches later, half the district knows your name." },
+    { label:"Go and see the person whose claim on you the Spell can feel.", requires:{ flaw:["tether"] },
+      effects:{ stats:{ willpower:3, tether:2, essence:-1 }, flags:{ add:["flaw_used"] } }, text:"You sit in their kitchen for an afternoon. The claim does not go away, but you stop fighting it." },
+    { label:"Feed it properly for once: hunt until your Core stops asking.", requires:{ flaw:["hunger"] },
+      effects:{ stats:{ essence:4, vitality:-3 }, flags:{ add:["flaw_used"] } }, text:"You hunt for a month. The Core goes quiet, for a while, and you come back thinner." },
+    { label:"Pay something back on purpose, before it gets collected.", requires:{ flaw:["debt"] },
+      effects:{ stats:{ renown:3, essence:-2 }, flags:{ add:["flaw_used"] } }, text:"You hand over something you would rather have kept. The debt is a little smaller, and so is your Core." },
+    { label:"Train without your Aspect until its silences stop mattering.", requires:{ flaw:["silence"] },
+      effects:{ stats:{ cunning:2, willpower:2, essence:-1 }, flags:{ add:["flaw_used"] } }, text:"A year of fighting with only your hands and your head. When your Aspect goes quiet now, you barely notice." },
+    { label:"Use it as bait: let the Creatures come to you, somewhere you chose.", requires:{ flaw:["mark"] }, hint:"Perception",
+      check:{ stat:"perception", dc:12, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"They come, the way they always do. More of them than you planned for.",
+        fatalCause:"Killed by Nightmare Creatures drawn to the Mark you used as bait." },
+      success:{ text:"They come, the way they always do, but this time to the ground you picked.", effects:{ stats:{ renown:2 }, kill:{ rank:1, size:2 }, flags:{ add:["flaw_used"] } } },
+      failure:{ text:"It does not work this time. The Flaw is exactly as large as it was.", effects:{ stats:{ vitality:-2, willpower:-1 } } } },
+    { label:"Stand watch in a ward where people are dying, and do not look away.", requires:{ flaw:["witness"] },
+      effects:{ stats:{ willpower:3, renown:2, vitality:-2 }, flags:{ add:["flaw_used"] } }, text:"You cannot look away from a death you could prevent, so you prevent eleven of them." },
+    { label:"Go back to where you bled first, and finish what started there.", requires:{ flaw:["echoing"] }, hint:"Willpower",
+      check:{ stat:"willpower", dc:13, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"The place you bled first had been waiting for you to come back.",
+        fatalCause:"Killed returning to where the Echoing Flaw kept calling." },
+      success:{ text:"The place calls you back, so you answer, on your terms. It calls a little more quietly afterwards.", effects:{ stats:{ renown:2 }, kill:{ rank:1, size:2 }, flags:{ add:["flaw_used"] } } },
+      failure:{ text:"It does not work this time. The Flaw is exactly as large as it was.", effects:{ stats:{ vitality:-2, willpower:-1 } } } },
+    { label:"Do alone the job that should have taken three people.", requires:{ flaw:["unasked"] }, hint:"Cunning",
+      check:{ stat:"cunning", dc:13, dcScale:2, dcEra:2 },
+      success:{ text:"You cannot ask for help, so you do not. It takes three times as long and it gets done.", effects:{ stats:{ cunning:3, willpower:1 }, flags:{ add:["flaw_used"] } } },
+      failure:{ text:"It does not work this time. The Flaw is exactly as large as it was.", effects:{ stats:{ vitality:-2, willpower:-1 } } } },
+    { label:"Collect every debt in your book at once.", requires:{ flaw:["ledgered"] },
+      effects:{ stats:{ renown:2, cunning:2, tether:-1 }, flags:{ add:["flaw_used"] } }, text:"Every name, every favour, all in one month. People are careful with you afterwards." },
+    { label:"Arrange your life around the death you keep seeing.", requires:{ flaw:["forewarned"] },
+      effects:{ stats:{ perception:3, willpower:-1 }, flags:{ add:["flaw_used"] } }, text:"You change your routes, your habits and your friends. The death is still in the room, but further from the door." },
+    { label:"Stop fighting it. Keep moving and answer Gates anywhere.", requires:{ flaw:["unhoused"] },
+      effects:{ stats:{ renown:3, tether:-2 }, flags:{ add:["flaw_used"] } }, text:"Nowhere holds you, so you go everywhere. Every district on the coast has seen you once." },
+    { label:"Drill the reflex until it moves first in the right direction.", requires:{ flaw:["first"] },
+      effects:{ stats:{ perception:2, vitality:1, willpower:1 }, flags:{ add:["flaw_used"] } }, text:"You will always move before you decide. After two years of drills, the move is usually the right one." },
+    { label:"Push your Aspect to its limit and see what it is holding back.", requires:{ flaw:["unspent"] }, hint:"Essence",
+      check:{ stat:"essence", dc:13, dcScale:2, dcEra:2 },
+      success:{ text:"It still holds a part back. But you have seen the edge of that part now, and you can lean on it.", effects:{ stats:{ essence:3, willpower:1 }, flags:{ add:["flaw_used"] } } },
+      failure:{ text:"It does not work this time. The Flaw is exactly as large as it was.", effects:{ stats:{ vitality:-2, willpower:-1 } } } },
   ]
 },
 {
@@ -995,7 +1123,7 @@ const EVENTS = [
   title:"Another Awakened",
   text:"Killing a Nightmare Creature gives you a portion of what it accumulated. Killing another Awakened gives you a portion of theirs, and theirs is human, and human cores are saturated in a way beasts' are not.\n\nEveryone knows this. Almost nobody says it out loud. And somebody has decided that your core is the convenient one.",
   choices:[
-    { label:"Meet them.", hint:"Cunning. Fights between Awakened are decided before they start.",
+    { label:"Accept the duel and fight them.", hint:"Cunning. Fights between Awakened are decided before they start.",
       check:{ stat:"cunning", dc:13, dcScale:2, dcEra:2, fatal:4, fatalKind:"murdered",
         fatalText:"They chose the ground, the hour and the witnesses. You attended.",
         fatalCause:"Killed by another Awakened for the contents of your Soul Core." },
@@ -1016,9 +1144,9 @@ const EVENTS = [
   title:"A Seed Is Growing",
   text:"Word comes through the clans first and everyone else about a week later: a Seed of Nightmare is maturing in the Dream Realm, and while it grows, anyone may challenge it.\n\nThe Second Nightmare is not tailored to you. It is bigger, longer and harder than the first, populated by Creatures of the Awakened and Fallen ranks, and the unlucky meet something Corrupted. Conquering it makes you a Master — three hundred years, another Aspect Ability, and a place in a category of person that most Awakened only ever see from a distance.\n\nAnd you may only ever do it once. Conquer a Nightmare of a given Rank and no Seed of that Rank will ever open to you again.",
   choices:[
-    { label:"Go.", effects:{ nightmare:"second" } },
-    { label:"Not yet. There will be other Seeds.", effects:{ stats:{ willpower:1 }, days:200 } },
-    { label:"Never. A hundred and forty years is a life.", effects:{ stats:{ willpower:2, tether:2 }, flags:{ add:["declined_second"] } } },
+    { label:"Enter the Seed and face the Second Nightmare.", effects:{ nightmare:"second" } },
+    { label:"Not this Seed. Wait for another one.", effects:{ stats:{ willpower:1 }, days:200 } },
+    { label:"Never. Stay Awakened for the rest of your life.", effects:{ stats:{ willpower:2, tether:2 }, flags:{ add:["declined_second"] } } },
   ]
 },
 
@@ -1146,7 +1274,7 @@ const EVENTS = [
   title:"Master",
   text:"The Seed resolves and spits you back into the Dream Realm, and the Spell writes one line, and the line is a rank.\n\nAscended. Master, in the older language. Another Aspect Ability, a Soul Core of a different quality altogether, and three hundred and twenty years instead of a hundred and forty.\n\nSomething else has changed, and it takes you a week to name it: you no longer need to be asleep. You can walk into the Dream Realm on your own feet now, leaving a tether behind you in the waking world, like a man leaving a rope down a well.",
   choices:[
-    { label:"Go up.", effects:{ rank:1, chapter:"ascended", stats:{ essence:5, renown:6 }, conquered:true } },
+    { label:"Accept the Ascension and become a Master.", effects:{ rank:1, chapter:"ascended", stats:{ essence:5, renown:6 }, conquered:true } },
   ]
 },
 
@@ -1164,7 +1292,7 @@ const EVENTS = [
   title:"The Long View",
   text:"You had not understood, as an Awakened, what the older ones meant about time going strange.\n\nYou sit down with a problem and stand up with a decade gone. Nothing was wasted. It is simply that a Master's life is measured on a longer ruler and the small years stop leaving marks.",
   choices:[
-    { label:"Deepen the Core.", effects:{ stats:{ essence:4, willpower:2 } } },
+    { label:"Spend the decades strengthening your Soul Core.", effects:{ stats:{ essence:4, willpower:2 } } },
     { label:"Build something that outlasts you.", effects:{ stats:{ renown:5, cunning:3 } } },
     { label:"Go down to the waking world and remember why you started.", effects:{ stats:{ vitality:2, willpower:2, tether:2 } } },
   ]
@@ -1178,13 +1306,98 @@ const EVENTS = [
     "The Gate opened inside a hospital basement. It is graded high enough that no Awakened is allowed near it.\n\nYour communicator lights up with a single word: yours.",
   ],
   choices:[
-    { label:"Take it.", hint:"Willpower",
+    { label:"Go into the Gate yourself and close it.", hint:"Willpower",
       check:{ stat:"willpower", dc:15, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
         fatalText:"A Corrupted came through. They are not supposed to come through. The grading system has a category for what happened next and it is used about twice a century.",
         fatalCause:"Killed by a Corrupted that stepped through a Gate it should not have fit." },
       success:{ text:"Fallen-ranked, entrenched, and three days of work. You close it and the district never learns how close it was.", effects:{ stats:{ vitality:-3, renown:4 }, kill:{ rank:3, size:2 } } },
       failure:{ text:"You close it. It costs you a year of recovery and a piece of your left side.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
-    { label:"Send others. You have people now.",
+    /* One choice per Aspect, shown only to its holder (issue #3). */
+    { label:"Go in through the Gate's own shadow, where nothing is looking.", requires:{ aspect:["shadow"] }, hint:"Perception. Your Aspect.",
+      check:{ stat:"perception", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"It never sees you. The fight lasts as long as one step.", effects:{ stats:{ vitality:-2, renown:4, perception:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Pour Essence into the fire and burn the Gate's whole nest out.", requires:{ aspect:["ember"] }, hint:"Essence. Your Aspect.",
+      check:{ stat:"essence", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"It burns. You keep burning a little longer than you needed to.", effects:{ stats:{ vitality:-2, renown:4, essence:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Wade in and let it wound you, again and again, until you are sharper than it.", requires:{ aspect:["thorn"] }, hint:"Vitality. Your Aspect.",
+      check:{ stat:"vitality", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"It tears you open and you close sharper each time. By the end it is the one bleeding.", effects:{ stats:{ vitality:-2, renown:4, vitality:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Listen ahead through the whole fight and never be where its blows land.", requires:{ aspect:["echo"] }, hint:"Perception. Your Aspect.",
+      check:{ stat:"perception", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"You hear every move a heartbeat early, and you are never where it strikes.", effects:{ stats:{ vitality:-2, renown:4, perception:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Fall back across the district, then come back in all at once.", requires:{ aspect:["tide"] }, hint:"Willpower. Your Aspect.",
+      check:{ stat:"willpower", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"You retreat until it is stretched thin, then come back over it like the tide.", effects:{ stats:{ vitality:-2, renown:4, willpower:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Stand in the breach and do not move, whatever comes through.", requires:{ aspect:["iron"] }, hint:"Vitality. Your Aspect.",
+      check:{ stat:"vitality", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"It hits you like a wall, and you are the wall.", effects:{ stats:{ vitality:-2, renown:4, vitality:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Light the inside of the Gate so the whole team can see what they are fighting.", requires:{ aspect:["lantern"] }, hint:"Perception. Your Aspect.",
+      check:{ stat:"perception", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"Once everyone can see it, it has nowhere to hide and no chance.", effects:{ stats:{ vitality:-2, renown:4, perception:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Make yourself the bait and run it into a trap you set an hour ago.", requires:{ aspect:["quarry"] }, hint:"Cunning. Your Aspect.",
+      check:{ stat:"cunning", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"It chases you for an hour, straight into the place you picked.", effects:{ stats:{ vitality:-2, renown:4, cunning:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Hold the ground at the Gate's mouth and refuse to give an inch of it back.", requires:{ aspect:["salt"] }, hint:"Willpower. Your Aspect.",
+      check:{ stat:"willpower", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"You do not give up an inch, and the ground you held stays held.", effects:{ stats:{ vitality:-2, renown:4, willpower:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Read the records of every Gate like this one and plan the fight to the minute.", requires:{ aspect:["ledger"] }, hint:"Cunning. Your Aspect.",
+      check:{ stat:"cunning", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"You plan for exactly what came through, and exactly that much is enough.", effects:{ stats:{ vitality:-2, renown:4, cunning:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Keep a whole district calm while the team works, then go in last.", requires:{ aspect:["hearth"] }, hint:"Willpower. Your Aspect.",
+      check:{ stat:"willpower", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"Nobody panics, nobody gets trampled, and the thing finds an empty street and you.", effects:{ stats:{ vitality:-2, renown:4, willpower:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Grip the Gate with your Aspect and squeeze it shut while it is still pouring out.", requires:{ aspect:["gate"] }, hint:"Essence. Your Aspect.",
+      check:{ stat:"essence", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"The Gate fights you, then closes on your terms, and cuts the thing in half doing it.", effects:{ stats:{ vitality:-2, renown:4, essence:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Turn the whole district into broken ground and fight it there.", requires:{ aspect:["harrow"] }, hint:"Cunning. Your Aspect.",
+      check:{ stat:"cunning", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"It comes at you across ground you turned over, and the ground is on your side.", effects:{ stats:{ vitality:-2, renown:4, cunning:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Say it ends here, in front of everyone, and make it true.", requires:{ aspect:["verdict"] }, hint:"Willpower. Your Aspect.",
+      check:{ stat:"willpower", dc:14, dcScale:2, dcEra:2, fatal:5, fatalKind:"gate",
+        fatalText:"A Master's Aspect is known by now, and something on the other side had studied it.",
+        fatalCause:"Killed at a Gate by a creature that had been waiting for exactly your Aspect." },
+      success:{ text:"You say it ends here. It ends there.", effects:{ stats:{ vitality:-2, renown:4, willpower:1 }, kill:{ rank:3, size:2 } } },
+      failure:{ text:"It works, but not cleanly. You close the Gate and spend a year healing from the parts that did not go to plan.", effects:{ stats:{ vitality:-6, renown:2 }, kill:{ rank:3, size:1 } } } },
+    { label:"Send other Awakened in instead of going yourself.",
       effects:{ stats:{ renown:-2, cunning:2 }, flags:{ add:["sent_others"] } } },
   ]
 },
@@ -1232,8 +1445,8 @@ const EVENTS = [
   title:"A Third Seed",
   text:"There are a few dozen Saints in the world. That is the whole population, across every clan and citadel and quadrant, and each of them is a force that reshapes the map around wherever they happen to stand.\n\nA Third Seed is maturing. Conquer it and you are Transcendent — nine hundred years, a Transformation, and a place on a list short enough to memorise.\n\nAlmost everyone who tries this is already the best Master anyone has ever seen, and most of them do not come back.",
   choices:[
-    { label:"Go.", effects:{ nightmare:"third" } },
-    { label:"Wait for a better Seed and a better century.", effects:{ stats:{ willpower:2 }, days:400 } },
+    { label:"Enter the Seed and face the Third Nightmare.", effects:{ nightmare:"third" } },
+    { label:"Not this Seed. Wait decades for another one.", effects:{ stats:{ willpower:2 }, days:400 } },
   ]
 },
 {
@@ -1241,7 +1454,7 @@ const EVENTS = [
   title:"The Assembly of Mouths",
   text:"A parliament, in session, in a chamber the size of a weather system.\n\nEvery seat is occupied by something that is mostly a mouth. They are debating. They have been debating for an age of the world, and the motion under discussion is what the Dream Realm is for, and the debate is binding — whatever the Assembly concludes, the region outside becomes.\n\nOutside, through the windows, the landscape is changing every few minutes as the argument swings.\n\nThere are three other challengers. Two are Saints' students. One is something you cannot read at all.",
   choices:[
-    { label:"Take the floor.", hint:"Willpower. You are not a member.",
+    { label:"Stand up and speak in the Assembly, uninvited.", hint:"Willpower. You are not a member.",
       check:{ stat:"willpower", dc:4, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"Speaking out of turn is a procedural matter. The Assembly resolves procedural matters by consuming them.",
         fatalCause:"Consumed by the Assembly of Mouths for speaking out of turn." },
@@ -1262,7 +1475,7 @@ const EVENTS = [
   title:"The Assembly of Mouths",
   text:"The conflict is the motion, and the motion cannot be won, because winning it would end the Assembly and the Assembly is what is doing the arguing.\n\nThe only resolution is to answer the question in a way that does not require the chamber. And the chamber is listening, now, because you are the first thing in an age to say something it had not already said to itself.",
   choices:[
-    { label:"Answer it. Properly. Once.", hint:"Willpower. There is no second attempt.",
+    { label:"Give the Assembly your answer to the motion. You only get one.", hint:"Willpower. There is no second attempt.",
       check:{ stat:"willpower", dc:7, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"Your answer is heard, considered, and found to be a contribution to the debate rather than an end to it. The Assembly welcomes new members.",
         fatalCause:"Seated. You are the eleven thousand and first mouth of the Assembly." },
@@ -1275,7 +1488,7 @@ const EVENTS = [
   title:"Saint",
   text:"Transcendent.\n\nThe old word for it is Saint, and there are a few dozen of those, and as of this moment you are one of them.\n\nNine hundred years. A Transformation Aspect Ability you have not yet dared use. And a change in what you are that you notice first in a small way: you no longer need a Gateway. You are one. You can step between the worlds where you stand, and take someone with you if you choose.\n\nSomewhere, three people who have been managing the number of Saints in the world for decades are being informed.",
   choices:[
-    { label:"Accept it.", effects:{ rank:1, chapter:"transcendent", stats:{ essence:8, renown:10 }, conquered:true } },
+    { label:"Accept Transcendence and become a Saint.", effects:{ rank:1, chapter:"transcendent", stats:{ essence:8, renown:10 }, conquered:true } },
   ]
 },
 
@@ -1315,8 +1528,8 @@ const EVENTS = [
   title:"The Fourth Door",
   text:"Three people have ever done this.\n\nAster, Song and Vale came back from the Fourth Nightmare wreathed in an authority the world had no word for, and then chose to say nothing about it and rule from behind the clans instead. There has not been a fourth. There has not been a serious attempt at a fourth in living memory, and living memory now means yours.\n\nSix thousand years on the other side of it. And a world that will spend every one of them declining to hold you.",
   choices:[
-    { label:"Go.", effects:{ nightmare:"fourth" } },
-    { label:"Stay. Nine hundred years is a long time to be someone.",
+    { label:"Enter the Seed and face the Fourth Nightmare.", effects:{ nightmare:"fourth" } },
+    { label:"Refuse it for good, and live out your life as a Saint.",
       effects:{ stats:{ willpower:4, tether:2 }, flags:{ add:["chose_to_stay"] } } },
   ]
 },
@@ -1325,7 +1538,7 @@ const EVENTS = [
   title:"The Quiet Between Stars",
   text:"There is no landscape.\n\nThere is a distance, and things at enormous intervals within it, and the distance is the Nightmare. The conflict is not a creature or a bargain or a debate. It is the interval itself: nothing here can reach anything else, has never been able to, and the whole of this place is the shape that fact has worn into existence over an unimaginable span.\n\nYou are the only thing in it that has ever arrived from somewhere.",
   choices:[
-    { label:"Cross it.", hint:"Willpower. There is no other verb available.",
+    { label:"Walk out into the interval and try to cross it.", hint:"Willpower. There is no other verb available.",
       check:{ stat:"willpower", dc:9, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"You go out into the interval. The interval is what happens to things that go out into it.",
         fatalCause:"Lost in the Quiet Between Stars. No body, no Gateway, no record." },
@@ -1380,7 +1593,7 @@ const EVENTS = [
   title:"The Fifth Nightmare",
   text:"Nobody from this cycle of the Spell has ever come back from it.\n\nEverything known about the Fifth is scavenged from the chronicles of civilisations the Spell used up before ours. It is two trials rather than one — a personal trial cut to fit you, and a collective one — and failure in either is death. Beyond it is Apotheosis: godhood, of the lesser kind.\n\nAnvil and Ki Song were offered this door and declined it, on the grounds that humanity could not afford to lose its Supremes. Asterion declined it on the grounds that he had a safer route to divinity and no interest in dying for the scenic one.\n\nAnd the warning underneath all of it: the Spell does not care whether you are still yourself afterwards. The Sun Realm went this way. Its gods ate their own world.",
   choices:[
-    { label:"Enter.", hint:"Willpower. The odds are worse than everything you have already survived, combined.",
+    { label:"Enter the Seed and face the Fifth Nightmare.", hint:"Willpower. The odds are worse than everything you have already survived, combined.",
       check:{ stat:"willpower", dc:10, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"The personal trial goes first. It always does.",
         fatalCause:"Unmade in the Fifth Nightmare, like everyone else this cycle." },
@@ -1438,7 +1651,7 @@ const EVENTS = [
   title:"The Numbers Keep Climbing",
   text:"You have been at this long enough now to have your own data, and your own data says the clans are lying by a factor of about three.\n\nA Master closes what an Awakened cannot. Every decade there is more of it, and the grading keeps having to be revised upward, and the revisions keep lagging the reality by about eighteen months. Eighteen months is a great many funerals.",
   choices:[
-    { label:"Close it.", hint:"Willpower",
+    { label:"Go in and close it with the Awakened beside you.", hint:"Willpower",
       check:{ stat:"willpower", dc:16, dcScale:3, dcEra:3, fatal:3, fatalKind:"gate",
         fatalText:"Corrupted. In a Gate graded for Fallen. The revision will be published in about eighteen months.",
         fatalCause:"Killed by a Corrupted in a Gate graded two categories too low." },
@@ -1950,8 +2163,8 @@ const EVENTS = [
 {
   id:"aw_lineage_named", chapter:"awakened", weight:16, once:true, days:70,
   requires:{ flags:{ all:["divine_lineage"] } },
-  title:"Somebody Recognises It",
-  text:"It happens in a corridor, from a woman three centuries older than you, and it takes her about four seconds.\n\nShe does not ask about your Aspect. She asks about your grandmother, and then your grandmother's mother, and then she stops asking and stands there doing arithmetic behind her eyes.\n\n\"So you know what is upstream of you,\" she says eventually. It is not a question, and she is not pleased about it. \"Most of them never find out. The ones who do tend to make it everybody's business.\"",
+  title:"Whose Blood It Is",
+  text:"Everyone in your clan knows the name of the god the lineage came from. Almost nobody outside it is supposed to know what that lineage actually does.\n\nA woman three centuries older than you watches you fight in a training hall, for about four seconds, and then names the god out loud, in front of everyone.\n\nThe gods are dead. Their blood is not, and the other clans keep very careful count of who carries it.",
   choices:[
     { label:"Make it everybody's business.", hint:"Renown is a weapon and a target.",
       effects:{ stats:{ renown:6, cunning:-1 }, flags:{ add:["claimed_the_blood"] } } },
@@ -1969,9 +2182,9 @@ const EVENTS = [
   title:"What Is Left Of It",
   text:"The thing you put down at the last Gate is still available, in the only sense that matters.\n\nAn Echo is not a ghost and not a prisoner, and every instructor who has ever explained it has explained it badly. It is a copy, made out of your own Soul Essence, of something that no longer exists. It does not possess a soul. It possesses the shape of one, which is a different thing, and the Essence that holds that shape is Essence you do not get back while you hold it.\n\nThe alternative is to let the shape go and keep the Essence.",
   choices:[
-    { label:"Bind it. You will want the second pair of hands.",
+    { label:"Bind it as your Echo. It will cost Essence for good.",
       effects:{ echo:"tender", flags:{ add:["bound_a_shade"] } } },
-    { label:"Let it go. You are thin enough already.",
+    { label:"Let it go and keep your Essence.",
       effects:{ stats:{ essence:3, willpower:1 }, flags:{ add:["let_it_go"] } } },
   ]
 },
@@ -2026,7 +2239,7 @@ const EVENTS = [
   choices:[
     { label:"Let it be written down properly. This should be known.",
       effects:{ stats:{ renown:7, essence:2 }, flags:{ add:["on_the_record"] } } },
-    { label:"Have the record lose itself.", hint:"Cunning",
+    { label:"Make sure the record of it quietly disappears.", hint:"Cunning",
       check:{ stat:"cunning", dc:16, dcScale:2, dcEra:2 },
       success:{ text:"Two accounts, both mislaid, one of them by the man who wrote it. You are simply unusually strong, and that is a category the world already has room for.", effects:{ stats:{ cunning:4, willpower:2 }, flags:{ add:["went_quiet"] } } },
       failure:{ text:"One account survives, and it travels a great deal further than the truth usually does.", effects:{ stats:{ renown:6, cunning:-2 } } } },
@@ -2036,7 +2249,7 @@ const EVENTS = [
   id:"st_lineage_end", chapter:"transcendent", weight:18, once:true, days:300,
   requires:{ flags:{ all:["divine_lineage"] } },
   title:"The End Of The Line",
-  text:"Nine hundred years is long enough to watch a bloodline finish.\n\nYours does, quietly, in a provincial ward, in a woman of eighty-one who has never heard of you and who carries the same inherited Attribute you do — diluted down to almost nothing, and still unmistakably the thing that is in you.\n\nWhatever is upstream of the pair of you does not appear to be taking an interest. It never has. That is the part nobody writes down about a divine lineage: it is a fact about your blood, and not a relationship with anybody.",
+  text:"Nine hundred years is long enough to watch a bloodline finish.\n\nA branch of yours does, quietly, in a provincial ward, in a woman of eighty-one who left the clan before you were born and who carries the same inherited Attribute you do, diluted down to almost nothing and still unmistakably the thing that is in you.\n\nThe god it came from died long before the Spell. That is the part nobody writes down about a divine lineage: it is a fact about your blood, and not a relationship with anybody.",
   choices:[
     { label:"Sit with her until it is over.",
       effects:{ stats:{ willpower:4, tether:1 }, memory:"clan_signet", flags:{ add:["sat_with_her"] } } },
@@ -2050,7 +2263,7 @@ const EVENTS = [
   title:"A Gate Only A Saint Can Close",
   text:"The duty does not lapse. It never has, at any rank, and the paperwork on that point is nine hundred years old and has never once been successfully argued with.\n\nWhat reaches you now are the ones nobody else can be sent to. A Corrupted-ranked Gate is a regional emergency; the ones that come with your name attached are worse than that, and they come with the tone of people who have already decided you are going.",
   choices:[
-    { label:"Close it. That is what the rank is for.", hint:"Willpower",
+    { label:"Go in yourself and close it.", hint:"Willpower",
       check:{ stat:"willpower", dc:18, dcScale:3, fatal:4, fatalKind:"gate",
         fatalText:"It is Great-ranked, which the grading did not say, because the last person qualified to grade it did not come back either.",
         fatalCause:"Killed closing a Gate that was graded by somebody who had not seen it." },
@@ -2069,7 +2282,7 @@ const EVENTS = [
   title:"There Is Nothing Above You To Call",
   text:"Three people in the world can be sent to this and one of them is you.\n\nThe Gates that reach a Sovereign are not emergencies. They are the ones that would end a continent if nobody went, and the arithmetic of who goes is very short: there is no higher rank to escalate to, and there has never been a version of this where somebody else handles it.",
   choices:[
-    { label:"Go. There is no one else.", hint:"Willpower",
+    { label:"Go yourself. There is no one else.", hint:"Willpower",
       check:{ stat:"willpower", dc:22, dcScale:4, fatal:4, fatalKind:"gate",
         fatalText:"Something comes through with no rank the Spell will name, and you are the only thing in the world large enough to be in its way.",
         fatalCause:"Killed at a Gate that had no grading because nothing had survived to write one." },
@@ -2088,13 +2301,13 @@ const EVENTS = [
   title:"The Duty Does Not Notice What You Are",
   text:"You are a lesser god, by any definition anyone has managed to write down, and the Gates keep opening, and none of them have been informed.\n\nThis is the part nobody warned you about on the far side of the Fifth. Apotheosis changed what you are. It did not change what the work is.",
   choices:[
-    { label:"Do the work.", hint:"Willpower",
+    { label:"Go to the Gate yourself and close it.", hint:"Willpower",
       check:{ stat:"willpower", dc:26, dcScale:4, fatal:4, fatalKind:"gate",
         fatalText:"There are things on the other side of a Gate that were Sacred before there were people to be Sacred in front of.",
         fatalCause:"Killed at a Gate by something that had been doing this for longer." },
       success:{ text:"Done, in an afternoon, in a way that would have taken a Saint a century and killed them.", effects:{ stats:{ vitality:-6, renown:16, essence:6 }, kill:{ rank:6, size:2 } } },
       failure:{ text:"Done. Slowly, and at a cost you are no longer able to describe in terms anyone alive would follow.", effects:{ stats:{ vitality:-12, renown:6 }, kill:{ rank:6, size:1 } } } },
-    { label:"Delegate it downward and watch what that costs.",
+    { label:"Send someone weaker and accept what it costs them.",
       effects:{ stats:{ renown:-6, willpower:2, tether:-1 }, flags:{ add:["shirked"] } } },
   ]
 },
