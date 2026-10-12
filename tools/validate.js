@@ -3,18 +3,22 @@
    When that happens the chain silently breaks, the player is dropped back
    into the ambient pool, and a whole act becomes unreachable — with no
    error anywhere. Run this after every content change. */
-const fs = require("fs"), vm = require("vm"), path = require("path");
-const B = path.join(__dirname, "..", "js");
-const ctx = { console };
-vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(B, "data.js"), "utf8") +
-  "\nglobalThis.EVENTS=EVENTS;globalThis.NIGHTMARES=NIGHTMARES;globalThis.SOLSTICE=SOLSTICE;" +
-  "globalThis.MEMORIES=MEMORIES;globalThis.ASPECTS=ASPECTS;globalThis.FLAWS=FLAWS;globalThis.RANKS=RANKS;globalThis.ECHOES=ECHOES;globalThis.LINEAGES=LINEAGES;globalThis.CLASSES=CLASSES;globalThis.ASPECT_RANKS=ASPECT_RANKS;", ctx);
+// Loads every script index.html loads, so content packs are checked too.
+const { load, scripts } = require("./load");
+const ctx = load();
 const { EVENTS, NIGHTMARES, SOLSTICE, MEMORIES } = ctx;
 
 const byId = new Map(EVENTS.map(e => [e.id, e]));
 const problems = [];
 const P = (sev, id, msg) => problems.push({ sev, id, msg });
+
+// every pack and module index.html loads must exist, and every pack must
+// have registered itself (a pack that throws halfway would leave half its
+// content in the game).
+for (const f of scripts())
+  if (!require("fs").existsSync(require("path").join(__dirname, "..", f))) P("ERROR", f, "index.html loads a file that does not exist");
+for (const f of scripts().filter(f => f.startsWith("js/packs/")))
+  if (!ctx.Pack.loaded.includes(f.slice(9, -3))) P("ERROR", f, "pack file did not call Pack.add with an id matching its file name");
 
 // every entry point named by the catalogues must exist
 for (const [tier, list] of Object.entries(NIGHTMARES))

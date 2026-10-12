@@ -1,9 +1,5 @@
-const fs=require("fs"),vm=require("vm");
-const B=require("path").join(__dirname,"..","js")+"/";
-const src=["data.js","engine.js"].map(f=>fs.readFileSync(B+f,"utf8")).join("\n")
- +"\nglobalThis.Engine=Engine;globalThis.RANKS=RANKS;";
-const ctx={console};vm.createContext(ctx);vm.runInContext(src,ctx);
-const {Engine,RANKS}=ctx;
+// Loads every script index.html loads (packs and modules included).
+const {Engine,RANKS}=require("./load").load();
 
 // A competent player: estimates the odds, avoids obvious suicide, but still
 // takes the doors, because refusing every door is its own kind of death.

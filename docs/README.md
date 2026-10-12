@@ -11,3 +11,5 @@ overview is the [main README](../README.md).
   and how to read them.
 - **[development.md](development.md)**: running locally, file layout, the HUD,
   the event format, and the rules the validator enforces.
+- **[content/](content/README.md)**: how content packs and modules work, and
+  one page per pack or module describing what it adds.

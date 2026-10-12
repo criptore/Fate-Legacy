@@ -3,13 +3,16 @@
    worker caches `data.js?v=<CACHE>` while the page requests `data.js?v=<other>`,
    the precache never matches a real request, and the only thing saving the
    offline case is the ignoreSearch fallback at the bottom of this file. */
-const CACHE = "fatelegacy-v0.4.0", V = CACHE.split("-v")[1];
+const CACHE = "fatelegacy-v0.5.0", V = CACHE.split("-v")[1];
 const CORE = [
   "./", "./index.html",
   `./css/tokens.css?v=${V}`, `./css/main.css?v=${V}`,
-  `./js/data.js?v=${V}`, `./js/save.js?v=${V}`,
+  `./js/hooks.js?v=${V}`, `./js/data.js?v=${V}`, `./js/save.js?v=${V}`,
   `./js/engine.js?v=${V}`, `./js/ui.js?v=${V}`,
 ];
+/* Content packs and modules (js/packs/, js/modules/) are not listed here on
+   purpose: each lives in its own pull request, and the fetch handler below
+   caches them on first load, which is enough for offline play. */
 
 async function net(req, tries = 3, opts) {
   for (let i = 0; i < tries; i++) {

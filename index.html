@@ -43,8 +43,8 @@
 <meta name="description" content="A narrative life-sim in a world of Nightmares. Awaken, survive your trials, and climb the Soul Ranks — if your lifespan lets you." />
 <meta name="theme-color" content="#0a0a0f" />
 <link rel="icon" href="data:," />
-<link rel="stylesheet" href="css/tokens.css?v=0.4.0" />
-<link rel="stylesheet" href="css/main.css?v=0.4.0" />
+<link rel="stylesheet" href="css/tokens.css?v=0.5.0" />
+<link rel="stylesheet" href="css/main.css?v=0.5.0" />
 </head>
 <body>
 <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle day mode" title="Toggle day mode">☾</button>
@@ -61,6 +61,7 @@
         <button class="btn btn-ghost btn-guide hint-toggle" type="button" aria-pressed="false">Stat hints: off</button>
       </div>
       <p class="fineprint" id="home-save-info"></p>
+      <div id="home-extra"></div>
     </div>
   </section>
 
@@ -131,6 +132,7 @@
 
       <h3 class="end-section-title">Life at a Glance</h3>
       <div class="stat-grid" id="end-stats"></div>
+      <div id="end-extra"></div>
 
       <button class="btn btn-primary" id="btn-again">Begin Again</button>
 
@@ -170,10 +172,49 @@
   </div>
 </div>
 
-<script src="js/data.js?v=0.4.0"></script>
-<script src="js/save.js?v=0.4.0"></script>
-<script src="js/engine.js?v=0.4.0"></script>
-<script src="js/ui.js?v=0.4.0"></script>
+<script src="js/hooks.js?v=0.5.0"></script>
+<script src="js/data.js?v=0.5.0"></script>
+<!-- CONTENT PACKS. Each slot below belongs to exactly one pull request,
+     which replaces its own comment with a <script> tag. Keep the blank
+     lines: they are what lets several packs merge without conflicts. -->
+<!-- slot:second-nightmare-4 -->
+
+<!-- slot:third-nightmare-3 -->
+
+<!-- slot:fourth-nightmare-2 -->
+
+<!-- slot:fifth-nightmare -->
+
+<!-- slot:sixth-nightmare -->
+
+<!-- slot:solstice-region-5 -->
+
+<!-- slot:high-rank-events -->
+
+<!-- slot:divine-era -->
+
+<!-- slot:new-origins -->
+
+<!-- slot:pack-spare-1 -->
+
+<!-- slot:pack-spare-2 -->
+
+<script src="js/save.js?v=0.5.0"></script>
+<script src="js/engine.js?v=0.5.0"></script>
+<!-- MODULES (features built on Hooks). Same rule: one slot per PR. -->
+<!-- slot:aspect-abilities -->
+
+<!-- slot:rival -->
+
+<!-- slot:chronicle -->
+
+<!-- slot:legacy -->
+
+<!-- slot:module-spare-1 -->
+
+<!-- slot:module-spare-2 -->
+
+<script src="js/ui.js?v=0.5.0"></script>
 <script>
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });
