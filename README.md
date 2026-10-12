@@ -54,7 +54,7 @@ home screen and the in-game toolbar.
 - Memories and Echoes that help in a fight: Weapons and Armor count on
   dangerous checks, and an Echo fights beside you and can die in your place
 - Found a company, an order or a landing zone, and run it: recruits,
-  rival clans, members going Hollow, and what became of it after you
+  rival clans, members who become Lost, and what became of it after you
 - Soul Cores, Tether, Gate duty and a world that keeps getting more
   dangerous
 - Achievements and a full life summary on the end screen
