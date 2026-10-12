@@ -4,7 +4,8 @@ Every design decision that claims to come from the novel is listed here with
 its source, so it can be checked. Where the canon is silent, that is said.
 
 **Last verified against the [Shadow Slave Wiki](https://shadowslave.fandom.com/)
-on 2026-10-12.** ✅ = the quoted wording was found on the wiki page named.
+on 2026-10-12.** Since v0.4.0, also against chapter text (quoted-phrase
+searches of chapter hosts) where the wiki was not enough. ✅ = the quoted wording was found on the wiki page named.
 ⚠️ = plausible, but not found on the wiki pages checked; needs a chapter
 reference before anyone relies on it.
 
@@ -12,7 +13,7 @@ reference before anyone relies on it.
 
 | Design choice | Canon it comes from | |
 |---|---|---|
-| Aspirant → First Nightmare → **Sleeper** → winter solstice → Dream Realm → **Awakened** | *Paths of Ascension*: a Sleeper has Aspect and Flaw but "ha[s] not yet established a connection with the Dream Realm"; only on returning "for the first time" do they become Awakened | ⚠️ |
+| Aspirant → First Nightmare → **Sleeper** → winter solstice → Dream Realm → **Awakened** | *Paths of Ascension*: a Sleeper has Aspect and Flaw but "ha[s] not yet established a connection with the Dream Realm"; only on returning "for the first time" do they become Awakened (wording found on both the fandom and miraheze wikis, 2026-10-12) | ✅ |
 | Aspect exists **before** the First Nightmare; the Flaw is granted **after** | *Awakened*: Aspirants "start off with a Dormant Rank Aspect without the Flaw or Aspect Ability… and [are] given Flaw in exchange for the power" | ✅ |
 | Flaws are weighted by what you did, never rolled blind | *Flaw*: "Flaws are never random; they are deeply connected to the individuals cursed by them" | ✅ |
 | The Spell appraises the trial and grades your Aspect | *Awakened*: "The Aspect can rank up after the trial is over, depending on the appraisal the Spell gives" | ✅ |
@@ -26,7 +27,7 @@ reference before anyone relies on it.
 | Hollow and Lost are possible only below Master | *Awakened*: "Only Awakened below the Master rank can become Hollow or Lost" (ch. 367) | ✅ |
 | Tether thins as you climb | *Nightmare Spell* / *Transcendent*: Masters enter the Dream Realm physically "leaving a tether behind"; Saints "were like miniature gateways"; Sovereigns "possess a gateway within themselves" | ✅ |
 | An unaffiliated Master gets politically blocked | *Sovereigns*: "Suppressing the Transcendence of independent Awakened for decades" (ch. 1229) | ✅ |
-| Transcendence is reachable without a Third Nightmare | *Hierarchy*: "The Path of Ascension could reach Transcendence without conquering a Third Nightmare" | ⚠️ |
+| Transcendence is reachable without a Third Nightmare | Ch. 1489: "The Path of Ascension could reach Transcendence without conquering a Third Nightmare". Ananke says it, and she lives before the Nightmare Spell (ch. 1307); no modern human in canon has done it, so the game keeps `ms_ancient` rare and hard | ✅ |
 | Saint is rare | *Transcendent*: "hundreds attempted the Third Nightmare in recent decades, but only a few dozen humans returned, becoming Saints" (ch. 1228) | ✅ |
 | Supreme is nearly unique; the first three were Aster, Song and Vale | *Sovereigns*: Aster, Song and Vale "had returned from the Fourth Nightmare… becoming the first humans to reach Supreme rank" (ch. 368) | ✅ |
 | Fifth Nightmare is near-certain death | *Nightmares*: "no Awakened from the current cycle of the Nightmare Spell had ever returned from it" | ✅ |
@@ -37,11 +38,15 @@ reference before anyone relies on it.
 | Three known Divine Aspect holders | *Divine Aspect*: Mordret (the first), Nephis and Sunny | ✅ |
 | Lineage and Aspect are unrelated | *Aspect* / *Divine Lineage*: "Possessing a lineage of a certain divine creature doesn't mean their aspect has to be related to it as well" (Mordret: War God lineage, Aspect of mirrors; Sunny: Weaver, Shadow God Aspect; Nephis: Sun God, Nephilim Aspect) | ✅ |
 | Lineage is hereditary, and clan scions share one | *Legacy Clans*: "great clans whose scions inherited the same lineage attribute" | ✅ |
-| The Great Clans each carry a divine lineage | *Divine Lineage*: Valor (War God), Immortal Flame (Sun God), House of Night (Storm God), Song (Beast God, "most likely"). **The game does not reflect this yet**; see [issue #4](https://github.com/criptore/Fate-Legacy/issues/4) | ✅ |
+| The Great Clans each carry a divine lineage | *Divine Lineage*: Valor (War God), Immortal Flame (Sun God, ch. 577), House of Night (Storm God; ch. 2603, taken from a Memory), Song (Beast God: Ki Song earned the Lineage Memory; ch. 1924). The game's Valor, Song and Night lineages are these | ✅ |
+| The divine lineages are a closed set: six gods and the Weaver | *Divine Lineage*. Sun God: Nephis is the last carrier. Heart God: Asterion alone (ch. 1613). Shadow God: devoured by [Blood Weave] (ch. 550–551). Weaver, the Demon of Fate: "Why have the gods forbidden us seven to sire offspring?" (ch. 1752). None of these four is drawable | ✅ |
+| A Nightmare ends in conquest or death | *Nightmares*: "Each Nightmare contains a central conflict that has to be resolved for the Nightmare to end"; failure is death. So no Second+ Nightmare offers a way out, and a failed decisive check is death | ✅ |
+| A destroyed Echo is gone for good | *Echo*: a damaged Echo heals, a destroyed one does not return. Ch. 47: Echoes are "extremely rare" and "much more precious than Memories" | ✅ |
+| The Great Clans hold independents down | Ch. 1229: "The great clans have been suppressing the Transcendence of independent Awakened for decades". Used by `ms_suppression` and `org_clan` | ✅ |
 | Class is a second axis, counted in Soul Cores | *Nightmare Creatures*: Beast 1, Monster 2, Demon 3, Devil 4, Tyrant 5, Terror 6, Titan 7, separate from the Rank ladder (Dormant…Unholy) | ✅ |
 | Extra Soul Cores hurt, and are not what humans are for | *Divine Aspect*: "Human souls are not meant to have many cores or sustain them… the birth [of a new core brings immense pain]" | ✅ |
 | Soul fragments = `2^(ranks above you) × soul cores` | Wiki FAQ, progression formula. *Soul Core* confirms that absorbing soul fragments increases core capacity, but the formula itself was not found | ⚠️ |
-| Memories have a type and sit on the rank ladder | *Memory*: types are Armor, Charm, Weapon, Tool (Utility), Garment. The game also uses "Lineage" and "Shard", which are **not** in the wiki's type list | ⚠️ |
+| Memories have a type and sit on the rank ladder | *Memory*: types are Armor, Charm, Weapon, Tool (Utility), Garment. Lineage Memories exist in canon (consumable, they grant a hereditary trait). "Shard" is not a type, so `core_shard` is a Charm since v0.4.0 | ✅ |
 | An Echo is not a kind of Memory | *Echo*: "a magical copy of a slain Nightmare Creature" | ✅ |
 | `core_shard` is a Soul Shard, not a "Shard Memory" | *Soul Shard*: "a physical manifestation of a broken Soul Core" | ✅ |
 
@@ -67,10 +72,18 @@ it might be canon:
 - **How a Divine Aspect comes about.** Canon says it exists and names its
   holders. It never says how. The gate here (an extraordinary appraisal plus a
   rare draw, deliberately *not* gated on lineage) is invented.
-- **The four divine lineages currently in the game** (the Salt Queen, the
-  Long Sleeper, the Cartographer, the Unmade Smith). **These break the lore:**
-  canon's divine lineages come from a closed set of six gods and the Weaver.
-  Scheduled for replacement in [issue #4](https://github.com/criptore/Fate-Legacy/issues/4).
+- **The four invented divine lineages** (the Salt Queen, the Long Sleeper,
+  the Cartographer, the Unmade Smith) were removed in v0.4.0 (issue #4).
+- **The "A Legacy Clan" lineage.** Canon has lesser Legacy Clans (Aegis
+  Rose, Dagonet, Han Li, Maharana, Pandavar, White Feather...) with
+  hereditary Attributes; the player's family is deliberately none of them.
+- **What Memories and Echoes do in a fight.** Canon has them summoned and
+  commanded; the Weapon +1, Armor soak, Echo d4 and "an Echo dies in your
+  place" numbers are ours. Personal trials (`dcSelf`) take none of it.
+- **Your organization**: its names, sizes, events and endings. Canon gives
+  the templates (the Irregulars, the Lord of Shadows' Citadel, Ravenheart
+  growing from a lesser clan's stronghold); none of the organizations a
+  player founds is from the novel.
 - **The soul-fragment thresholds for each Class.** Calibrated against
   `tools/sim.js`. Fan summaries quote figures in the thousands; a whole skilled
   life in this game banks about 40 fragments, so those numbers would make

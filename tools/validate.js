@@ -110,7 +110,7 @@ for (const e of EVENTS) for (const [i, c] of (e.choices || []).entries())
   for (const fx of [c.effects, c.success?.effects, c.failure?.effects])
     if (fx?.echo && !ctx.ECHOES[fx.echo]) P("ERROR", e.id, `choice ${i} binds unknown echo "${fx.echo}"`);
 for (const [id, m] of Object.entries(MEMORIES)) {
-  if (!m.type) P("WARN", id, "memory has no `type` (canon: Armor/Charm/Utility/Garment/Weapon/Lineage/Shard)");
+  if (!m.type) P("WARN", id, "memory has no `type` (canon: Armor/Charm/Utility/Garment/Weapon/Lineage)");
   if (!m.rank) P("WARN", id, "memory has no `rank` (canon: Memories sit on the Soul Rank ladder)");
 }
 for (const [id, e] of Object.entries(ctx.ECHOES)) {
