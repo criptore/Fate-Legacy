@@ -391,6 +391,9 @@ const MEMORIES = {
     desc:"Snapped clean through. It had been ready to give for years.",     stats:{ vitality:2, willpower:1 } },
   struck_the_ledger:{ name:"The Founding Entry", type:"Lineage", rank:"Ascended",
     desc:"One page, torn from under a judge's seat. Six centuries were a description of it.", stats:{ cunning:3, renown:2 } },
+  /* Handed to you by your own order (issue #10). */
+  order_seal:   { name:"The Order's Seal",  type:"Charm",  rank:"Ascended",
+    desc:"Struck by your own people, from the first fragments they ever banked together.", stats:{ willpower:2, renown:2 } },
   core_shard:   { name:"Shard of a Broken Core", type:"Charm", rank:"Ascended",
     desc:"Somebody else's Soul Core, in pieces, still holding a little of what they had.", stats:{ essence:5 } },
 };
@@ -459,6 +462,7 @@ const ACHIEVEMENTS = {
   answered:           { name:"Silenced the Assembly", desc:"Gave the Assembly of Mouths an answer that did not need a chamber to hold it." },
   stopped_the_march:  { name:"Stopped the March",  desc:"Stood in the road until forty thousand lanterns went out, and the Nightmare had nothing left to collect." },
   saw_the_interval:   { name:"Saw the Interval",   desc:"Failed to cross the Quiet Between Stars, kept going anyway, and crossed it on the second attempt." },
+  great_order:        { name:"Founder",            desc:"Built an organization of Awakened large enough that the Great Clans had to count it." },
   went_quiet:         { name:"Went Quiet",         desc:"Vanished from Sovereign attention for forty years, on purpose, and came back unnoticed." },
   neutral:            { name:"Neutral Ground",     desc:"Refused both Domains during their war, and survived refusing them." },
   killed_awakened:    { name:"Blood Price",        desc:"Killed another Awakened for the contents of their Soul Core." },
@@ -1293,7 +1297,7 @@ const EVENTS = [
   text:"You had not understood, as an Awakened, what the older ones meant about time going strange.\n\nYou sit down with a problem and stand up with a decade gone. Nothing was wasted. It is simply that a Master's life is measured on a longer ruler and the small years stop leaving marks.",
   choices:[
     { label:"Spend the decades strengthening your Soul Core.", effects:{ stats:{ essence:4, willpower:2 } } },
-    { label:"Build something that outlasts you.", effects:{ stats:{ renown:5, cunning:3 } } },
+    { label:"Found a company of Awakened under your name, or grow the one you have.", effects:{ stats:{ renown:5, cunning:3 }, org:{ found:"company", grow:1 } } },
     { label:"Go down to the waking world and remember why you started.", effects:{ stats:{ vitality:2, willpower:2, tether:2 } } },
   ]
 },
@@ -1493,6 +1497,101 @@ const EVENTS = [
 },
 
 /* ===================================================================
+   YOUR ORGANIZATION (issue #10)
+   Only drawn once you have founded one (Master: "Found a company",
+   Saint: "Build an order", Sovereign: "Build a landing zone").
+   Canon templates: the Irregulars of the First Evacuation Army, the
+   Lord of Shadows' Citadel, Ravenheart growing out of a lesser clan's
+   stronghold. Canon threat: "The great clans have been suppressing
+   the Transcendence of independent Awakened for decades" (ch. 1229).
+   Members are mostly Awakened, so they can still go Hollow: canon
+   says "Only Awakened below the Master rank can become Hollow or
+   Lost" (ch. 367). Everything else here is ours.
+=================================================================== */
+{
+  id:"org_recruit", weight:16, cooldown:60, days:40,
+  requires:{ chapter:["ascended", "transcendent", "supreme"], org:{ min:1 } },
+  title:"People Want In",
+  text:"Word has got around that you take people in. There are forty of them at the gate this morning: Awakened from the outskirts, a clan's third son, two Sleepers who should not even be here yet.",
+  variants:[
+    "A team of Awakened whose company was wiped out at a Gate is asking to join yours. All of them, together, or none.",
+    "Your people have been recruiting without asking you. The new faces outnumber the old ones at dinner.",
+  ],
+  choices:[
+    { label:"Take anyone willing to answer a Gate.", effects:{ stats:{ renown:2 }, org:{ grow:2 } },
+      text:"The ranks swell. Not all of them will be worth it, and every one of them now carries your name." },
+    { label:"Test them yourself and take only the best.", hint:"Perception. You are looking for what they hide.",
+      check:{ stat:"perception", dc:14, dcScale:2, dcEra:1 },
+      success:{ text:"You take nine. Each of them would have been somebody's best. Now they are yours.", effects:{ stats:{ renown:3, cunning:1 }, org:{ grow:1 } } },
+      failure:{ text:"You take the wrong nine. You find out which ones over the next decade.", effects:{ stats:{ renown:-1 }, org:{ grow:1 } } } },
+    { label:"Close the doors for now. You cannot train what you already have.", effects:{ stats:{ willpower:1, cunning:1 } } },
+  ]
+},
+{
+  id:"org_hollow", weight:9, cooldown:120, days:30,
+  requires:{ chapter:["ascended", "transcendent", "supreme"], org:{ min:1 } },
+  title:"One Of Yours Is Going Hollow",
+  text:"One of your Awakened has stopped sleeping, and then stopped eating, and this morning stopped answering to their name.\n\nThey are going Hollow. It happens to Awakened, never to Masters, and the rule for it is old and simple: deal with it before it finishes, or it will finish in a room full of your people.",
+  choices:[
+    { label:"Go into their Soul Sea with them and try to pull them back.", hint:"Willpower. It is not your Soul Sea.",
+      check:{ stat:"willpower", dc:15, dcScale:2, dcEra:1 },
+      success:{ text:"You find them at the bottom of it and bring them back up. They do not remember. Everyone else does.", effects:{ stats:{ renown:3, willpower:2 }, flags:{ add:["came_back_for_them"] } } },
+      failure:{ text:"You are too late. You end it yourself, because that is the other half of the rule.", effects:{ stats:{ willpower:-2 }, org:{ grow:-1 } } } },
+    { label:"Follow the rule: end it now, before it turns.", effects:{ stats:{ willpower:-1, renown:-1 }, org:{ grow:-1 } },
+      text:"It is quick. Your people watch you do it, and none of them say anything, which is its own kind of answer." },
+  ]
+},
+{
+  id:"org_clan", weight:14, once:true, days:60,
+  requires:{ chapter:["ascended", "transcendent"], org:{ min:2 }, flags:{ none:["clan_owned"] } },
+  title:"A Great Clan Notices",
+  text:"Your organization has grown large enough to be counted, and the Great Clans count everything.\n\nThe envoy is very polite. Swear your people to the clan, and they will be fed, armed and protected. Stay independent, and nobody can promise what happens to an independent company in a world where the clans have been holding independents down for decades.",
+  choices:[
+    { label:"Swear your people to the clan.", effects:{ stats:{ renown:4, essence:3 }, org:{ grow:1, sworn:true }, flags:{ add:["org_sworn"] } },
+      text:"Your banner goes up under theirs. Your people eat better. You no longer decide where they go." },
+    { label:"Refuse, and keep your people independent.", hint:"Cunning. Being too expensive to swallow is a skill.",
+      check:{ stat:"cunning", dc:16, dcScale:2, dcEra:1 },
+      success:{ text:"You make yourself too useful to attack and too awkward to buy. The envoy leaves. The clan does not forget.", effects:{ stats:{ renown:4, cunning:2 }, flags:{ add:["stayed_independent"] } } },
+      failure:{ text:"Nobody attacks you. Half your people are simply offered better terms elsewhere, one at a time, and take them.", effects:{ stats:{ renown:-2 }, org:{ grow:-2 } } } },
+    { label:"Disband before they make you choose.", effects:{ stats:{ willpower:2, renown:-3 }, org:{ grow:-12 } },
+      text:"You send them home with what you can give them. It is the only way to keep them out of a war they cannot win." },
+  ]
+},
+{
+  id:"org_gate", weight:16, cooldown:50, days:40,
+  requires:{ chapter:["ascended", "transcendent", "supreme"], org:{ min:1 } },
+  title:"Send Your People",
+  text:"A Gate has opened in a region your organization has promised to cover. It is too big for one Awakened and too small for you.\n\nThis is what your people are for. It is also how you lose them.",
+  choices:[
+    { label:"Send a team in and run it from outside.", hint:"Cunning. Choose who goes, and where they stand.",
+      check:{ stat:"cunning", dc:13, dcScale:2, dcEra:2 },
+      success:{ text:"They go in, they close it, they all come out. Your people talk about this one for years.", effects:{ stats:{ renown:3 }, kill:{ rank:2, size:2 }, org:{ grow:1 } } },
+      failure:{ text:"They close it. Not all of them come out.", effects:{ stats:{ renown:-1, willpower:-1 }, org:{ grow:-1 } } } },
+    { label:"Lead them in yourself.", hint:"Willpower",
+      check:{ stat:"willpower", dc:14, dcScale:2, dcEra:2, fatal:6, fatalKind:"gate",
+        fatalText:"You lead them in. Your people lead themselves out, without you.",
+        fatalCause:"Killed at a Gate, leading your own people through it." },
+      success:{ text:"You go in first and come out last, and everyone between you comes home.", effects:{ stats:{ renown:4, vitality:-2 }, kill:{ rank:2, size:2 } } },
+      failure:{ text:"You get them out. You carry two of them.", effects:{ stats:{ vitality:-4 }, org:{ grow:-1 } } } },
+    { label:"Keep them home. This one is not worth it.", effects:{ stats:{ renown:-2 } } },
+  ]
+},
+{
+  id:"org_payoff", weight:10, cooldown:150, days:40,
+  requires:{ chapter:["ascended", "transcendent", "supreme"], org:{ min:3 } },
+  title:"What Your People Give Back",
+  text:"Your organization is large enough now to look after itself, and, for once, after you.\n\nThe quartermaster has a list of what can be spared.",
+  choices:[
+    { label:"Take a tithe of soul shards to feed your Core.", effects:{ stats:{ essence:4, renown:-1 } },
+      text:"They bring you a share of every Gate's shards for a decade. Your Core is fuller. Your people noticed." },
+    { label:"Let them carry your name further.", effects:{ stats:{ renown:5 } },
+      text:"They go where you cannot be, and say whose they are." },
+    { label:"Accept the seal they struck for you.", effects:{ memory:"order_seal", stats:{ willpower:1 } },
+      text:"A Memory, made by your own people from the first fragments they ever banked together." },
+  ]
+},
+
+/* ===================================================================
    ACT V — SAINT, AND THE FOURTH DOOR
    Canon: Aster, Song and Vale "returned from the Fourth Nightmare
    wreathed in new authority, becoming the first humans to reach
@@ -1504,8 +1603,12 @@ const EVENTS = [
   id:"st_centuries", chapter:"transcendent", weight:30, cooldown:20, days:70,
   title:"Centuries",
   text:"A Saint does not have days. A Saint has projects, and the projects have generations inside them.\n\nYou set something in motion, look up, and everyone who began it with you is three lifetimes gone.",
+  variants:[
+    "Someone thanks you, in a street in a Citadel, for something you did for their great-grandmother. You remember her. You do not remember the street being here.\n\nThe century turns while you are deciding what to do with the next one.",
+    "A Saint's calendar has no weeks in it. It has wars, Seeds and successions, and a great deal of quiet in between.\n\nThe quiet has come round again, and it will last longer than most people's lives.",
+  ],
   choices:[
-    { label:"Build an order that will outlive you.", effects:{ stats:{ renown:8, cunning:4 } } },
+    { label:"Build an order that will outlive you, or turn your company into one.", effects:{ stats:{ renown:8, cunning:4 }, org:{ found:"order", kind:"order", grow:2 } } },
     { label:"Chase the Aspect to the bottom of itself.", effects:{ stats:{ essence:8, willpower:4 } } },
     { label:"Walk among mortals, unannounced, for a while.", effects:{ stats:{ tether:3, vitality:2, willpower:2 } } },
   ]
@@ -1584,7 +1687,7 @@ const EVENTS = [
   choices:[
     { label:"Hold a Gate no one else can hold.", effects:{ stats:{ renown:12, essence:6, vitality:-2 }, kill:{ rank:5, size:1 } } },
     { label:"Go looking for what makes the Nightmares.", effects:{ stats:{ essence:10, perception:8 } } },
-    { label:"Build a landing zone. The waking world will not last forever.", effects:{ stats:{ renown:10, cunning:6 }, flags:{ add:["built_refuge"] } } },
+    { label:"Build a landing zone. The waking world will not last forever.", effects:{ stats:{ renown:10, cunning:6 }, flags:{ add:["built_refuge"] }, org:{ found:"refuge", kind:"refuge", grow:3 } } },
   ]
 },
 {
@@ -2262,6 +2365,10 @@ const EVENTS = [
   id:"st_gate", chapter:"transcendent", weight:30, cooldown:18, days:80,
   title:"A Gate Only A Saint Can Close",
   text:"The duty does not lapse. It never has, at any rank, and the paperwork on that point is nine hundred years old and has never once been successfully argued with.\n\nWhat reaches you now are the ones nobody else can be sent to. A Corrupted-ranked Gate is a regional emergency; the ones that come with your name attached are worse than that, and they come with the tone of people who have already decided you are going.",
+  variants:[
+    "A Gate has opened in the sea off a siege capital, and three Masters have already gone into it.\n\nThe request reaches you by name, from people who have run out of other names.",
+    "Something came through a Gate in the mountains and has been walking toward a city for six days. Nothing sent against it has slowed it down.\n\nThe city has two days left, and one Saint within reach.",
+  ],
   choices:[
     { label:"Go in yourself and close it.", hint:"Willpower",
       check:{ stat:"willpower", dc:18, dcScale:3, fatal:4, fatalKind:"gate",
