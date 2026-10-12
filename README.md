@@ -388,6 +388,10 @@ it: the site stays static and needs no key.
   runes, rank/lifespan/Aspect, saves and the end screen), shown once and
   reopenable from Home or the in-game toolbar. Rune text is generated from
   `STATS`, so it never drifts from the data.
+- **Stat hints off by default** — choices no longer name the attribute
+  they roll (or pay out), so you pick by what your character would do; the
+  roll line afterwards still shows the stat. "Stat hints" on the home
+  screen or Status page turns them back on.
 - **End-of-run feedback links** — "Report a bug" / "Leave feedback" open a
   pre-filled GitHub issue with the run's details.
 - **PWA / offline play** via the service worker, and a **save/continue**

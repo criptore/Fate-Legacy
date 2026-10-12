@@ -43,8 +43,8 @@
 <meta name="description" content="A narrative life-sim in a world of Nightmares. Awaken, survive your trials, and climb the Soul Ranks — if your lifespan lets you." />
 <meta name="theme-color" content="#0a0a0f" />
 <link rel="icon" href="data:," />
-<link rel="stylesheet" href="css/tokens.css?v=0.3.1" />
-<link rel="stylesheet" href="css/main.css?v=0.3.1" />
+<link rel="stylesheet" href="css/tokens.css?v=0.3.2" />
+<link rel="stylesheet" href="css/main.css?v=0.3.2" />
 </head>
 <body>
 <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle day mode" title="Toggle day mode">☾</button>
@@ -58,6 +58,7 @@
         <button class="btn btn-primary" id="btn-continue" hidden>Continue</button>
         <button class="btn" id="btn-new">New Life</button>
         <button class="btn btn-ghost btn-guide" id="btn-guide-home" type="button">How to play</button>
+        <button class="btn btn-ghost btn-guide hint-toggle" type="button" aria-pressed="false">Stat hints: off</button>
       </div>
       <p class="fineprint" id="home-save-info"></p>
     </div>
@@ -146,6 +147,7 @@
     <div class="sheet">
       <h3>Spell Status Page</h3>
       <div id="sheet-body"></div>
+      <button class="btn btn-ghost hint-toggle" type="button" aria-pressed="false">Stat hints: off</button>
       <button class="btn" id="btn-sheet-close">Close</button>
     </div>
   </div>
@@ -168,10 +170,10 @@
   </div>
 </div>
 
-<script src="js/data.js?v=0.3.1"></script>
-<script src="js/save.js?v=0.3.1"></script>
-<script src="js/engine.js?v=0.3.1"></script>
-<script src="js/ui.js?v=0.3.1"></script>
+<script src="js/data.js?v=0.3.2"></script>
+<script src="js/save.js?v=0.3.2"></script>
+<script src="js/engine.js?v=0.3.2"></script>
+<script src="js/ui.js?v=0.3.2"></script>
 <script>
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); });

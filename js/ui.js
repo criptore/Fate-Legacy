@@ -113,6 +113,49 @@
     el.flawLine.textContent = lines.join("  ·  ");
   }
 
+  /* ---------- stat hints ----------
+     Player feedback: naming the rolled stat under every choice turns a
+     decision into "press the button you're best at". Hidden by default, so
+     you choose by what your character would do; the roll line after the
+     choice still names the stat, so the system stays learnable. Only stat
+     names are stripped; flavour after them ("Willpower. Years of it." ->
+     "Years of it.") and non-stat hints (costs, warnings) are kept.
+     Display preference, kept outside the save like the theme. */
+  const HINTS_KEY = "fatelegacy.statHints";
+  let showStatHints = false;
+  try { showStatHints = localStorage.getItem(HINTS_KEY) === "1"; } catch (e) {}
+
+  function shownHint(c) {
+    if (!c.hint || showStatHints) return c.hint;
+    // A bare stat name on an unchecked choice advertises what it pays out —
+    // the same min-maxing nudge, so it goes too.
+    if (!c.check) return STATS.some(d => d.name === c.hint) ? "" : c.hint;
+    const name = Engine.statDef(c.check.stat)?.name;
+    const names = [name, name && name.split(" ").pop()].filter(Boolean);   // "Soul Essence" / "Essence"
+    for (const n of names) {
+      if (c.hint === n) return "";
+      if (c.hint.startsWith(n + ".")) return c.hint.slice(n.length + 1).trim();
+    }
+    return c.hint;
+  }
+
+  function syncHintToggles() {
+    for (const b of document.querySelectorAll(".hint-toggle")) {
+      b.textContent = `Stat hints: ${showStatHints ? "on" : "off"}`;
+      b.setAttribute("aria-pressed", String(showStatHints));
+    }
+  }
+
+  function toggleStatHints() {
+    showStatHints = !showStatHints;
+    try { localStorage.setItem(HINTS_KEY, showStatHints ? "1" : "0"); } catch (e) {}
+    syncHintToggles();
+    // Re-draw the open choices, but never a resolved event's outcome.
+    if (EV && S && !S.dead && el.outcome.hidden && !el.game.hidden) renderEvent(EV);
+  }
+  for (const b of document.querySelectorAll(".hint-toggle")) b.onclick = toggleStatHints;
+  syncHintToggles();
+
   /* ---------- event ---------- */
   function renderEvent(ev) {
     EV = ev;
@@ -127,7 +170,8 @@
       b.className = "btn";
       const ok = Engine.choiceAvailable(S, c);
       b.disabled = !ok;
-      b.innerHTML = escape(c.label) + (c.hint ? `<span class="choice-hint">${escape(c.hint)}</span>` : "");
+      const hint = shownHint(c);
+      b.innerHTML = escape(c.label) + (hint ? `<span class="choice-hint">${escape(hint)}</span>` : "");
       if (ok) b.onclick = () => resolve(i);
       el.choices.appendChild(b);
     });
@@ -339,11 +383,14 @@
       a Great Clan is gentle.</p>` },
     { title:"Choices and rolls", body:() => `
       <p>Every event offers choices. Some are plain decisions; others are
-      <b>checks</b>, and the small line under the choice names the attribute
-      it leans on.</p>
+      <b>checks</b> against one of your attributes. By default the game
+      doesn't tell you which: pick what your character would do, and judge
+      from the situation.</p>
       <p class="guide-formula">d10 &nbsp;+&nbsp; attribute &nbsp;≥&nbsp; difficulty</p>
       <p>The result shows the exact roll, e.g. <span class="guide-code">7 + WIL 6 vs 12 — success</span>.
       Missing <b>badly</b> on a dangerous check can kill you outright.</p>
+      <p>Prefer to see the attribute before choosing? Turn on <b>Stat hints</b>
+      from the home screen or the Status page.</p>
       <p>Greyed-out choices need something you don't have yet. Difficulty rises
       with your rank <i>and</i> with the years you've lived — staying put is
       never perfectly safe.</p>` },
