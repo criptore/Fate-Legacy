@@ -70,4 +70,8 @@ Pack.add({
   ]
 },
   ],
+
+  patch() {
+    Hooks.on("endTitle", (title, S) => S.causeKind === "beyond" ? "Beyond The Edge" : title);
+  },
 });
