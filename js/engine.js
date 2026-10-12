@@ -492,7 +492,10 @@ const Engine = (() => {
        and that the wiki knows of exactly three holders. So the top three
        rungs need an extraordinary trial AND a rare draw, and the draw is
        deliberately NOT gated on lineage: canon says the two are unrelated. */
-    const deviation = s.origin === "outskirts" ? 2 : s.origin === "clan" ? -1 : 0;
+    /* An origin may set its own `deviation` (origins added by content packs
+       do); the three original ones keep their values. */
+    const deviation = ORIGINS.find(o => o.id === s.origin)?.deviation ??
+      (s.origin === "outskirts" ? 2 : s.origin === "clan" ? -1 : 0);
     const graded = s.appraisal + deviation;
     let rankIndex = graded >= 8 ? 3 : graded >= 5 ? 2 : graded >= 2 ? 1 : 0;
     if (rankIndex === 3) {
