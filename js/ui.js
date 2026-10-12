@@ -355,7 +355,7 @@
     const finalRankLabel = S.rank === 0 && S.chapter === "aspirant" ? "Aspirant" : (r.common === r.name ? r.name : `${r.name} · ${r.common}`);
     el.endRankName.textContent = finalRankLabel;
     renderPips(el.endRankPips, S.rank);
-    el.endTitle.textContent = KIND[S.causeKind] ?? `Died ${r.common}`;
+    el.endTitle.textContent = Hooks.reduce("endTitle", KIND[S.causeKind] ?? `Died ${r.common}`, S);
     el.endCause.textContent = S.cause ?? "The story ends here.";
 
     const aspect = S.aspect && ASPECTS.find(a => a.id === S.aspect);
