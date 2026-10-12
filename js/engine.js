@@ -350,6 +350,22 @@ const Engine = (() => {
     }
   }
 
+  /* ---------- saves from before v0.4.0 ----------
+     v0.4.0 removed five lineages. A save still carrying one would show
+     "Lineage: —" while keeping its stats, and a Weave could not take it
+     back. The stats were already earned, so they stay; only the id is
+     mapped onto the nearest lineage that still exists. */
+  const LINEAGE_RENAMED = { flame:"sun", salt_queen:"thin", long_sleeper:"thin", cartographer:"thin", unmade_smith:"thin" };
+  function migrate(s) {
+    const to = LINEAGE_RENAMED[s.lineage];
+    if (!to) return s;
+    s.lineage = to;
+    if (to === "thin") s.flags = s.flags.filter(f => f !== "divine_lineage");
+    else if (!s.flags.includes("hidden_lineage")) s.flags.push("hidden_lineage");
+    s.flags = s.flags.filter(f => f !== "fallen_clan");
+    return s;
+  }
+
   /* ---------- your organization (issue #10) ----------
      Canon gives the templates: an Awakened company like the First
      Evacuation Army's Irregulars, a Saint's own order and Citadel like the
@@ -370,9 +386,10 @@ const Engine = (() => {
   function orgSize(s) { return s.org && !s.org.gone ? s.org.size : 0; }
 
   function applyOrg(s, o) {
-    if (!s.org && o.found) {
+    if (o.found && (!s.org || s.org.gone)) {
       s.org = { name: pickRandom(ORG_NAMES), kind: o.found, size: 1, peak: 1, founded: years(s) };
       if (!s.flags.includes("has_org")) s.flags.push("has_org");
+      s.flags = s.flags.filter(f => f !== "org_gone");
     }
     if (!s.org || s.org.gone) return;
     if (o.kind && ORG_KINDS.indexOf(o.kind) > ORG_KINDS.indexOf(s.org.kind)) s.org.kind = o.kind;
@@ -414,6 +431,7 @@ const Engine = (() => {
     const old = LINEAGES.find(l => l.id === s.lineage);
     if (old) {
       applyStatBlock(s, Object.fromEntries(Object.entries(old.stats ?? {}).map(([k, v]) => [k, -v])), deltas);
+      if (s.stats.vitality < 1) s.stats.vitality = 1;
       s.flags = s.flags.filter(f => !(old.flags ?? []).includes(f));
       s.lineageBefore = old.id;
     }
@@ -559,7 +577,8 @@ const Engine = (() => {
      none of this: they are measured against you alone, which is also what
      keeps the Fourth and Fifth Nightmares the spike they are meant to be.
      All numbers are ours. */
-  const COMBAT_KINDS = ["gate", "nightmare", "dream_realm", "war", "chain"];
+  const COMBAT_KINDS = ["gate", "nightmare", "dream_realm", "war", "chain", "murdered"];
+  const AID = { weaponEach: 1, weaponCap: 2, soakEach: 2, soakCap: 4, echoDie: 4 };
 
   function isCombat(c) {
     return !!(c.check && c.check.fatal != null && !c.check.dcSelf &&
@@ -570,15 +589,15 @@ const Engine = (() => {
     return s.memories.filter(m => types.includes(MEMORIES[m]?.type)).length;
   }
 
-  function weaponBonus(s) { return Math.min(2, countMemories(s, ["Weapon"])); }
-  function armorSoak(s)   { return Math.min(4, 2 * countMemories(s, ["Armor", "Garment"])); }
+  function weaponBonus(s) { return Math.min(AID.weaponCap, AID.weaponEach * countMemories(s, ["Weapon"])); }
+  function armorSoak(s)   { return Math.min(AID.soakCap, AID.soakEach * countMemories(s, ["Armor", "Garment"])); }
 
-  /* What a check would add before the die is rolled. The simulator and the
-     UI hint read this too, so it has to stay deterministic: the Echo die is
+  /* What a check would add before the die is rolled. tools/sim.js prices
+     choices with it, so it has to stay deterministic: the Echo die is
      reported as a die, not rolled. */
   function checkAid(s, c) {
     if (!isCombat(c)) return { weapon: 0, echoDie: 0 };
-    return { weapon: weaponBonus(s), echoDie: (s.echoes?.length ?? 0) > 0 ? 4 : 0 };
+    return { weapon: weaponBonus(s), echoDie: (s.echoes?.length ?? 0) > 0 ? AID.echoDie : 0 };
   }
 
   function strongestEcho(s) {
@@ -589,6 +608,9 @@ const Engine = (() => {
     s.echoes = s.echoes.filter(e => e !== id);
     const neg = Object.fromEntries(Object.entries(ECHOES[id].stats ?? {}).map(([k, v]) => [k, -v]));
     applyStatBlock(s, neg, deltas);
+    /* The Echo died so that you would not: losing its Vitality bonus must
+       not be what kills you a moment later. */
+    if (s.stats.vitality < 1) s.stats.vitality = 1;
     s.echoesLost = (s.echoesLost ?? 0) + 1;
   }
 
@@ -645,19 +667,21 @@ const Engine = (() => {
           kill(s, c.check.fatalCause ?? out.text, c.check.fatalKind ?? "killed");
           return out;
         }
-        out.echoLost = shield;
-        loseEcho(s, shield, out.deltas);
+        out.echoLost = shield;   // lost below, after the failure lands
       }
       const branch = out.ok ? c.success : c.failure;
       if (branch) {
         let fx = branch.effects;
-        if (!out.ok) { const a = soaked(s, fx); fx = a.fx; out.soaked = a.soak; }
+        if (!out.ok && isCombat(c)) { const a = soaked(s, fx); fx = a.fx; out.soaked = a.soak; }
         out.text = branch.text ?? null;
         if (out.echoLost) out.text = `${ECHOES[out.echoLost].name} steps into what was meant for you, and is unmade.` + (out.text ? `\n\n${out.text}` : "");
         out.deltas.push(...applyEffects(s, fx));
       } else if (out.echoLost) {
         out.text = `${ECHOES[out.echoLost].name} steps into what was meant for you, and is unmade.`;
       }
+      /* The Echo goes after the ordinary failure has landed, so its own
+         stat bonus is never what kills you (loseEcho keeps Vitality >= 1). */
+      if (out.echoLost && !s.dead) loseEcho(s, out.echoLost, out.deltas);
     }
     out.deltas.push(...applyEffects(s, c.effects));
     if (!c.check && c.text) out.text = c.text;   // a plain choice may narrate its outcome
@@ -668,7 +692,7 @@ const Engine = (() => {
 
   return {
     newRun, draw, choose, choiceAvailable, applyEffects, harvest, ORIGINS: () => ORIGINS,
-    checkAid, isCombat, weaponBonus, armorSoak, orgSize,
+    checkAid, isCombat, weaponBonus, armorSoak, orgSize, migrate, AID,
     soulClass: s => CLASSES[s.soulClass ?? 0],
     maxClassFor,
     rank, years, lifeRemaining, lifespanYears, statDef, shown, eventText,

@@ -115,10 +115,11 @@ dies inside a Nightmare must not be credited with conquering it;
 ```
 
 **Dangerous checks.** A check with `fatal` whose `fatalKind` is `gate`,
-`nightmare`, `dream_realm`, `war` or `chain`, and which is not `dcSelf`, is a
+`nightmare`, `dream_realm`, `war`, `chain` or `murdered`, and which is not `dcSelf`, is a
 fight: Weapon Memories add +1 each (cap 2), a bound Echo adds a d4, Armor and
 Garment Memories take 2 Vitality each (cap 4) off the failure branch, and a
-fatal miss destroys the strongest Echo instead of the player. See
+fatal miss destroys the strongest Echo instead of the player (never leaving
+you below 1 Vitality). The numbers live in `Engine.AID`, which the UI reads. See
 `checkAid` in `engine.js`; `tools/sim.js` prices all of it.
 
 **A Nightmare ends in conquest or death.** No choice inside a Second+
