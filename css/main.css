@@ -91,6 +91,7 @@ body{
   border:1px solid var(--rank,var(--accent));
   box-shadow:0 0 9px -3px var(--rank,var(--accent));
 }
+#hud-runes .rune-aspect{cursor:pointer}
 .rune-aspect .rune-glyph{color:var(--accent-2);border-color:var(--accent-2);box-shadow:0 0 9px -3px var(--accent-2)}
 .rune-val{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1}
 .rune-name{font-family:ui-serif,Georgia,serif;font-style:italic;font-size:12px;color:var(--ink)}

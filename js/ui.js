@@ -50,11 +50,20 @@
 
   function aspectRuneHTML(aspect) {
     if (!aspect) return "";
-    return `<span class="rune rune-aspect" title="${escape(aspect.name)} — ${escape(aspect.desc)}">
+    return `<span class="rune rune-aspect" data-aspect title="${escape(aspect.name)} — ${escape(aspect.desc)}">
       <span class="rune-glyph">✧</span>
       <span class="rune-name">${escape(aspect.name)}</span>
       <span class="rune-label">Aspect</span>
     </span>`;
+  }
+
+  /* A Flaw's mechanical price, spelled out. Player feedback: the poetic
+     desc alone ("You move before you decide to. It has saved you twice...")
+     can read like a skill rather than a curse. */
+  function flawCost(f) {
+    const parts = Object.entries(f.stats ?? {}).map(([id, v]) =>
+      `${v > 0 ? "+" : "−"}${Math.abs(v)} ${Engine.statDef(id)?.short ?? id}`);
+    return parts.length ? `Cost: ${parts.join(", ")}` : "";
   }
 
   function renderPips(container, rankIndex) {
@@ -104,8 +113,11 @@
     const lin = S.lineage && LINEAGES.find(l => l.id === S.lineage);
     const cls = Engine.soulClass(S);
     const lines = [];
+    /* Aspect first: its rune only carries a hover title, which a phone can
+       never show, so this line is the only place mobile players can read it. */
+    if (aspect) lines.push(`Aspect — ${aspect.name}${S.aspectRank && S.aspectRank !== "Dormant" ? ` (${S.aspectRank} rank)` : ""}: ${aspect.desc}`);
     if (lin && lin.id !== "none") lines.push(`Lineage — ${lin.name}${lin.divine ? " (divine)" : ""}: ${lin.desc}`);
-    if (flaw) lines.push(`Flaw — ${flaw.name}: ${flaw.desc}`);
+    if (flaw) lines.push(`Flaw — ${flaw.name}: ${flaw.desc} ${flawCost(flaw)}.`);
     /* Class only earns HUD space once it stops being the default. Everyone
        starts a Beast with one core and almost everyone stays one. */
     if ((S.soulClass ?? 0) > 0) lines.push(`Class — ${cls.name}, ${cls.cores} Soul Cores.`);
@@ -311,7 +323,7 @@
       ["Solstice region", S.region ?? "Never reached"],
       ["Soul Cores", `${Engine.soulClass(S).name} · ${Engine.soulClass(S).cores}`],
       ["Aspect", aspect ? `${aspect.name}${S.aspectRank ? ` · ${S.aspectRank} rank` : ""} — ${aspect.desc}` : "—", "wide"],
-      ["Flaw", flaw ? `${flaw.name} — ${flaw.desc}` : "Never paid for", "wide"],
+      ["Flaw", flaw ? `${flaw.name} — ${flaw.desc} ${flawCost(flaw)}.` : "Never paid for", "wide"],
       ["Lineage", lineage ? `${lineage.name}${lineage.divine ? " · divine" : ""} — ${lineage.desc}` : "—", "wide"],
       ["Memories", S.memories.length
         ? S.memories.map(m => `${MEMORIES[m].name} (${MEMORIES[m].rank} ${MEMORIES[m].type})`).join(", ") : "None", "wide"],
@@ -349,7 +361,7 @@
     h += `<div class="sheet-section">Aspect</div>`;
     h += a ? line(a.name, a.desc) : line("—", "Not yet Awakened");
     h += `<div class="sheet-section">Flaw</div>`;
-    h += f ? line(f.name, f.desc) : line("—", "Not yet Awakened");
+    h += f ? line(f.name, `${f.desc} ${flawCost(f)}.`) : line("—", "Not yet Awakened");
     const l = S.lineage && LINEAGES.find(x => x.id === S.lineage);
     h += `<div class="sheet-section">Lineage</div>`;
     h += l ? line(l.name + (l.divine ? " (divine)" : ""), l.desc) : line("—", "None");
@@ -411,8 +423,10 @@
       <p>The thin <b>bar</b> under it is your remaining lifespan. Each rank lives
       far longer — but years pass faster the higher you climb, and your
       <b>Tether</b> to the waking world thins.</p>
-      <p>Survive the First Nightmare and the Spell grants an <b>Aspect</b>
-      (your power) and a <b>Flaw</b> (its price), shaped by how you played it.
+      <p>You carry an <b>Aspect</b> (your power) from the start; survive the
+      First Nightmare and the Spell adds a <b>Flaw</b>, its price: a permanent
+      penalty to some runes, shaped by how you played. Tap the gold Aspect
+      rune to read both.
       Later you may gain Memories, Echoes, and more Soul Cores.</p>` },
     { title:"Status, saves, the end", body:() => `
       <p><b>Status</b> (bottom of the screen) opens your full Spell status page:
@@ -511,12 +525,14 @@
     Save.clear(); show("home"); boot();
   };
 
-  el.expand.onclick = () => {
-    const open = el.panel.hidden;
+  function setPanel(open) {
     el.panel.hidden = !open;
     el.expand.setAttribute("aria-expanded", String(open));
     el.expandLabel.textContent = open ? "Fewer runes ▴" : "More runes ▾";
-  };
+  }
+  el.expand.onclick = () => setPanel(el.panel.hidden);
+  // Tapping the Aspect rune opens the panel where its text is written out.
+  el.runes.onclick = e => { if (e.target.closest("[data-aspect]")) setPanel(true); };
 
   /* Day mode. Persisted separately from the save — it is a display
      preference, not part of any life. Set in <head> too, so the very
