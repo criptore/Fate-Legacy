@@ -27,7 +27,7 @@ and end the life. That is the only way a Divine life ends, and it earns
 ## Canon it follows
 | Rule | Source |
 |---|---|
-| The Sixth Nightmare is "the final Nightmare"; conquering it makes one Divine | Paths of Ascension (wiki) |
+| The Sixth is the last Nightmare on the Path of Ascension; conquering it makes one Divine | Paths of Ascension (wiki). Late chapters mention a Seventh (a spoiler), so the game never calls the Sixth "the last Nightmare" outright |
 | Divine is "a true god whose essence encompasses all of existence, being woven into the universal laws" | wiki |
 | The Divine rank has no human name "because no one has reached it" | wiki |
 | A Nightmare ends in conquest or death | Repo owner's ruling; docs/canon.md |

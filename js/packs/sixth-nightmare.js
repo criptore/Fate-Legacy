@@ -1,6 +1,7 @@
 /* =============================================================
    THE SIXTH NIGHTMARE — THE UNWRITTEN LAW
-   Canon: "the Sixth Nightmare is the final Nightmare"; conquering it
+   Canon (wiki: Paths of Ascension): the Sixth is the last Nightmare on
+   the Path of Ascension; conquering it
    makes one Divine, "a true god whose essence encompasses all of
    existence, being woven into the universal laws" (wiki: Paths of
    Ascension). Human rank names stop before it: Divine "has no human
@@ -21,7 +22,7 @@ Pack.add({
   },
 
   achievements: {
-    divine: { name:"Divine", desc:"Conquered the Sixth Nightmare, the last one, and became a true god. There is no human word for what you are." },
+    divine: { name:"Divine", desc:"Conquered the Sixth Nightmare, the last on the Path of Ascension, and became a true god. There is no human word for what you are." },
     wrote_a_law: { name:"Author of a Law", desc:"Ended a Divine life by weaving yourself into the laws of existence." },
   },
 
@@ -32,9 +33,9 @@ Pack.add({
   id:"sx_offer", chapter:"sacred", weight:20, cooldown:30, days:300,
   requires:{ flags:{ all:["seeking_sixth"], none:["declined_sixth"] }, stats:{ willpower:{ min:70 }, essence:{ min:70 } } },
   title:"The Last Door",
-  text:"You have looked for it for millennia, and in the end it is not hidden at all. It is a Seed at the bottom of the Dream Realm, below the deepest Death Zone, below the dead gods' bones, in a place where the light behaves as if it is being watched.\n\nThe Sixth Nightmare. The last one. Nobody in the records of any cycle has come back from it with a name anyone wrote down.\n\nWhat waits beyond it is not a rank. It is the end of ranks. A god in the true sense, woven into the laws that make the world a world.",
+  text:"You have looked for it for millennia, and in the end it is not hidden at all. It is a Seed at the bottom of the Dream Realm, below the deepest Death Zone, below the dead gods' bones, in a place where the light behaves as if it is being watched.\n\nThe Sixth Nightmare. The last door on the Path of Ascension. Nobody in the records of any cycle has come back from it with a name anyone wrote down.\n\nWhat waits beyond it is not a rank. It is the end of ranks. A god in the true sense, woven into the laws that make the world a world.",
   choices:[
-    { label:"Enter the Seed and face the Sixth Nightmare.", hint:"The last trial there is. Almost certain death.",
+    { label:"Enter the Seed and face the Sixth Nightmare.", hint:"The last trial of the Path. Almost certain death.",
       effects:{ nightmare:"sixth" } },
     { label:"Not yet. You have time. You have nothing but time.", effects:{ stats:{ willpower:4, essence:4 } } },
     { label:"Never. Stay a lesser god, and look after what you can reach.", effects:{ stats:{ renown:10, tether:2 }, flags:{ add:["declined_sixth"] } } },
