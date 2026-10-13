@@ -50,13 +50,13 @@ Pack.add({
 {
   id:"dv_lesser", chapter:"divine", weight:14, cooldown:50, days:600,
   title:"A Lesser God Asks",
-  text:"A Sacred comes to you. She was a Sovereign once, and before that a Saint, and before that a seventeen-year-old from a citadel ward, and she has been a lesser god for nine thousand years.\n\nShe has found the last door, the Sixth Seed. She wants to know what is inside it, and whether she should go.",
+  text:"A Sacred comes to you. She was a Sovereign once, and before that a Saint, and before that a seventeen-year-old from a citadel ward. She came back from the Fifth Nightmare a little while after you did, the second of this cycle to manage it, and she has been a lesser god ever since.\n\nShe has found the last door, the Sixth Seed. She wants to know what is inside it, and whether she should go.",
   choices:[
     { label:"Tell her the truth: what it cost, and what it made of you.", effects:{ stats:{ renown:10, willpower:4 } },
       text:"She listens to all of it. Then she thanks you, and goes home, and you never find out whether she went in. You decide that this is the right way for it to be." },
     { label:"Tell her nothing. The Sixth Nightmare should be met with no warning, as you met it.", effects:{ stats:{ cunning:4, essence:6 } } },
     { label:"Tell her not to go.", effects:{ stats:{ tether:2, renown:4 } },
-      text:"She does not go. She lives another forty thousand years as a lesser god, and is, by every account, a good one. You will never know if you were right." },
+      text:"She does not go. She lives out the long age of a lesser god, and is, by every account, a good one. You will never know if you were right." },
   ]
 },
 {
