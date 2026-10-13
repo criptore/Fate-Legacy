@@ -67,7 +67,7 @@ Pack.add({
       check:{ stat:"vitality", dc:25, fatal:6, fatalKind:"nightmare",
         fatalText:"The ship goes into the dark, and the dark does not give it back.",
         fatalCause:"Lost in the storm behind the Fleet That Never Lands." },
-      success:{ text:"Inside the storm is the shore. The promised land, exactly as the songs describe it, and it is rotting. Something Defiled lives in its soil and has been reaching for the fleet for a thousand years. You kill one of its servants on the beach, and it bleeds black.", effects:{ stats:{ vitality:-5, renown:6 }, kill:{ rank:4, size:1 }, flags:{ add:["fleet_shore"] } } },
+      success:{ text:"Inside the storm is the shore. The promised land, exactly as the songs describe it, and it is rotting. Something Corrupted lives in its soil and has been reaching for the fleet for a thousand years. You kill one of its servants on the beach, and it bleeds black.", effects:{ stats:{ vitality:-5, renown:6 }, kill:{ rank:4, size:1 }, flags:{ add:["fleet_shore"] } } },
       failure:{ text:"You turn back before the cloud closes over you. Half the crew does not make it home, and the half that does will not speak of what they heard.", effects:{ stats:{ vitality:-7, willpower:2 } } },
       effects:{ goto:"tn3_3" } },
     { label:"Call a council of all ten thousand captains and tell them the truth.", hint:"Willpower. A thousand years of song against one sentence.",
@@ -92,12 +92,12 @@ Pack.add({
 {
   id:"tn3_3", scripted:true, once:true, days:60, fixedTime:true,
   title:"The Fleet That Never Lands",
-  text:"The conflict is the flight.\n\nFor a thousand years the fleet has run from a Defiled shore, and the Shepherd herd has kept it running, turning back every ship that drifted toward the storm. Now the storm is faster than the fleet. It will catch them within the year.\n\nThe other challengers have each decided what this Nightmare is about. One wants to kill the Shepherd and let the fleet choose its own way. One wants to sail into the storm and burn the shore clean. One has stopped talking, and is building something in the flagship's hold.\n\nThere will be no next year to decide in.",
+  text:"The conflict is the flight.\n\nFor a thousand years the fleet has run from a Corrupted shore, and the Shepherd herd has kept it running, turning back every ship that drifted toward the storm. Now the storm is faster than the fleet. It will catch them within the year.\n\nThe other challengers have each decided what this Nightmare is about. One wants to kill the Shepherd and let the fleet choose its own way. One wants to sail into the storm and burn the shore clean. One has stopped talking, and is building something in the flagship's hold.\n\nThere will be no next year to decide in.",
   choices:[
     { label:"Lead the whole fleet into the storm and take the shore back.", requires:{ flags:{ any:["fleet_shore", "fleet_council"] } }, hint:"Willpower. Ten thousand ships, a thousand years of fear, one order.",
       check:{ stat:"willpower", dc:6, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"The fleet follows you into the dark. The shore is waiting for it, and it has been waiting a very long time.",
-        fatalCause:"Killed on the Defiled shore, leading the Fleet That Never Lands to landfall." },
+        fatalCause:"Killed on the Corrupted shore, leading the Fleet That Never Lands to landfall." },
       success:{ text:"Ten thousand ships turn at once, which no living sailor has ever seen, and go into the storm under every scrap of sail they have. The fighting on the beach lasts a season. When it is over, the soil is clean, and the fleet's children walk on land for the first time in a thousand years.\n\nThe Shepherd herd follows you in, and then, for the first time, swims away.", effects:{ stats:{ willpower:5, renown:12 }, kill:{ rank:4, size:2 }, memory:"shoreless_chart", flags:{ add:["made_landfall", "carried_them"] }, goto:"tn_resolve" } },
       failure:{ text:"You take the shore. It costs a third of the fleet, and it costs you most of what you were when you came aboard. The Seed resolves on the beach, with the tide coming in red.", effects:{ stats:{ vitality:-10, willpower:2, renown:6 }, flags:{ add:["made_landfall"] }, goto:"tn_resolve" } } },
     { label:"Kill the Shepherd, and let the fleet decide where to sail.", hint:"Vitality. The eldest of the herd, Great-ranked, in its own sea.",

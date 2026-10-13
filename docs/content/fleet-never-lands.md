@@ -7,7 +7,7 @@ the Quiet Continent.
 thousand ships that have been at sea for a thousand years, sailing for a
 promised shore. A herd of Great-ranked sea creatures, the Shepherd, turns
 back any ship that strays. Eleven years in, you learn the truth: the fleet is
-not sailing toward anything. It is fleeing a Defiled shore hidden inside a
+not sailing toward anything. It is fleeing a Corrupted shore hidden inside a
 storm, and the storm is now faster than the fleet.
 
 **Three nodes.**
@@ -28,9 +28,9 @@ Ariel.
 ## Canon it follows
 | Rule | Source |
 |---|---|
-| A Third Nightmare can hold a whole nation, with challengers scattered through it | Tomb of Ariel (wiki); the "thirteen million challengers" figure was not found by search, so ⚠️ |
-| Years pass inside the Seed, and survivors return to the moment they entered | Tomb of Ariel (wiki); exact wording not found by search, so ⚠️. The no-ageing patch rests on it |
-| Defilement: "a special kind of Corruption that appeared on the Great River and then spread from downstream like a plague" | Great River, around ch. 1292–1294 |
+| A Third Nightmare can hold a whole nation, with challengers scattered through it | Third Nightmare (Event) (wiki): the Tomb of Ariel Nightmare had "thirteen million challengers" |
+| Years pass inside the Seed, and survivors return to the moment they entered | Third Nightmare (Event) (wiki): after conquering it, Sunny and the others "were sent back by the Spell to the exact moment they had entered the Seed of Nightmare" (Effie's pregnancy shows the gap). The no-ageing patch rests on it |
+| The shore is Corrupted, not Defiled | Defilement (wiki) is the Great River's own Corruption, born in the Estuary and tied to the Tomb of Ariel. An original Nightmare does not borrow it, so the shore is simply Corrupted |
 | Several valid resolutions | "there is no right or wrong way" (Nightmares, wiki) |
 | A Nightmare ends in conquest or death | Repo owner's ruling; docs/canon.md |
 
