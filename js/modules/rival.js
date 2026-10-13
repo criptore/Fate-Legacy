@@ -44,13 +44,13 @@
     const others = ASPECTS.filter(a => a.id !== s.aspect);
     s.rival = { name: pick(NAMES), aspect: pick(others).name, background: pick(BACKGROUNDS),
                 rank: 1, standing: -1, alive: true, fate: null };
-    s.flags.push("rival_unmet");
     syncFlags(s);
   }
 
-  /* The rival appears the first time you draw an event as an Awakened. */
+  /* Not every life has a rival. The first meeting is an ordinary event in
+     the Awakened pool, and the rival only exists once it is drawn. */
   Hooks.on("draw", (s, ev) => {
-    if (!s.rival && s.chapter === "awakened" && s.rank >= 1) { create(s); if (!s.pending) s.pending = "rv_meet"; }
+    if (!s.rival && ev.id === "rv_meet") create(s);
     if (s.rival) syncFlags(s);
   });
 
@@ -79,7 +79,6 @@
      them are filled here, once per draw. */
   Hooks.on("draw", (s, ev) => {
     if (!s.rival || !ev.id.startsWith("rv_")) return;
-    if (ev.id === "rv_meet") s.flags = s.flags.filter(f => f !== "rival_unmet");
     ev._title = ev._title ?? ev.title;
     ev.title = Hooks.reduce("text", ev._title, s);
     for (const c of ev.choices) {
@@ -113,17 +112,16 @@
     },
     events: [
 {
-  /* Forced through s.pending on the first Awakened draw. Not "scripted",
-     since it is a one-off scene, not a link in a chain; the flag keeps it
-     out of the ambient pool for anyone who has not just met their rival. */
-  id:"rv_meet", once:true, weight:1, days:5, fixedTime:true,
-  requires:{ flags:{ all:["rival_unmet"] } },
+  /* A random Awakened event, once per life. About half of the lives that
+     reach Awakened meet a rival; the rest never do. */
+  id:"rv_meet", once:true, weight:6, days:5,
+  requires:{ chapter:["awakened"] },
   title:"Someone Else Who Made It",
-  text:"There were forty Sleepers at your Gateway, and eleven came out the other side. One of them is standing next to you at the registration desk, still in the clothes they were wearing in the Dream Realm.\n\nTheir name is {rival}: {rivalBackground}. Their Aspect is {rivalAspect}. They watched you cross the last stretch to the Gateway, and they have clearly decided something about you, and it is not friendly.\n\n\"I was ahead of you,\" they say. \"At the end. Remember that.\"",
+  text:"Someone is waiting for you outside the Gate cordon, and it takes you a moment to place them. Then you do: the Gateway, the winter you Awakened. They were a few steps ahead of you on the last stretch, and they have not stopped thinking about it since.\n\nTheir name is {rival}: {rivalBackground}. Their Aspect is {rivalAspect}. They have been asking about you, and they have clearly decided something about you, and it is not friendly.\n\n\"I was ahead of you,\" they say. \"At the end. Remember that.\"",
   choices:[
     { label:"Shake their hand and tell them they were.", effects:{ stats:{ renown:1 }, rival:{ standing:2 } },
       text:"They stare at your hand for a long second, then take it. Something shifts in their face. It is not friendship. It might turn into it." },
-    { label:"Tell them the Gateway does not care who was first.", hint:"Cunning. A cool head, in front of everyone.",
+    { label:"Tell them the Gateway does not care who was first.", hint:"Cunning. A cool head, in front of the whole cordon.",
       check:{ stat:"cunning", dc:9, dcScale:2 },
       success:{ text:"A few people laugh. {rival} does not, but they nod, slowly, as if filing it away.", effects:{ stats:{ cunning:1, renown:2 } } },
       failure:{ text:"It comes out sharper than you meant. {rival} smiles in a way you will learn to recognise.", effects:{ rival:{ standing:-1 } } } },

@@ -6,8 +6,11 @@ your life for as long as both of you live.
 
 ## How it works
 
-- **When:** the first time you draw an event as an Awakened, the rival is
-  created and *Someone Else Who Made It* (`rv_meet`) is forced next.
+- **When:** not every life has a rival. *Someone Else Who Made It*
+  (`rv_meet`) is an ordinary random event in the Awakened pool, drawn at most
+  once per life, and the rival only exists once it is drawn. It is someone
+  who came out of the same Gateway the winter you Awakened and has been
+  thinking about you since.
 - **Who:** an original character (never a canon one). They get a name, a
   background (Legacy scion, outskirts kid, citadel prodigy) and an Aspect
   that is not yours.
@@ -21,7 +24,7 @@ your life for as long as both of you live.
 
 | id | when | what |
 |---|---|---|
-| `rv_meet` | once, forced | first meeting at the registration desk |
+| `rv_meet` | Awakened, random, once | first meeting, outside a Gate cordon |
 | `rv_gate` | Awakened/Ascended, recurring | the same Gate, two Aspects |
 | `rv_news` | recurring | you hear how they are doing |
 | `rv_duel` | standing ≤ -2, once | they come to take your soul fragments (fatal, `murdered`) |
@@ -44,9 +47,8 @@ Everything else (names, scenes, the standing scale) is fanfiction.
 
 ## Balance
 
-In a sim of 4,000 random-policy lives:
+From a sim of 6,000 random-policy lives:
 
-- 71% of lives meet a rival; the rest die before Awakening.
-- Of those rivals, 77% are alive at the end, 12% die on their own and 11% are
-  killed by you.
-- About 1% of all lives are killed by their rival.
+- **Who meets one:** 46% of the lives that reach Awakened, or 34% of all lives.
+- **When:** at a median age of 36. One meeting in ten happens by age 20, and one in ten after age 76.
+- **Deaths:** about 0.2% of all lives are killed by their rival.
