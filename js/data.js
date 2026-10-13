@@ -31,7 +31,7 @@ const RANKS = [
   { id:"ascended",     name:"Ascended",     common:"Master",    lifespan:320,   timeScale:34,   tetherLoss:2 },
   { id:"transcendent", name:"Transcendent", common:"Saint",     lifespan:900,   timeScale:90,   tetherLoss:3 },
   { id:"supreme",      name:"Supreme",      common:"Sovereign", lifespan:6000,  timeScale:520,  tetherLoss:4 },
-  { id:"sacred",       name:"Sacred",       common:"Sacred",    lifespan:40000, timeScale:1200, tetherLoss:0 },
+  { id:"sacred",       name:"Sacred",       common:"Spirit",    lifespan:40000, timeScale:1200, tetherLoss:0 },
   { id:"divine",       name:"Divine",       common:"Divine",    lifespan:null,  timeScale:6000, tetherLoss:0 },
 ];
 
@@ -413,7 +413,8 @@ const MEMORIES = {
   struck_the_ledger:{ name:"The Founding Entry", type:"Lineage", rank:"Ascended",
     desc:"One page, torn from under a judge's seat. Six centuries were a description of it.", stats:{ cunning:3, renown:2 } },
   /* Handed to you by your own order (issue #10). Canon: making a Memory is
-     rare even among Valor's enchanters, so your people commission it. */
+     slow and costly even for Valor's forgemasters (wiki: Memory), so your
+     people commission it. */
   order_seal:   { name:"The Order's Seal",  type:"Charm",  rank:"Ascended",
     desc:"Commissioned from a clan enchanter, paid for with the first soul shards your people ever pooled.", stats:{ willpower:2, renown:2 } },
   core_shard:   { name:"Shard of a Broken Core", type:"Charm", rank:"Ascended",
@@ -498,7 +499,7 @@ const ACHIEVEMENTS = {
   blooded:            { name:"Bloodied",           desc:"Helped bring down a Fallen-ranked Nightmare Creature as an Awakened." },
   went_first:         { name:"First Across",       desc:"Crossed the Saltglass Flats first, alone, with everyone else watching." },
   led:                { name:"Led Them",           desc:"Talked eight Awakened out of a fight that would have killed most of them." },
-  declined_fifth:     { name:"Chose Humanity",     desc:"Declined the Fifth Nightmare, as Anvil and Ki Song once did." },
+  declined_fifth:     { name:"Chose Humanity",     desc:"Declined the Fifth Nightmare. Anvil and Ki Song never dared it either." },
   seeking_sixth:      { name:"Seeking the Sixth",  desc:"Sacred, and still looking for the last door." },
 };
 
@@ -1715,11 +1716,12 @@ const EVENTS = [
 /* ===================================================================
    ACT VI — SOVEREIGN
    Canon: no Awakened of the current cycle has ever returned from the
-   Fifth Nightmare. Anvil and Ki Song declined it outright rather
-   than leave humanity without Supremes; Asterion called it a far
-   greater gamble than the previous four combined, with slim odds,
-   and warned that even success does not leave you yourself. The
-   loss of self is what destroyed the Sun Realm civilisation.
+   Fifth Nightmare. Ki Song admitted that she and Anvil never dared
+   it, and Asterion said humanity could not be left without its
+   Supremes; he called it "a far greater gamble than conquering the
+   previous four Nightmares", with slim odds, and warned that the
+   Spell does not care whether you remain yourself. By his account,
+   the Sun Realm was devoured by the Spirits it raised (ch. ~2761).
 =================================================================== */
 {
   id:"sv_millennia", chapter:"supreme", weight:30, cooldown:14, days:100,
@@ -1735,15 +1737,15 @@ const EVENTS = [
   id:"sv_fifth", chapter:"supreme", weight:14, once:true, days:800,
   requires:{ stats:{ willpower:{ min:55 }, essence:{ min:50 } } },
   title:"The Fifth Nightmare",
-  text:"Nobody from this cycle of the Spell has ever come back from it.\n\nEverything known about the Fifth is scavenged from the chronicles of civilisations the Spell used up before ours. It is two trials rather than one — a personal trial cut to fit you, and a collective one — and failure in either is death. Beyond it is Apotheosis: godhood, of the lesser kind.\n\nAnvil and Ki Song were offered this door and declined it, on the grounds that humanity could not afford to lose its Supremes. Asterion declined it on the grounds that he had a safer route to divinity and no interest in dying for the scenic one.\n\nAnd the warning underneath all of it: the Spell does not care whether you are still yourself afterwards. The Sun Realm went this way. Its gods ate their own world.",
+  text:"Nobody from this cycle of the Spell has ever come back from it.\n\nEverything known about the Fifth is scavenged from the chronicles of civilisations the Spell used up before ours. It is two trials rather than one — a personal trial cut to fit you, and a collective one — and failure in either is death. Beyond it is Apotheosis: godhood, of the lesser kind.\n\nAnvil and Ki Song never dared it: the risk was too great, and humanity could not be left without its Supremes. There are rumours that a third Sovereign saw a safer road to godhood and called this one a far greater gamble than the four before it.\n\nAnd the warning underneath all of it: the Spell does not care whether you are still yourself afterwards. The old chronicles say a civilisation called the Sun Realm was devoured, in the end, by the Spirits it raised, because they lost themselves to godhood.",
   choices:[
     { label:"Enter the Seed and face the Fifth Nightmare.", hint:"Willpower. The odds are worse than everything you have already survived, combined.",
       check:{ stat:"willpower", dc:10, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"The personal trial goes first. It always does.",
         fatalCause:"Unmade in the Fifth Nightmare, like everyone else this cycle." },
       success:{ text:"You conquer both trials and the Spell facilitates Apotheosis in record-breaking time, and the transformation is not something you get to steer.\n\nSomething comes out of it. It has your history and your Aspect and the shape of your intentions.\n\nWhether it is you is a question the Spell was never designed to answer, and there is nobody left alive who knew you well enough to check.", effects:{ rank:1, chapter:"sacred", stats:{ essence:20, renown:30, tether:-8 }, flags:{ add:["apotheosis"] } } },
-      failure:{ text:"You survive the personal trial and fail the collective one, and the Nightmare returns what is left of you to the Dream Realm without comment.", effects:{ stats:{ vitality:-13, willpower:4, essence:-10 }, days:1000 } } },
-    { label:"Decline, as Anvil and Ki Song declined. Humanity needs Supremes more than it needs a god.",
+      failure:{ effects:{ death:{ kind:"nightmare", text:"You survived the personal trial of the Fifth Nightmare and failed the collective one. A Nightmare ends in conquest or death." } } } },
+    { label:"Decline. Humanity needs its Sovereigns more than it needs one more god.",
       effects:{ stats:{ willpower:6, renown:10 }, flags:{ add:["declined_fifth"] } } },
   ]
 },
@@ -1834,21 +1836,22 @@ const EVENTS = [
    THE ACTS ABOVE MASTER NEED TEETH TOO
    Canon: Anvil of Valor and Ki Song "must expand their influence to
    perfect their Domains, but due to limited human Citadels, they
-   cannot coexist. This leads to a war between their clans."
-   Antarctica is named as the first major battlefield and the clash
-   is described as extremely fierce and bloody. A Saint does not get
-   nine hundred quiet years; a Saint gets drafted.
+   cannot coexist. This leads to a war between their clans." The
+   clans' feud first turned bloody in Antarctica, during the Chain of
+   Nightmares (ch. 1172-1204); the Domain War itself was fought in
+   Godgrave. A Saint does not get nine hundred quiet years; a Saint
+   gets drafted.
 =================================================================== */
 {
   id:"st_war", chapter:"transcendent", weight:26, once:true, days:90,
   title:"The Clans Cannot Coexist",
-  text:"Two Sovereigns are perfecting Domains that require the same Citadels, and there are not enough Citadels, and so one Domain must swallow the other.\n\nThat is the whole of the reasoning and it has been sufficient to start a war across a quadrant. The Southern front opens in Antarctica. Both sides are counting Saints, and there are only a few dozen Saints, and everyone knows the name of every single one.\n\nIncluding yours.",
+  text:"Two Sovereigns are perfecting Domains that require the same Citadels, and there are not enough Citadels, and so one Domain must swallow the other.\n\nThat is the whole of the reasoning and it has been sufficient to start a war. The front runs along the bones of Godgrave, a dead god under ash and twilight. Both sides are counting Saints, and there are only a few dozen Saints, and everyone knows the name of every single one.\n\nIncluding yours.",
   choices:[
     { label:"Take a side and fight it.", hint:"Willpower. Saints do not fight anything smaller than each other.",
       check:{ stat:"willpower", dc:5, dcSelf:true, fatal:2, fatalKind:"war",
-        fatalText:"You meet another Saint on an ice shelf at the bottom of the world. One of you was always going to be the one who did not leave.",
-        fatalCause:"Killed by another Saint in the Southern Quadrant war." },
-      success:{ text:"You break a front that a hundred thousand Awakened could not have moved, and the ice will be a different shape for a thousand years.", effects:{ stats:{ renown:12, vitality:-6 }, kill:{ rank:3, cores:1, size:6 }, flags:{ add:["war_saint"] } } },
+        fatalText:"You meet another Saint on the collarbone of a dead god. One of you was always going to be the one who did not leave.",
+        fatalCause:"Killed by another Saint in the war of the Domains, on Godgrave." },
+      success:{ text:"You break a front that a hundred thousand Awakened could not have moved, and the ash will lie differently for a thousand years.", effects:{ stats:{ renown:12, vitality:-6 }, kill:{ rank:3, cores:1, size:6 }, flags:{ add:["war_saint"] } } },
       failure:{ text:"You hold your section. It costs you a century of recovery and a piece of your Aspect you will not get back.", effects:{ stats:{ vitality:-9, essence:-4, renown:5 } } } },
     { label:"Refuse both sides.", hint:"Cunning. Neutrality is a position, and positions get attacked.",
       check:{ stat:"cunning", dc:5, dcSelf:true, fatal:3, fatalKind:"murdered",

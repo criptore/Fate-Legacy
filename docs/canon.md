@@ -41,10 +41,17 @@ reference before anyone relies on it.
 | The Great Clans each carry a divine lineage | *Divine Lineage*: Valor (War God), Immortal Flame (Sun God, ch. 577), House of Night (Storm God; ch. 2603, taken from a Memory), Song (Beast God: Ki Song earned the Lineage Memory; ch. 1924). The game's Valor, Song and Night lineages are these | ✅ |
 | The divine lineages are a closed set: six gods and the Weaver | *Divine Lineage*. Sun God: Nephis is the last known carrier. Heart God: Asterion alone (ch. 1613). Shadow God: unclaimed (ch. 1613); Sunny's drop devoured by [Blood Weave] (ch. 550–551). Weaver, the Demon of Fate: "Why have the gods forbidden us seven to sire offspring?" (ch. 1752). All seven are in the game and nothing else divine is | ✅ |
 | A Weave can devour another lineage | [Blood Weave] devoured the Shadow God's ichor (ch. 551). This is the precedent for `ev_weave`, the only way to the Weaver's lineage | ✅ |
-| A Nightmare ends in conquest or death | *Nightmares*: "Each Nightmare contains a central conflict that has to be resolved for the Nightmare to end". No canon line says outright that a Second+ Nightmare cannot be abandoned, but nothing shows anyone walking out, and ch. 1228 has only "a few dozen" of "hundreds and hundreds" returning from the Third. So no Second+ Nightmare offers a way out here, and a failed decisive check is death | ⚠️ |
+| A Nightmare ends in conquest or death | *Nightmares*: "Each Nightmare contains a central conflict that has to be resolved for the Nightmare to end"; ch. 1228: of "hundreds and hundreds" who attempted the Third, "only a few dozen humans returned". No canon scene shows anyone walking out of a Second+ Nightmare alive. **Confirmed as a project rule by the repo owner (2026-10-12)**, and enforced by the canon watch (#14) | ✅ |
 | Hollow and Lost are different things | *Hollow*: the soul is destroyed and an empty body is left. *Lost*: the body dies in the waking world and the soul is stranded in the Dream Realm, unable to return unless it reaches Master. `org_lost` uses the second | ✅ |
 | A destroyed Echo is gone for good | *Echo*: a damaged Echo heals, a destroyed one does not return. Ch. 47: Echoes are "extremely rare" and "much more precious than Memories" | ✅ |
 | The Great Clans hold independents down | Ch. 1229: "The great clans have been suppressing the Transcendence of independent Awakened for decades". Used by `ms_suppression` and `org_clan` | ✅ |
+| Humans call the Sacred rank "Spirit" | ch. ~2266: "A Supreme is someone who expands their soul to dominate a portion of the world. A Spirit is someone whose soul can encompass the whole world"; ch. 2761 uses "Spirits" for the same tier. The rank keeps its name (Sacred) and shows "Spirit" as its common name, like Saint and Sovereign | ✅ |
+| Anvil and Ki Song never attempted the Fifth Nightmare | Wiki (Sovereigns/History): Ki Song "admitted that even if she and Anvil had ambitions to conquer the Fifth Nightmare, they did not dare take the risk"; Asterion's account: humanity could not be left without its Supremes. Until v0.5.0 the game said they were "offered" it and "declined", which overstated it | ✅ |
+| Asterion called the Fifth "a far greater gamble than conquering the previous four Nightmares", saw "a safer and better way to become a deity", and said the Sun Realm was devoured by the Spirits it raised | Ch. ~2761 (heavy spoiler); the game only alludes to it, attributing it to "rumours" and "the old chronicles" | ✅ |
+| The Domain War was fought in Godgrave; the clans' feud first turned bloody in Antarctica during the Chain of Nightmares | Ch. 1172-1204 (Antarctica, Battle of the Black Skull); the Domain War opens on the Collarbone Plains and centres on Godgrave. Until v0.5.0 `st_war` put the war's front in Antarctica | ✅ |
+| Sovereigns "still demanded fealty from the absolute majority of Transcendents" | around ch. 1678 | ✅ |
+| Making a Memory is slow and costly even for Valor's forgemasters; altering a Spell-granted Memory is rarer still | *Memory* (wiki): Valor's forgemasters "could create Memories and Echoes, but the process was long and required precious resources"; "Altering Memories ... was a rare skill even among enchanters of Valor" | ✅ |
+| Sorrow is a Legacy Clan | "Tamar of Sorrow", around ch. 2740 | ✅ |
 | Class is a second axis, counted in Soul Cores | *Nightmare Creatures*: Beast 1, Monster 2, Demon 3, Devil 4, Tyrant 5, Terror 6, Titan 7, separate from the Rank ladder (Dormant…Unholy) | ✅ |
 | Extra Soul Cores hurt, and are not what humans are for | *Divine Aspect*: "Human souls are not meant to have many cores or sustain them… the birth [of a new core brings immense pain]" | ✅ |
 | Soul fragments = `2^(ranks above you) × soul cores` | Wiki FAQ, progression formula. *Soul Core* confirms that absorbing soul fragments increases core capacity, but the formula itself was not found | ⚠️ |
@@ -105,3 +112,12 @@ it might be canon:
 - **Every Nightmare and solstice region.** All 11 Nightmares and 4 regions are
   original, built on the pattern of the novel's (Forgotten Shore, Dark City,
   Hollow Mountains).
+
+## Fan fiction (fanon)
+
+The repo owner allows fan fiction as a source of ideas when chapter text is
+out of reach. The rule here: fanon can inspire a scenario, but it is never
+cited as canon, and anything taken from it is listed under "Ours" in that
+pack's page in `docs/content/`. The research for v0.5.0 found almost no
+usable fan fiction (two stories, neither adding rules), so nothing in the
+game currently rests on it.
