@@ -40,7 +40,7 @@ This is intended: canon Abilities consume Essence.
 |---|---|
 | Dormant Ability from the First Nightmare; Awakened Ability; "Ascension grants a third Aspect Ability"; a Transformation at Transcendence; a Domain at Supreme | Aspect Ability, Category:Master (wiki) |
 | Aspirants have the Aspect "without the Flaw or Aspect Ability" | Awakened (wiki) |
-| "Essence can be used for summoning Memories and Echoes or using advanced Aspect Abilities" | Soul Essence (wiki) |
+| Abilities run on soul essence: run dry and even the Dormant Ability goes out | Aspect Ability (wiki): in ch. 1409 and 1412 Nephis "experienced essence exhaustion that she couldn't access even her Dormant Ability". (An earlier quote attributed to the Soul Essence page was not found there and is dropped.) |
 
 ## Ours
 Every name, bonus and cost. Canon gives no numbers for Ability costs.
