@@ -1742,7 +1742,7 @@ const EVENTS = [
     { label:"Enter the Seed and face the Fifth Nightmare.", hint:"Willpower. The odds are worse than everything you have already survived, combined.",
       check:{ stat:"willpower", dc:10, dcSelf:true, fatal:2, fatalKind:"nightmare",
         fatalText:"The personal trial goes first. It always does.",
-        fatalCause:"Unmade in the Fifth Nightmare, like everyone else this cycle." },
+        fatalCause:"Unmade in the Fifth Nightmare. Nobody of this cycle had tried it before you." },
       success:{ text:"You conquer both trials and the Spell facilitates Apotheosis in record-breaking time, and the transformation is not something you get to steer.\n\nSomething comes out of it. It has your history and your Aspect and the shape of your intentions.\n\nWhether it is you is a question the Spell was never designed to answer, and there is nobody left alive who knew you well enough to check.", effects:{ rank:1, chapter:"sacred", stats:{ essence:20, renown:30, tether:-8 }, flags:{ add:["apotheosis"] } } },
       failure:{ effects:{ death:{ kind:"nightmare", text:"You survived the personal trial of the Fifth Nightmare and failed the collective one. A Nightmare ends in conquest or death." } } } },
     { label:"Decline. Humanity needs its Sovereigns more than it needs one more god.",
