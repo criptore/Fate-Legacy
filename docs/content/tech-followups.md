@@ -16,7 +16,10 @@ intended -2 +1). The canon watch caught it.
 At realistic Awakened stats the Lantern March, the Iron Orchard and the
 Court of Uncounted Debts killed 0.1–1.9% of challengers. Their decisive
 checks used fixed DCs (14–17), which any Awakened ready for a Second Seed
-clears easily. In canon, most challengers never come back.
+clears easily. In canon the Second Nightmare is "larger, longer, and harder" than the
+First (ch. 559), and its Creatures are "usually either Awakened or Fallen"; a
+Nightmare that kills almost nobody does not match that. Canon gives no death
+rate for it, so the 10% below is ours.
 
 The decisive (last-node) checks are now personal trials
 (`dcSelf:true, dc:4, fatal:3`), the same as the new Noon Tribute:
