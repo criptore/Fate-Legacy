@@ -6,7 +6,7 @@
    - A Sworn House: a lesser Legacy Clan sworn to a Great one. Canon
      has lesser Legacy Clans with hereditary Attributes (Aegis Rose,
      Dagonet, Han Li, Maharana, Pandavar, Sorrow, White Feather), and
-     some of them serve a Great Clan (White Feather serves Valor).
+     some of them serve a Great Clan.
      Which house is left unnamed: the player's family is ours.
    - The Evacuation Camps: raised in a camp after a Gate swallowed
      your home region. Canon's Chain of Nightmares turned Antarctica

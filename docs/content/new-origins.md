@@ -35,7 +35,7 @@ A Gate swallowed the region you were born in, and you grew up in the camps.
 ## Canon it follows
 | Rule | Source |
 |---|---|
-| Lesser Legacy Clans have hereditary Attributes, and some serve a Great Clan (White Feather serves Valor) | Legacy Clans (wiki) |
+| Lesser Legacy Clans have hereditary Attributes, and some serve a Great Clan | Legacy Clans (wiki) |
 | "Physical contact was required to transfer a Memory", and Memories are "destroyed at the moment of their owner's death" | Memory (wiki) |
 | The Chain of Nightmares turned Antarctica into hundreds of Gates; the Government ran the evacuation; the First Evacuation Army fought it | Chain of Nightmares, ch. 843+ (wiki) |
 | The Spell's appraisal is tied to "how far one deviated from their destined path" | Nightmare Spell (wiki) |
