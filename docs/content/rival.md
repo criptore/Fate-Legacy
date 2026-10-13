@@ -17,7 +17,9 @@ your life for as long as both of you live.
 - **Standing:** a scale from -3 ("would kill you") to +3 ("would die for
   you"). It starts at -1. Your choices move it.
 - **Rank:** the rival climbs on their own. Each time you rank up, they have a
-  60% chance to follow, and some scenes push them further. When they are
+  60% chance to follow, and some scenes push them further. They never go
+  above Saint: canon has only three Sovereigns before the player (ch. 368),
+  so a Sovereign rival would contradict it. When they are
   ahead of you, the `rival_ahead` flag is set.
 
 ## Events
@@ -28,7 +30,7 @@ your life for as long as both of you live.
 | `rv_gate` | Awakened/Ascended, recurring | the same Gate, two Aspects |
 | `rv_news` | recurring | you hear how they are doing |
 | `rv_duel` | standing ≤ -2, once | they come to take your soul fragments (fatal, `murdered`) |
-| `rv_rescue` | standing ≥ 2, once | they come back for you |
+| `rv_rescue` | standing ≥ 2, once, up to Saint | they come back for you |
 | `rv_fall` | once | they die somewhere you were not |
 
 Achievements: **Only One Of Us** (kill your rival) and **Saved By A Rival**.
@@ -38,12 +40,13 @@ screen shows what became of them.
 
 ## Lore basis
 
-- Killing an Awakened yields part of their soul fragments. That is the canon
-  motive for the duel.
+- Killing an Awakened yields part of their soul fragments (Awakened, wiki:
+  "Other Awakened receive a portion of the soul fragments his enemy had
+  accumulated"). That is the canon motive for the duel.
 - Feuds between Legacy scions and independents in the Dream Realm.
 - Duels between Awakened happen.
 
-Everything else (names, scenes, the standing scale) is fanfiction.
+Everything else (names, scenes, the standing scale) is ours.
 
 ## Balance
 

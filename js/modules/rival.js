@@ -12,13 +12,13 @@
 
    State: s.rival = { name, aspect, rank, standing, alive, fate }
    - standing runs from -3 (would kill you) to +3 (would die for you)
-   - their rank climbs on its own, roughly in step with yours
+   - their rank climbs on its own, roughly in step with yours, never above Saint
    Placeholders in event text: {rival}, {rivalAspect}, {rivalRank}.
    See docs/content/rival.md.
    ============================================================= */
 (() => {
   const NAMES = ["Kael Vantrice", "Ines Marrow", "Oren Calloway", "Sable Ruiz", "Tavi Okonkwo",
-    "Mirela Hask", "Jun Ashby", "Rook Delacroix", "Petra Vael", "Idris Lorne", "Nadia Corve", "Emre Solace"];
+    "Mirela Hask", "Jun Ashby", "Rook Delacroix", "Petra Vael", "Idris Lorne", "Nadia Corve", "Emre Halloran"];
   const BACKGROUNDS = [
     "a Legacy scion with a clan's training and a clan's expectations",
     "an outskirts kid who has never once been given anything",
@@ -26,6 +26,10 @@
   ];
 
   const R = s => s.rival;
+  /* Never above Saint. Canon has only three Sovereigns before the player
+     ("Aster, Song, Vale", ch. 368), and no one of this cycle has come back
+     from the Fifth, so a rival who climbs past Transcendent would break both. */
+  const CAP = 3;
   const alive = s => !!(s.rival && s.rival.alive);
   const rankName = r => RANKS[Math.min(r, RANKS.length - 1)].common;
   const standingWord = st => st <= -3 ? "would kill you" : st <= -1 ? "rival" : st === 0 ? "wary" : st <= 2 ? "something like a friend" : "would die for you";
@@ -57,10 +61,10 @@
   /* fx.rival: { standing:+n, kill:true, spare:true, die:"text" } */
   Hooks.on("effects", (s, fx, deltas) => {
     const r = s.rival;
-    if (r && fx.rank && r.alive && r.rank <= s.rank && Math.random() < 0.6) r.rank = Math.min(r.rank + 1, 5);
+    if (r && fx.rank && r.alive && r.rank <= s.rank && Math.random() < 0.6) r.rank = Math.min(r.rank + 1, CAP);
     if (!fx.rival || !r) return;
     if (fx.rival.standing) r.standing = Math.max(-3, Math.min(3, r.standing + fx.rival.standing));
-    if (fx.rival.climb && r.alive) r.rank = Math.min(r.rank + 1, 5);
+    if (fx.rival.climb && r.alive) r.rank = Math.min(r.rank + 1, CAP);
     if (fx.rival.kill && r.alive) {
       r.alive = false; r.fate = `Killed by you, as ${rankName(r.rank)}.`;
       if (!s.flags.includes("killed_rival")) s.flags.push("killed_rival");
@@ -200,7 +204,7 @@
 },
 {
   id:"rv_rescue", weight:16, once:true, days:30,
-  requires:{ chapter:["awakened", "ascended", "transcendent", "supreme"], flags:{ all:["rival_alive", "rival_friend"] } },
+  requires:{ chapter:["awakened", "ascended", "transcendent"], flags:{ all:["rival_alive", "rival_friend"] } },
   title:"{rival} Comes Back For You",
   text:"You are pinned down at a Gate that was graded wrong, with something on top of you that should not have fit through it, and the communicator has stopped answering.\n\nThen the wall to your left comes apart, and {rival} walks through the gap with {rivalAspect} roaring around them, and says, \"You owe me,\" and does not wait for an answer.",
   choices:[
