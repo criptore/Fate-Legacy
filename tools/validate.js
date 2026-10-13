@@ -12,6 +12,19 @@ const byId = new Map(EVENTS.map(e => [e.id, e]));
 const problems = [];
 const P = (sev, id, msg) => problems.push({ sev, id, msg });
 
+// A repeated key in an object literal is legal JavaScript and silently keeps
+// only the last value, so `stats:{ vitality:-2, renown:4, vitality:1 }`
+// quietly loses the -2. Object literals are flattened by the time we see
+// them, so this reads the source text of every loaded file instead.
+for (const f of scripts()) {
+  const src = require("fs").readFileSync(require("path").join(__dirname, "..", f), "utf8");
+  for (const m of src.matchAll(/stats:\{([^{}]*)\}/g)) {
+    const keys = [...m[1].matchAll(/([a-z_]+)\s*:/g)].map(k => k[1]);
+    const dup = keys.find((k, i) => keys.indexOf(k) !== i);
+    if (dup) P("ERROR", f, `stats block repeats "${dup}" (only the last value counts): {${m[1].trim()}}`);
+  }
+}
+
 // every pack and module index.html loads must exist, and every pack must
 // have registered itself (a pack that throws halfway would leave half its
 // content in the game).
