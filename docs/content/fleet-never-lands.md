@@ -28,16 +28,18 @@ Ariel.
 ## Canon it follows
 | Rule | Source |
 |---|---|
-| A Third Nightmare can hold a whole nation, with challengers scattered through it | Tomb of Ariel "began with thirteen million challengers" (wiki) |
-| Years pass inside the Seed, and survivors return "to the exact moment they had entered the Seed" | Tomb of Ariel (wiki) |
-| Defilement as a spreading corruption of a land | Great River, Third Nightmare (wiki) |
+| A Third Nightmare can hold a whole nation, with challengers scattered through it | Tomb of Ariel (wiki); the "thirteen million challengers" figure was not found by search, so ⚠️ |
+| Years pass inside the Seed, and survivors return to the moment they entered | Tomb of Ariel (wiki); exact wording not found by search, so ⚠️. The no-ageing patch rests on it |
+| Defilement: "a special kind of Corruption that appeared on the Great River and then spread from downstream like a plague" | Great River, around ch. 1292–1294 |
 | Several valid resolutions | "there is no right or wrong way" (Nightmares, wiki) |
 | A Nightmare ends in conquest or death | Repo owner's ruling; docs/canon.md |
 
 ## Ours
 The fleet, the *Long Patience*, the Shepherd herd, the storm and the shore.
-*The Shoreless Chart* (Utility Memory), *The Shepherd's Calf* (Echo) and the
-*Made Landfall* achievement are new.
+*The Shoreless Chart* (Utility Memory), *The Shepherd's Calf* (Echo, Ascended
+rank and 4 Essence like the other Fallen-born Echo) and the *Made Landfall*
+achievement are new. The council check is deliberately hard (DC 44 against an
+average Willpower of about 39 at a Third Seed).
 
 ## Numbers
 At the average stats of a life that reaches the Third Seed (sampled from

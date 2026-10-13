@@ -22,7 +22,7 @@ Pack.add({
   },
 
   echoes: {
-    shepherd_calf: { name:"The Shepherd's Calf", rank:"Ascended", bound:5,
+    shepherd_calf: { name:"The Shepherd's Calf", rank:"Ascended", bound:4,
       desc:"A copy of the youngest thing that swam beneath the fleet. It circles you as if you were a ship that might stray.",
       stats:{ vitality:4, willpower:2 } },
   },
@@ -71,6 +71,9 @@ Pack.add({
       failure:{ text:"You turn back before the cloud closes over you. Half the crew does not make it home, and the half that does will not speak of what they heard.", effects:{ stats:{ vitality:-7, willpower:2 } } },
       effects:{ goto:"tn3_3" } },
     { label:"Call a council of all ten thousand captains and tell them the truth.", hint:"Willpower. A thousand years of song against one sentence.",
+      /* Deliberately high: by a Third Seed, Willpower averages ~39, and
+         talking ten thousand captains out of a thousand-year song should
+         fail about half the time. */
       check:{ stat:"willpower", dc:44, fatal:6, fatalKind:"nightmare",
         fatalText:"The captains listen, and then they vote, and the vote is to throw the person who said it over the side so that the song can go on.",
         fatalCause:"Thrown overboard by the captains of the Fleet That Never Lands for telling them the truth." },
