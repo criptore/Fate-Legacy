@@ -57,16 +57,16 @@ Pack.add({
 {
   id:"sv_fealty", chapter:"supreme", weight:20, cooldown:24, days:150,
   title:"The Saints Come To Swear",
-  text:"Sovereigns demand fealty from Saints. That is how the world has worked since there were Sovereigns in it, and now it is how the world works around you.\n\nThree Saints are waiting in the hall of your Citadel. One of them is very young, as Saints go. One is older than you. The third has sworn to two Sovereigns before you, and both of them are dead.",
+  text:"Sovereigns demand fealty from Saints. That is how the world has worked since there were Sovereigns in it, and now it is how the world works around you.\n\nThree Saints are waiting in the hall of your Citadel. One of them is very young, as Saints go. One is older than you. The third swore to two Saints before you, back when she was a Master, and both of them are dead.",
   choices:[
     { label:"Accept their fealty and give them each a Citadel's defence.", effects:{ stats:{ renown:8, cunning:2 }, flags:{ add:["sworn_saints"] } } },
     { label:"Refuse fealty. Offer them alliance instead, as equals.", hint:"Cunning. A Sovereign who does not demand fealty is a rumour that travels.",
       check:{ stat:"cunning", dc:22, dcScale:4 },
       success:{ text:"Two of them accept, and stay, and are better allies than any sworn Saint would have been. The third leaves, and tells everyone, and within a decade Saints are coming to you from other Domains.", effects:{ stats:{ renown:12, willpower:2 }, flags:{ add:["free_saints"] } } },
       failure:{ text:"They take it as weakness. All three leave, and one of them swears to a Sovereign who would very much like your Citadels.", effects:{ stats:{ renown:-6 } } } },
-    { label:"Ask the one who outlived two Sovereigns what killed them.", hint:"Perception. She knows. She has never been asked.",
+    { label:"Ask the one who outlived two lords what killed them.", hint:"Perception. She knows. She has never been asked.",
       check:{ stat:"perception", dc:22, dcScale:4 },
-      success:{ text:"She tells you, after a long silence. Both of them died the same way: they stopped going to the Gates themselves, and their Domains forgot what they were for. You will remember that for a very long time.", effects:{ stats:{ perception:4, willpower:4 }, flags:{ add:["knows_the_fall"] } } },
+      success:{ text:"She tells you, after a long silence. Both of them died the same way: they stopped going to the Gates themselves, and their Citadels forgot what they were for. You will remember that for a very long time.", effects:{ stats:{ perception:4, willpower:4 }, flags:{ add:["knows_the_fall"] } } },
       failure:{ text:"She tells you a story that is mostly true. You will not find out which part is not for several centuries.", effects:{ stats:{ cunning:2 } } } },
   ]
 },
@@ -77,9 +77,9 @@ Pack.add({
   choices:[
     { label:"Go down into the Hollows and look for a lost Citadel.", hint:"Willpower. A Death Zone, under a god.",
       check:{ stat:"willpower", dc:26, dcScale:4, fatal:5, fatalKind:"war",
-        fatalText:"The Hollows are a Death Zone, and you went in alone, and something Unholy had been waiting under the ribs since before there were Sovereigns.",
+        fatalText:"The Hollows are a Death Zone, and you went in alone, and something Cursed had been waiting under the ribs since before there were Sovereigns.",
         fatalCause:"Killed in the Hollows of Godgrave by something older than the war." },
-      success:{ text:"You find one, under the seventh rib: a Citadel of black stone with a working Gateway, empty for an age. You bring it into your Domain, and the war changes shape around you.", effects:{ stats:{ renown:12, vitality:-6 }, domain:1, kill:{ rank:6, size:1 } } },
+      success:{ text:"You find one, under the seventh rib: a Citadel of black stone with a working Gateway, empty for an age. You bring it into your Domain, and the war changes shape around you.", effects:{ stats:{ renown:12, vitality:-6 }, domain:1, kill:{ rank:5, size:1 } } },
       failure:{ text:"You find the Citadel and cannot hold it. You come back up into the twilight with nothing but the memory of what lives down there.", effects:{ stats:{ vitality:-10, willpower:3 } } } },
     { label:"Hold a section of the line on the god's shoulder.", hint:"Vitality. Sovereign against Sovereign.",
       check:{ stat:"vitality", dc:26, dcScale:4, fatal:5, fatalKind:"war",

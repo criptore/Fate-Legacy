@@ -9,7 +9,7 @@ issue #6, and it made the longest lives in the game the most repetitive.
   Citadel and its people: take it by force, defend its people until they
   choose you, or let it go.
 - **The Saints Come To Swear.** Accept fealty, refuse it and offer alliance,
-  or ask the Saint who outlived two Sovereigns what killed them.
+  or ask the Saint who outlived two lords what killed them.
 - **Godgrave.** The front of the war between Domains runs along a dead
   god's bones. Search the Hollows for a lost Citadel, hold the line on the
   god's shoulder, or refuse the war.
@@ -34,8 +34,10 @@ listed on the Status page and the end screen. Holding three earns
 |---|---|
 | A Sovereign's Domain spreads "through two mediums: Territory and People" and is tied to Citadels, "fortresses built in the Dream Realm around a Gateway" | Sovereigns (wiki) |
 | "Within their Domains, they are practically invincible" | Sovereigns (wiki) |
-| Sovereigns "demand fealty from most Transcendents" | chapter text (via search) |
-| The Domain War was fought around Godgrave: a dead god's skeleton under twilight and ash, with Citadels in its Hollows, and a Death Zone | chapter text / wiki |
+| Sovereigns "demand fealty from most Transcendents" | Ch. 1075 (Sovereigns, wiki): they "eliminated Transcendent who refused to swear fealty"; around ch. 1678 "the absolute majority of Transcendents" |
+| The Domain War was fought around Godgrave: a dead god's skeleton under twilight and ash, and a Death Zone | Godgrave (wiki, ch. 1607): a skeleton "at least 5,000 kilometers" long, ground "shrouded in twilight and covered by a carpet of ash", the land bridge both Domains need |
+| The Hollows hold Corrupted, Great and Cursed creatures and ruined cities, and Godgrave has Citadels of its own | Godgrave (wiki): the Hollows' jungle; the Nameless Temple. So the thing under the ribs is Cursed, not Unholy |
+| A Citadel is "a human fortress in the Dream Realm built around a conquered Gateway"; binding one expands a Sovereign's Domain | Citadel (wiki). In canon a Saint who serves the Sovereign does the binding; the game lets the Sovereign claim it directly (ours) |
 | A Sacred human almost certainly cannot set foot on Earth | Sacred (wiki) |
 
 ## Ours
