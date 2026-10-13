@@ -3,8 +3,7 @@
    An original scenario, built to canon's Second Nightmare format:
    a Seed in the Dream Realm, several challengers, a role assigned
    by the Spell, Creatures of the Fallen and Corrupted ranks, and one
-   central conflict with more than one way to resolve it ("there is
-   no right or wrong way"). A Nightmare ends in conquest or death.
+   central conflict with more than one way to resolve it. A Nightmare ends in conquest or death.
    Everything named here is ours. See docs/content/noon-tribute.md.
    ============================================================= */
 Pack.add({
@@ -21,7 +20,7 @@ Pack.add({
   },
 
   echoes: {
-    siege_warden: { name:"A Warden of the Outer Wall", rank:"Awakened", bound:3,
+    siege_warden: { name:"A Warden of the Outer Wall", rank:"Ascended", bound:4,
       desc:"A copy of one of the things that walked the siege lines for three centuries. It still faces outward, toward nothing.",
       stats:{ vitality:3, perception:2 } },
   },

@@ -16,8 +16,7 @@ woke inside the walls with you.
 2. Twenty days later: search the clock tower (find the pact), fight a siege
    walker at night (Echo: *A Warden of the Outer Wall*), or listen to the
    citizens.
-3. The last noon. There are four ways to end it, as canon's "there is no
-   right or wrong way" requires:
+3. The last noon. There are four ways to end it:
    - tear up the pact (needs the pact; the Keeper draws her own name);
    - walk out and kill the thing at the centre;
    - lead the whole city out (needs allies or the citizens' trust);
@@ -29,15 +28,15 @@ woke inside the walls with you.
 | Rule | Source |
 |---|---|
 | A Second Nightmare is a Seed in the Dream Realm, open to several challengers, who may be rivals | Nightmares (wiki); Kingdom of Hope, Tomb of Ariel |
-| The Spell assigns roles inside the Nightmare | Kingdom of Hope: Sunny wakes as a slave (wiki) |
-| One central conflict, with more than one resolution ("no right or wrong way") | Nightmares (wiki) |
-| Creatures of Fallen and Corrupted rank | Second Nightmare description in `aw_second` |
+| "Each Nightmare contains a central conflict that has to be resolved for the Nightmare to end" | Nightmares (wiki); already ✅ in docs/canon.md |
+| Creatures of Fallen and Corrupted rank | Ours: matches the game's own `aw_second` text, not a canon citation |
 | A Nightmare ends in conquest or death | Repo owner's ruling; docs/canon.md |
 
 ## Ours
 Varrow, the Keeper of Hours, the tribute, the siege and every name in it.
 *The Noon Bell's Tongue* (Weapon Memory) and *A Warden of the Outer Wall*
-(Echo) are new catalogue entries.
+(Echo, Ascended rank and 4 Essence like the other Fallen-born Echo) are new
+catalogue entries. The Spell giving you a role (a soldier of Varrow) is ours.
 
 ## Numbers
 The decisive checks are personal trials (`dcSelf`), so a high stat does not
