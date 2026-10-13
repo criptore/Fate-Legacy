@@ -25,12 +25,12 @@
 
   /* Four names per Aspect, one per tier. */
   const NAMES = {
-    shadow:  ["Unlit Step", "Second Silhouette", "Where The Light Isn't", "The Long Dusk"],
+    shadow:  ["Out of the Light", "Second Silhouette", "Where The Light Isn't", "The Long Dusk"],
     ember:   ["Banked Coal", "Kindling Hand", "Wildfire Pulse", "Pyre-Shape"],
     thorn:   ["Barbed Skin", "Bloodbriar", "Thicket Wall", "The Bramble Crown"],
     echo:    ["Half-Heard", "The Moment Before", "Rewound Breath", "Choir Of What Was"],
     tide:    ["Undertow", "Ebb and Return", "Riptide Stance", "The Drowned Moon"],
-    iron:    ["Hard Grain", "Anvil Stance", "Unbending", "Living Bulwark"],
+    iron:    ["Hard Grain", "Forge Stance", "Unbending", "Living Bulwark"],
     lantern: ["Lamplight", "Shown Plainly", "Revelation", "The Bright Witness"],
     quarry:  ["Scent-Break", "False Trail", "The Hunter's Blind Spot", "Prey Ascendant"],
     salt:    ["Preserve", "Brine Ward", "Keeping Hand", "The White Shore"],

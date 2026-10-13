@@ -23,10 +23,11 @@ a roll. Tap one to arm it, then pick a choice:
 
 - **Personal trials** (`dcSelf`) take only +1. They measure you, and your
   Aspect is already part of you.
-- **Names.** Each of the 14 Aspects has its own four names (Shadow: *Unlit
-  Step*, *Second Silhouette*, *Where The Light Isn't*, *The Long Dusk*; Iron:
-  *Hard Grain*, *Anvil Stance*, *Unbending*, *Living Bulwark*...). None copies
-  a canon character's Ability.
+- **Names.** Each of the 14 Aspects has its own four names (Shadow: *Out of
+  the Light*, *Second Silhouette*, *Where The Light Isn't*, *The Long Dusk*; Iron:
+  *Hard Grain*, *Forge Stance*, *Unbending*, *Living Bulwark*...). None copies
+  or echoes a canon character's Ability (an early *Unlit Step* was renamed
+  because it read like Sunny's [Shadow Step]).
 - **Where it shows.** The Status page lists your Abilities, and the end screen
   counts how many times you used them.
 
