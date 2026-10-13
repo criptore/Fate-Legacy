@@ -181,8 +181,18 @@
   let showStatHints = false;
   try { showStatHints = localStorage.getItem(HINTS_KEY) === "1"; } catch (e) {}
 
+  /* With stat hints on, a fight also says what your Memories and Echoes
+     will add before you commit to it. */
+  function aidHint(c) {
+    if (!showStatHints || !S) return "";
+    const a = Engine.checkAid(S, c);
+    const parts = [a.weapon ? `Weapon +${a.weapon}` : "", a.echoDie ? `Echo +d${a.echoDie}` : ""].filter(Boolean);
+    return parts.length ? ` (${parts.join(", ")})` : "";
+  }
+
   function shownHint(c) {
-    if (!c.hint || showStatHints) return c.hint;
+    if (showStatHints) return c.hint ? c.hint + aidHint(c) : aidHint(c).trim();
+    if (!c.hint) return c.hint;
     // A bare stat name on an unchecked choice advertises what it pays out —
     // the same min-maxing nudge, so it goes too.
     if (!c.check) return STATS.some(d => d.name === c.hint) ? "" : c.hint;
