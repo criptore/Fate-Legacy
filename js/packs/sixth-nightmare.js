@@ -33,7 +33,7 @@ Pack.add({
   id:"sx_offer", chapter:"sacred", weight:20, cooldown:30, days:300,
   requires:{ flags:{ all:["seeking_sixth"], none:["declined_sixth"] }, stats:{ willpower:{ min:70 }, essence:{ min:70 } } },
   title:"The Last Door",
-  text:"You have looked for it for millennia, and in the end it is not hidden at all. It is a Seed at the bottom of the Dream Realm, below the deepest Death Zone, below the dead gods' bones, in a place where the light behaves as if it is being watched.\n\nThe Sixth Nightmare. The last door on the Path of Ascension. Nobody in the records of any cycle has come back from it with a name anyone wrote down.\n\nWhat waits beyond it is not a rank. It is the end of ranks. A god in the true sense, woven into the laws that make the world a world.",
+  text:"You have looked for it for millennia, and in the end it is not hidden at all. It is on the Moon, where humanity has been afraid to look since the Spell first came: behind a Gate nobody below your rank could ever have reached, past the Unholy thing that nests there.\n\nYou cannot set foot on Earth any more. The Moon is not Earth.\n\nThe Sixth Nightmare. The last door on the Path of Ascension. Nobody in the records of any cycle has come back from it with a name anyone wrote down.\n\nWhat waits beyond it is not a rank. It is the end of ranks. A god in the true sense, woven into the laws that make the world a world.",
   choices:[
     { label:"Enter the Seed and face the Sixth Nightmare.", hint:"The last trial of the Path. Almost certain death.",
       effects:{ nightmare:"sixth" } },
