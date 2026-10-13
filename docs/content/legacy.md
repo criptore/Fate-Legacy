@@ -51,7 +51,26 @@ A chain of 3,000 random lives, each one inheriting from the Hall:
 
 Lore checked:
 
-- Memories vanish when their owner dies.
+- Memories vanish when their owner dies: "destroyed at the moment of their
+  owner's death" (Memory, wiki).
 - A destroyed Echo is gone.
+- A Seed stays open to "any number of challengers as long as the trial is not
+  conquered" (Nightmares, wiki), and one that is not found in time blooms into
+  a Gate that can still be entered (Seed of Nightmare, wiki). So the Nightmare
+  that killed a past life can still be waiting for the next one. How long a
+  Seed lasts is not stated anywhere; that it lasts a lifetime is ours.
+- The notes hold only what someone could know *before* entering: what was
+  known about the Seed, what came through its Gate, who else meant to try,
+  and their plan. Nobody who died inside could write what happened there.
+
+## Firsts stay true
+
+Past lives happened in this world, so they count. Canon has three Sovereigns
+before the player (ch. 368) and nobody of this cycle back from the Fifth
+Nightmare (ch. 2761). If a past life became a Sovereign or a Spirit, the
+module rewrites those lines for every life after it: "There have been four.
+You are the fifth.", "Only one from this cycle of the Spell has ever come
+back from it", and the Sacred who visits a god becomes the third of this
+cycle instead of the second.
 
 The legends, archives and orders are ours.

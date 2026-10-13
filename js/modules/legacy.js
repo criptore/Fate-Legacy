@@ -83,7 +83,32 @@
     wounds: "died of their wounds", woven: "wove themselves into the law of the world",
     beyond: "stepped over the edge of the Dream Realm" };
 
-  const pastName = e => e.epithet ? `the ${rankCommon(e.rank)} remembered as ${e.epithet}` : `a ${rankCommon(e.rank)}`;
+  const article = w => /^[AEIOU]/.test(w) ? "an" : "a";
+  const pastName = e => e.epithet ? `the ${rankCommon(e.rank)} remembered as ${e.epithet}` : `${article(rankCommon(e.rank))} ${rankCommon(e.rank)}`;
+
+  /* Past lives happened in this world, so the firsts the Spell's history
+     counts have to include them. Canon has three Sovereigns before the
+     player ("Aster, Song, Vale", ch. 368) and nobody of this cycle back from
+     the Fifth (ch. 2761); a past life that climbed that far changes both
+     numbers for every life after it. */
+  const ORD = ["zeroth", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth"];
+  const ordinal = n => ORD[n] ?? `${n}th`;
+  const COUNT = ["no one", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+  const count = n => COUNT[n] ?? String(n);
+  function firsts(str) {
+    if (!str) return str;
+    const hall = read();
+    const sovereigns = hall.filter(e => e.rank >= 4).length;
+    const spirits = hall.filter(e => e.rank >= 5).length;
+    if (sovereigns) str = str.replace(/There have been three\. You are the fourth\./g,
+      `There have been ${count(3 + sovereigns)}. You are the ${ordinal(4 + sovereigns)}.`);
+    if (spirits) str = str
+      .replace(/Nobody from this cycle of the Spell has ever come back from (it|the Fifth Nightmare)\.( Now one has\.)?/g,
+        (m, what, now) => `Only ${count(spirits)} from this cycle of the Spell ${spirits === 1 ? "has" : "have"} ever come back from ${what}, and the world remembers ${spirits === 1 ? "them" : "every one"}.${now ? " Now one more has." : ""}`)
+      .replace(/the second of this cycle to manage it/g, `the ${ordinal(2 + spirits)} of this cycle to manage it`);
+    return str;
+  }
+  Hooks.on("text", str => firsts(str));
 
   Hooks.on("text", (str, s) => !str || !s?.legacy ? str : str
     .replace(/\{past\}/g, pastName(s.legacy))
@@ -195,7 +220,7 @@
   id: "hall_notes", weight: 24, once: true, days: 20,
   requires: { chapter: ["awakened", "ascended", "transcendent"], flags: { all: ["legacy_notes"] } },
   title: "A Bundle Of Notes",
-  text: "The archivist hands you a bundle tied with Gate wire. \"Nobody has asked for these in years.\"\n\nThey are the notes {past} wrote before entering {pastTrial}: what the Spell's whispers said, which roles the challengers woke in, what they meant to try. The last page is blank. They never came back to write it.",
+  text: "The archivist hands you a bundle tied with Gate wire. \"Nobody has asked for these in years.\"\n\nThey are the notes {past} wrote before entering {pastTrial}: what they had learned about the Seed, which Creatures had come through its Gate, who else meant to challenge it, what they planned to try. The last page is blank. They never came back to write it.",
   choices: [
     { label: "Read every page, twice.", hint: "Their notes will help you if the Spell ever sends you into the same Nightmare.",
       effects: { stats: { perception: 1 }, legacyNotes: true },
