@@ -27,9 +27,9 @@ woke inside the walls with you.
 ## Canon it follows
 | Rule | Source |
 |---|---|
-| A Second Nightmare is a Seed in the Dream Realm, open to several challengers, who may be rivals | Nightmares (wiki); Kingdom of Hope, Tomb of Ariel |
+| A Second Nightmare is a Seed in the Dream Realm, open to any number of challengers, who may be rivals | Nightmares (wiki): "any number of Awakened can attempt to conquer it"; "not all challengers have to be on the same side" (ch. 559). Kingdom of Hope is the canon example (the Tomb of Ariel is a Third Nightmare, so it is not cited here) |
 | "Each Nightmare contains a central conflict that has to be resolved for the Nightmare to end" | Nightmares (wiki); already ✅ in docs/canon.md |
-| Creatures of Fallen and Corrupted rank | Ours: matches the game's own `aw_second` text, not a canon citation |
+| Fallen walkers, and one Corrupted thing at the centre | Ch. 559 (Nightmares, wiki): the creatures "will be of higher Ranks and Classes, usually either Awakened or Fallen. Unlucky ones might meet a Corrupted." Varrow is the unlucky kind |
 | A Nightmare ends in conquest or death | Repo owner's ruling; docs/canon.md |
 
 ## Ours
