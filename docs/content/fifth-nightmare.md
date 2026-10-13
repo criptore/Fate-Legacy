@@ -13,10 +13,15 @@ spread over, faces you and argues that a god is a Domain with nobody inside
 it. You hold on to yourself, let it unmake you while hiding one memory, or
 look for the person you were before you had a Domain.
 
-**Trial two, together (`fv_2`).** A road filled with every challenger of this
-cycle who entered the Fifth and never came back. The door at the end opens
-for everyone or for no one. You lead them, carry the ones who cannot walk, or
-teach them to walk without you.
+**Trial two, together (`fv_2`).** Like every Nightmare, a piece of the past
+rebuilt: a road filled with a whole civilisation from an older cycle of the
+Spell, walking out of a world that is ending, while that world tries to
+swallow you. The door at the end opens for everyone or for no one. You lead
+them, carry the ones who cannot walk, or teach them to walk without you.
+
+Nobody on the road is from this cycle. Canon's first three Sovereigns never
+entered the Fifth (Anvil and Ki Song did not dare, Asterion chose another
+road), so there is nobody of ours for it to hold.
 
 **Apotheosis (`fv_resolve`).** You become Sacred, a lesser god. The waking
 world's laws reject you now. A costly pass in either trial leaves you
@@ -27,6 +32,11 @@ Passing both cleanly earns *Still Yourself*.
 | Rule | Source |
 |---|---|
 | Two trials, one personal and one collective; failing either is death | Fifth Nightmare (wiki) |
+| The unmaking: time folds, the challenger lives an eternity in a moment, and the danger is dissolving into it | Ch. 3184 (Nightmares, wiki: "Traps") |
+| The second part is a conflict to resolve, and its trap is "being swallowed by the world": fusing with it and becoming an elemental force instead of a Spirit | Ch. 3184 (Nightmares, wiki) |
+| Every Nightmare is a reconstruction of the Dream Realm's past | Ch. 0 (Nightmares, wiki). The road's lost civilisation is ours; canon only says older cycles left "fragmented chronicles" in their ruins (ch. 2761) |
+| None of the first Sovereigns entered the Fifth | Ch. 880 (Sovereigns, wiki): none of them "have yet to challenge the Fifth Nightmare"; ch. 2760: Anvil and Ki Song stayed for humanity, Asterion saw "a safer and better way" |
+| A Sacred human is called a Spirit | Spirit (wiki) |
 | The personal trial is faced alone and forces the challenger "to face their own Domain", to "unmake them as humans and rebuild them in the image of deities" | Fifth Nightmare (wiki) |
 | "the Spell does not care whether the challenger remains themselves" | Fifth Nightmare (wiki) |
 | Apotheosis: "a lesser deity and a minor god, but still something fundamentally different from a mortal"; "a Spirit is someone whose soul can encompass the whole world" | ch. ~2266 (chapter text, via search) |
@@ -34,8 +44,8 @@ Passing both cleanly earns *Still Yourself*.
 | A Sacred human almost certainly cannot set foot on Earth | Sacred (wiki) |
 
 ## Ours
-What the two trials contain: the Domain that speaks, the road of the dead
-challengers, the door. The *Still Yourself* achievement.
+What the two trials contain: the Domain that speaks, the road and the lost
+civilisation walking it, the door. The *Still Yourself* achievement.
 
 ## Numbers
 6000 runs from the first trial at Sovereign stats, random choices: 14% reach
