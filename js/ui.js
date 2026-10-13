@@ -17,7 +17,7 @@
     btnQuit:$("btn-quit"), btnAgain:$("btn-again"),
     endRankName:$("end-rank-name"), endRankPips:$("end-rank-pips"),
     endTitle:$("end-title"), endCause:$("end-cause"), endRunes:$("end-runes"),
-    endAchv:$("end-achv"), endStats:$("end-stats"),
+    endAchv:$("end-achv"), endStats:$("end-stats"), endExtra:$("end-extra"), homeExtra:$("home-extra"),
     linkBug:$("link-bug"), linkFeedback:$("link-feedback"),
     themeToggle:$("theme-toggle"),
     guide:$("guide"), guideStep:$("guide-step"), guideTitle:$("guide-title"), guideBody:$("guide-body"),
@@ -220,6 +220,7 @@
     el.title.textContent = ev.title ?? "";
     el.text.textContent = Engine.eventText(S, ev) ?? "";
     el.choices.innerHTML = "";
+    for (const node of Hooks.collect("choiceBar", S, ev)) el.choices.appendChild(node);
 
     ev.choices.forEach((c, i) => {
       const ok = Engine.choiceAvailable(S, c);
@@ -249,7 +250,8 @@
     if (out.rollInfo) {
       const r = out.rollInfo;
       const label = Engine.statDef(r.statId)?.short ?? r.statId;
-      const extra = (r.weapon ? ` + Weapon ${r.weapon}` : "") + (r.echoDie ? ` + Echo d${r.echoDie} (${r.echoRoll})` : "");
+      const extra = (r.weapon ? ` + Weapon ${r.weapon}` : "") + (r.echoDie ? ` + Echo d${r.echoDie} (${r.echoRoll})` : "") +
+        (r.mods ?? []).map(m => ` ${m.value < 0 ? "−" : "+"} ${escape(m.label)} ${Math.abs(m.value)}`).join("");
       parts.push(`<div class="choice-hint">${r.die} + ${label} ${r.stat}${extra} vs ${r.dc} — ${out.ok ? "success" : "failure"}</div>`);
       if (out.soaked) parts.push(`<div class="choice-hint">Armor took ${out.soaked} Vitality of it.</div>`);
     }
@@ -353,7 +355,7 @@
     const finalRankLabel = S.rank === 0 && S.chapter === "aspirant" ? "Aspirant" : (r.common === r.name ? r.name : `${r.name} · ${r.common}`);
     el.endRankName.textContent = finalRankLabel;
     renderPips(el.endRankPips, S.rank);
-    el.endTitle.textContent = KIND[S.causeKind] ?? `Died ${r.common}`;
+    el.endTitle.textContent = Hooks.reduce("endTitle", KIND[S.causeKind] ?? `Died ${r.common}`, S);
     el.endCause.textContent = S.cause ?? "The story ends here.";
 
     const aspect = S.aspect && ASPECTS.find(a => a.id === S.aspect);
@@ -384,9 +386,12 @@
         ? S.echoes.map(e => `${ECHOES[e].name} (${ECHOES[e].rank}: ${echoEffect(e)})`).join("; ") : "None bound", "wide"],
       ...(S.echoesLost ? [["Echoes lost", `${S.echoesLost} died in your place`]] : []),
       ...(S.org ? [["Your organization", orgEpilogue(S.org), "wide"]] : []),
+      ...Hooks.collect("endTiles", S),
     ];
     el.endStats.innerHTML = tiles.map(([k, v, wide]) =>
       `<div class="stat-tile${wide ? " wide" : ""}"><b>${escape(k)}</b><span>${escape(String(v))}</span></div>`).join("");
+    el.endExtra.innerHTML = "";
+    for (const node of Hooks.collect("endExtra", S)) el.endExtra.appendChild(node);
 
     el.linkBug.href = feedbackURL("bug");
     el.linkFeedback.href = feedbackURL("feedback");
@@ -433,6 +438,7 @@
       h += `<div class="sheet-section">Memories</div>`;
       for (const m of S.memories) h += line(`${MEMORIES[m].name} · ${MEMORIES[m].rank} ${MEMORIES[m].type}`, `${MEMORIES[m].desc} ${memoryEffect(m)}.`);
     }
+    h += Hooks.collect("sheet", S).join("");
     el.sheetBody.innerHTML = h;
     el.sheet.hidden = false;
   }
@@ -628,6 +634,7 @@
     }
   }
   boot();
+  Hooks.emit("home", el.homeExtra);
 
   let guideSeen = false;
   try { guideSeen = localStorage.getItem(GUIDE_KEY) === "1"; } catch (e) {}

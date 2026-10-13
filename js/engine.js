@@ -4,6 +4,10 @@
    ============================================================= */
 const Engine = (() => {
 
+  /* Every content pack has run by now (they load between data.js and this
+     file), so their patches to existing events can be applied. */
+  Pack.finish();
+
   const DAYS_PER_YEAR = 365;
   const START_AGE = 17;
 
@@ -75,6 +79,7 @@ const Engine = (() => {
        creature doesn't mean their aspect has to be related to it as well." */
     awardLineage(s);
     awardAspect(s);
+    Hooks.emit("newRun", s);
     return s;
   }
 
@@ -138,6 +143,7 @@ const Engine = (() => {
     if (s.dead) return;
     s.dead = true; s.cause = cause; s.causeKind = kind || "unknown";
     s.diedIn = s.chapter;
+    Hooks.emit("death", s);
   }
 
   /* ---------- requirement checking ---------- */
@@ -232,6 +238,7 @@ const Engine = (() => {
     s.history.push(ev.id);
     s.eventCount++;
     if (s.history.length > 60) s.history.shift();
+    Hooks.emit("draw", s, ev);
     return ev;
   }
 
@@ -256,7 +263,7 @@ const Engine = (() => {
 
   function eventText(s, ev) {
     const i = s.current === ev.id ? (s.currentVariant ?? 0) : 0;
-    return i > 0 ? (ev.variants?.[i - 1] ?? ev.text) : ev.text;
+    return Hooks.reduce("text", i > 0 ? (ev.variants?.[i - 1] ?? ev.text) : ev.text, s);
   }
 
   /* ---------- effects ---------- */
@@ -298,6 +305,7 @@ const Engine = (() => {
       deltas.push({ id:"essence", d:-(e.bound ?? 0) });
     }
     if (fx.org) applyOrg(s, fx.org);
+    Hooks.emit("effects", s, fx, deltas);
     if (fx.lineage) rewriteLineage(s, fx.lineage, deltas);
     if (fx.awardFlaw) awardFlaw(s, deltas);
     /* Canon: "First Nightmares are unique because each of them is tailored
@@ -626,6 +634,13 @@ const Engine = (() => {
 
   /* ---------- resolving a choice ---------- */
   function choose(s, ev, index) {
+    const out = resolveChoice(s, ev, index);
+    if (out.text) out.text = Hooks.reduce("text", out.text, s);
+    Hooks.emit("choose", s, ev, ev.choices[index], out);
+    return out;
+  }
+
+  function resolveChoice(s, ev, index) {
     const c = ev.choices[index];
     const out = { text: null, ok: null, deltas: [] };
 
@@ -653,10 +668,14 @@ const Engine = (() => {
       const dc = c.check.dcSelf
         ? (s.stats[c.check.stat] ?? 0) + c.check.dc
         : c.check.dc + (c.check.dcScale ?? 0) * s.rank + (c.check.dcEra ?? 0) * era;
-      const margin = (r + stat + aid.weapon + echoRoll) - dc;
+      /* Modules may add to a roll (an Aspect Ability, an ally). Each mod is
+         {label, value} and is shown on the roll line. */
+      const mods = Hooks.collect("checkMods", s, c);
+      const modSum = mods.reduce((n, m) => n + (m.value ?? 0), 0);
+      const margin = (r + stat + aid.weapon + echoRoll + modSum) - dc;
       out.ok = margin >= 0;
       out.rollInfo = { die: r, stat, dc, statId: c.check.stat, margin,
-                       weapon: aid.weapon, echoDie: aid.echoDie, echoRoll };
+                       weapon: aid.weapon, echoDie: aid.echoDie, echoRoll, mods };
 
       // A catastrophic miss is fatal. This is where the game's lethality lives.
       if (!out.ok && c.check.fatal != null && margin <= -c.check.fatal) {

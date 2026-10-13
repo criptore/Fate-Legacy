@@ -55,10 +55,7 @@ const KEY = loadKey();
 if (!KEY) { console.error("TYPESAFE_API_KEY is not set (env or .env at the repo root)."); process.exit(2); }
 
 /* ---------- content ---------- */
-const ctx = { console };
-vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(ROOT, "js", "data.js"), "utf8") +
-  "\nglobalThis.EVENTS=EVENTS;globalThis.FLAWS=FLAWS;globalThis.STATS=STATS;", ctx);
+const ctx = require("./load").load();   // packs and modules included
 const { EVENTS, FLAWS, STATS } = ctx;
 
 const CHECK_STATS = ["vitality", "willpower", "perception", "cunning"];

@@ -18,11 +18,15 @@ node tools/audit.js             # optional, see below
 index.html          shell + recovery hatch (/?repair)
 css/tokens.css      design tokens, per-rank accent colours
 css/main.css        everything else
-js/data.js          ALL content: ranks, origins, aspects, flaws, catalogues, events
+js/hooks.js         Hooks (feature hook points) and Pack (content registry); loaded first
+js/data.js          core content: ranks, origins, aspects, flaws, catalogues, events
+js/packs/*.js       content packs: one scenario / region / event batch per file
+js/modules/*.js     features built on Hooks: one per file
 js/engine.js        clock, eligibility, weighted draw, checks, effects
 js/save.js          versioned localStorage
 js/ui.js            DOM rendering
 sw.js               PWA precache, network-first shell
+tools/load.js       loads every script index.html loads (packs and modules too)
 tools/validate.js   event-graph checker; run after every content change
 tools/audit.js      optional semantic audit (needs an API key, see below)
 tools/sim.js        balance harness (see balance.md)
@@ -73,6 +77,11 @@ dies inside a Nightmare must not be credited with conquering it;
 `s.currentTrial` holds the attempt until (if) it resolves.
 
 ## Adding content
+
+**New content goes in a content pack, not in `data.js`.** See
+[content/README.md](content/README.md): one file per scenario or feature,
+registered with `Pack.add` or `Hooks.on`, and loaded through its own slot in
+`index.html`. The event format below is the same either way.
 
 ```js
 {
