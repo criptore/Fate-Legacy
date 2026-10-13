@@ -2,9 +2,10 @@
    SOLSTICE REGION — THE HANGING FOREST
    An original Dream Realm region, built to the pattern canon gives
    (Forgotten Shore, Dark City): one landscape, one dominant hazard,
-   a Gateway a long way from where Sleepers land, and creatures of
-   the Dormant and Awakened ranks only (no Death Zone ranks for a
-   Sleeper's first solstice). Ends at sl_return, like every region.
+   a Gateway a long way from where Sleepers land. Its creatures are
+   Dormant and Awakened only, which is ours: canon's Forgotten Shore
+   was far deadlier (a Fallen Terror guards its Gateway). Ends at
+   sl_return, like every region.
    Everything named here is ours. See docs/content/hanging-forest.md.
    ============================================================= */
 Pack.add({

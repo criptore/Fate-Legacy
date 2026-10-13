@@ -25,7 +25,7 @@ cannot climb surrounds the Gateway.
 |---|---|
 | Sleepers are taken to a region of the Dream Realm on the winter solstice and become Awakened only by returning through a Gateway | Paths of Ascension (wiki) |
 | A region has one landscape, one dominant hazard and a Gateway a long way from where Sleepers land | Forgotten Shore / Dark City template (wiki) |
-| A Sleeper's region holds Dormant and Awakened creatures, not Death Zone ranks | Creature ranks; Death Zones hold Great, Cursed and Unholy (chapter text) |
+| The creatures here are Dormant and Awakened only | **Ours, not canon.** Canon's solstice regions are far worse: the Forgotten Shore's Gateway is guarded by a Fallen Terror (Forgotten Shore, wiki), and Sleepers there were at the bottom of the food chain. The game keeps its solstice regions survivable, like the other four |
 
 ## Ours
 The forest, its silk, the crawlers and the meadow. *Rootsilk Line*,
