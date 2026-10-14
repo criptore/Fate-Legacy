@@ -52,6 +52,11 @@ Flaw's text sit behind the "More runes" expander (tapping the Aspect rune
 opens it too). The same glyphs and rank badge are reused on the end screen
 and in the Status sheet, so the visual language is one system, not three.
 
+On screens 1300px and wider the Status page is also pinned to the left of
+the story (`#side-status`) and refreshed from `renderHud()` after every
+choice; the toolbar's Status button hides there. Both use `sheetHTML()` in
+`js/ui.js`, so anything a module adds through the `sheet` hook shows in both.
+
 Day mode is an opt-in toggle (`#theme-toggle`), persisted to
 `localStorage["fatelegacy.theme"]` and applied via `html[data-theme="light"]`.
 It is applied inline in `index.html`'s `<head>`, before either stylesheet
