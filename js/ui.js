@@ -12,7 +12,7 @@
     runes:$("hud-runes"), runesSecondary:$("hud-runes-secondary"), flawLine:$("hud-flaw"),
     expand:$("hud-expand"), expandLabel:$("hud-expand-label"), panel:$("hud-panel"),
     title:$("event-title"), text:$("event-text"), outcome:$("outcome"), choices:$("choices"),
-    sheet:$("sheet"), sheetBody:$("sheet-body"),
+    sheet:$("sheet"), sheetBody:$("sheet-body"), sideBody:$("side-status-body"),
     btnSheet:$("btn-sheet"), btnSheetClose:$("btn-sheet-close"),
     btnQuit:$("btn-quit"), btnAgain:$("btn-again"),
     endRankName:$("end-rank-name"), endRankPips:$("end-rank-pips"),
@@ -167,6 +167,7 @@
     if ((S.soulClass ?? 0) > 0) lines.push(`Class — ${cls.name}, ${cls.cores} Soul Cores.`);
     if (S.echoes && S.echoes.length) lines.push(`Echoes — ${S.echoes.map(e => ECHOES[e].name).join(", ")}.`);
     el.flawLine.textContent = lines.join("  ·  ");
+    renderSide();
   }
 
   /* ---------- stat hints ----------
@@ -409,8 +410,11 @@
     Save.clear();
   }
 
-  /* ---------- status sheet ---------- */
-  function openSheet() {
+  /* ---------- status sheet ----------
+     One builder, two places: the Status sheet (phones, tablets) and, on a
+     wide screen, a panel pinned to the left of the story that stays up to
+     date after every choice (issue #45: that space was empty). */
+  function sheetHTML() {
     const r = Engine.rank(S);
     const a = S.aspect && ASPECTS.find(x => x.id === S.aspect);
     const f = S.flaw && FLAWS.find(x => x.id === S.flaw);
@@ -449,9 +453,20 @@
       for (const m of S.memories) h += line(`${MEMORIES[m].name} · ${MEMORIES[m].rank} ${MEMORIES[m].type}`, `${MEMORIES[m].desc} ${memoryEffect(m)}.`);
     }
     h += Hooks.collect("sheet", S).join("");
-    el.sheetBody.innerHTML = h;
+    return h;
+  }
+
+  function openSheet() {
+    el.sheetBody.innerHTML = sheetHTML();
     el.sheet.hidden = false;
   }
+
+  const wideScreen = matchMedia("(min-width: 1300px)");
+  function renderSide() {
+    if (!S || !wideScreen.matches) return;
+    el.sideBody.innerHTML = sheetHTML();
+  }
+  wideScreen.addEventListener?.("change", renderSide);
 
   /* ---------- guide ----------
      First-launch primer, asked for in player feedback: the stat system was

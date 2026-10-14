@@ -52,6 +52,11 @@ Flaw's text sit behind the "More runes" expander (tapping the Aspect rune
 opens it too). The same glyphs and rank badge are reused on the end screen
 and in the Status sheet, so the visual language is one system, not three.
 
+On screens 1300px and wider the Status page is also pinned to the left of
+the story (`#side-status`) and refreshed from `renderHud()` after every
+choice; the toolbar's Status button hides there. Both use `sheetHTML()` in
+`js/ui.js`, so anything a module adds through the `sheet` hook shows in both.
+
 Day mode is an opt-in toggle (`#theme-toggle`), persisted to
 `localStorage["fatelegacy.theme"]` and applied via `html[data-theme="light"]`.
 It is applied inline in `index.html`'s `<head>`, before either stylesheet
@@ -118,6 +123,8 @@ registered with `Pack.add` or `Hooks.on`, and loaded through its own slot in
               nightmare:"second",   // stages a random scenario from that tier
               conquered:true,       // ONLY on the resolution node's success
               solstice:true,
+              years:80,             // exact years of life, never rank-scaled: use it
+                                    // when the text says how long something took
               chapter:"ascended", goto:"next_id", death:{text:"", kind:""} }
   }]
 }
@@ -142,6 +149,13 @@ Great 4, Cursed 5, Unholy 6.
 Choice hints that start with a stat name ("Willpower. Years of it.") have the
 name stripped in-game unless the player turns Stat hints on, so keep the
 flavour after the full stop meaningful on its own.
+
+**Say how long it took, and make it take that long.** `days` is multiplied
+by the rank's `timeScale`, so "Two hundred and ten years, alone" on a 300-day
+Master event used to age the character 28 years. If an outcome names a span
+the character lives through, give it a matching `years:` (issue #46). Time
+inside a Nightmare and figures of speech ("you will be doing the arithmetic
+on that for a century") are exempt.
 
 **`once` on an offer is a trap.** If an event offers a "not yet" choice, it
 must not be `once:true`, or "not yet" means never and the life is stranded at

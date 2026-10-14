@@ -211,3 +211,23 @@ body{
 .guide-nav .btn{margin-top:0}
 .guide-nav .btn-primary{width:auto;margin-left:auto;padding:11px 26px}
 .btn-guide{align-self:center}
+
+/* --- side status (wide screens) ---
+   Issue #45: on a desktop the story column leaves the left of the window
+   empty. From 1300px the Status page sits there, fixed, scrolling on its
+   own, and the toolbar's Status button (which would open the same thing)
+   steps aside. Placed relative to the centred column, so it never overlaps
+   it, and on the left so it never meets the top-right theme toggle. */
+.side-status{display:none}
+@media (min-width:1300px){
+  .side-status{
+    display:block;position:fixed;top:0;bottom:0;width:288px;
+    left:calc(50% - var(--maxw) / 2 - 312px);
+    overflow:auto;padding:22px 18px 28px;
+    border-right:1px solid var(--line);background:var(--bg);
+  }
+  .side-status h3{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 14px}
+  .side-status .sheet-line{font-size:13px}
+  .side-status .rune-strip{gap:8px 10px}
+  #btn-sheet{display:none}
+}

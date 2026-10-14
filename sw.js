@@ -3,7 +3,7 @@
    worker caches `data.js?v=<CACHE>` while the page requests `data.js?v=<other>`,
    the precache never matches a real request, and the only thing saving the
    offline case is the ignoreSearch fallback at the bottom of this file. */
-const CACHE = "fatelegacy-v0.5.1", V = CACHE.split("-v")[1];
+const CACHE = "fatelegacy-v0.5.2", V = CACHE.split("-v")[1];
 const CORE = [
   "./", "./index.html",
   `./css/tokens.css?v=${V}`, `./css/main.css?v=${V}`,

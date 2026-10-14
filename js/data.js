@@ -448,6 +448,12 @@ const ECHOES = {
   tender:       { name:"An Orchard Tender",           rank:"Awakened", bound:2,
     desc:"It prunes. Given nothing to prune it stands where you left it, indefinitely, patiently.",
     stats:{ vitality:2, cunning:2 } },
+  /* Issue #46: the generic post-Gate binding used to hand out the Orchard
+     Tender, a creature from the Iron Orchard, to players who had never been
+     there. This is what actually comes through a Gate. */
+  gate_hound:   { name:"A Hound From The Gate",       rank:"Awakened", bound:2,
+    desc:"It came through the Gate first, the way they always do. Now it walks a step behind you and watches every doorway you pass.",
+    stats:{ vitality:2, perception:2 } },
   fallen_shade: { name:"Shade of a Fallen",           rank:"Ascended", bound:4,
     desc:"A copy of something that walked beside a column of forty thousand people for centuries.",
     stats:{ vitality:4, willpower:3 } },
@@ -1457,8 +1463,8 @@ const EVENTS = [
       check:{ stat:"willpower", dc:28, fatal:7, fatalKind:"ascension",
         fatalText:"Reforming a soul core by hand, without the Spell holding the shape, goes wrong somewhere in the second century. There is no dramatic moment. You simply do not finish.",
         fatalCause:"Unmade attempting the ancient soul-refining path." },
-      success:{ text:"Two hundred and ten years, alone, refining essence by hand.\n\nYou come out of it Transcendent without the Spell ever having graded you, which is a thing perhaps four people alive can say, and none of them advertise it.", effects:{ rank:1, chapter:"transcendent", stats:{ essence:8, willpower:6, renown:2 }, flags:{ add:["ancient_path"] } } },
-      failure:{ text:"A hundred and forty years in, the technique's fragment runs out. What you have is not nothing. It is not Transcendence either.", effects:{ stats:{ essence:6, willpower:4 }, days:200 } } },
+      success:{ text:"Two hundred and ten years, alone, refining essence by hand.\n\nYou come out of it Transcendent without the Spell ever having graded you, which is a thing perhaps four people alive can say, and none of them advertise it.", effects:{ rank:1, years:182, chapter:"transcendent", stats:{ essence:8, willpower:6, renown:2 }, flags:{ add:["ancient_path"] } } },
+      failure:{ text:"A hundred and forty years in, the technique's fragment runs out. What you have is not nothing. It is not Transcendence either.", effects:{ stats:{ essence:6, willpower:4 }, years:112 } } },
     { label:"Leave it. The Spell's road is faster for a reason.", effects:{ stats:{ cunning:2 } } },
   ]
 },
@@ -1668,12 +1674,19 @@ const EVENTS = [
   ]
 },
 {
-  id:"st_fourth", chapter:"transcendent", weight:16, once:true, days:400,
-  requires:{ stats:{ willpower:{ min:38 }, essence:{ min:34 } } },
+  /* Not `once` any more (issue #47): the Door could come up the moment a
+     life reached Saint, and refusing to go unready meant never going. Canon
+     keeps a Seed open to challengers until it is conquered, so it now comes
+     back on a long cooldown; "Refuse it for good" is the only permanent no.
+     Conquering moves you out of the transcendent chapter, so it cannot
+     re-offer after that. */
+  id:"st_fourth", chapter:"transcendent", weight:16, cooldown:120, days:400,
+  requires:{ stats:{ willpower:{ min:38 }, essence:{ min:34 } }, flags:{ none:["chose_to_stay"] } },
   title:"The Fourth Door",
   text:"Three people have ever done this.\n\nAster, Song and Vale came back from the Fourth Nightmare wreathed in an authority the world had no word for, and then chose to say nothing about it and rule from behind the clans instead. There has not been a fourth. There has not been a serious attempt at a fourth in living memory, and living memory now means yours.\n\nSix thousand years on the other side of it. And a world that will spend every one of them declining to hold you.",
   choices:[
     { label:"Enter the Seed and face the Fourth Nightmare.", effects:{ nightmare:"fourth" } },
+    { label:"Not yet. Prepare, and wait for the next Seed.", effects:{ stats:{ willpower:1, essence:1 } } },
     { label:"Refuse it for good, and live out your life as a Saint.",
       effects:{ stats:{ willpower:4, tether:2 }, flags:{ add:["chose_to_stay"] } } },
   ]
@@ -1694,9 +1707,9 @@ const EVENTS = [
 /* Until v0.4.0 a failed crossing, or turning around, sent a Saint home alive
    and un-ascended, which breaks the rule that a Nightmare ends in conquest or
    death (the same exit was removed from the Second Nightmares in v0.3.4).
-   It also stranded the life: st_fourth is `once`, so a tester spent the rest
-   of a 900-year life alternating two events (issue #6). The second attempt
-   below is the only one there is. */
+   It also stranded the life: st_fourth was `once` (until #47), so a tester
+   spent the rest of a 900-year life alternating two events (issue #6). The
+   second attempt below is the only one there is. */
 {
   id:"qn1_2", scripted:true, once:true, days:30, fixedTime:true,
   title:"The Quiet Between Stars",
@@ -1821,7 +1834,7 @@ const EVENTS = [
       check:{ stat:"vitality", dc:13, dcScale:2, dcEra:3, fatal:3, fatalKind:"gate",
         fatalText:"They give you the calls nobody else wants, which is exactly what you asked for.",
         fatalCause:"Killed working off a debt to the people who hand out the Gates." },
-      success:{ text:"Ten years of the worst rotations on the board. At the end of it the file is clean and you are not the person who started it.", effects:{ stats:{ renown:6, vitality:-4, willpower:2 }, flags:{ remove:["shirked"] }, kill:{ rank:1, size:3 } } },
+      success:{ text:"Ten years of the worst rotations on the board. At the end of it the file is clean and you are not the person who started it.", effects:{ stats:{ renown:6, vitality:-4, willpower:2 }, flags:{ remove:["shirked"] }, kill:{ rank:1, size:3 }, years:8 } },
       failure:{ text:"You work most of it off.", effects:{ stats:{ renown:2, vitality:-6 } } } },
     { label:"Go independent. Live outside the arrangement.", hint:"Cunning. Nobody is coming when it opens near you.",
       check:{ stat:"cunning", dc:14, dcScale:2, dcEra:3, fatal:4, fatalKind:"gate",
@@ -1852,7 +1865,7 @@ const EVENTS = [
         fatalText:"You meet another Saint on the collarbone of a dead god. One of you was always going to be the one who did not leave.",
         fatalCause:"Killed by another Saint in the war of the Domains, on Godgrave." },
       success:{ text:"You break a front that a hundred thousand Awakened could not have moved, and the ash will lie differently for a thousand years.", effects:{ stats:{ renown:12, vitality:-6 }, kill:{ rank:3, cores:1, size:6 }, flags:{ add:["war_saint"] } } },
-      failure:{ text:"You hold your section. It costs you a century of recovery and a piece of your Aspect you will not get back.", effects:{ stats:{ vitality:-9, essence:-4, renown:5 } } } },
+      failure:{ text:"You hold your section. It costs you a century of recovery and a piece of your Aspect you will not get back.", effects:{ stats:{ vitality:-9, essence:-4, renown:5 }, years:78 } } },
     { label:"Refuse both sides.", hint:"Cunning. Neutrality is a position, and positions get attacked.",
       check:{ stat:"cunning", dc:5, dcSelf:true, fatal:3, fatalKind:"murdered",
         fatalText:"Neutral is a word for a Saint whose Domain nobody has claimed yet. Both sides reach the same conclusion in the same month.",
@@ -2330,7 +2343,7 @@ const EVENTS = [
   text:"The thing you put down at the last Gate is still available, in the only sense that matters.\n\nAn Echo is not a ghost and not a prisoner, and every instructor who has ever explained it has explained it badly. It is a copy, made out of your own Soul Essence, of something that no longer exists. It does not possess a soul. It possesses the shape of one, which is a different thing, and the Essence that holds that shape is Essence you do not get back while you hold it.\n\nThe alternative is to let the shape go and keep the Essence.",
   choices:[
     { label:"Bind it as your Echo. It will cost Essence for good.",
-      effects:{ echo:"tender", flags:{ add:["bound_a_shade"] } } },
+      effects:{ echo:"gate_hound", flags:{ add:["bound_a_shade"] } } },
     { label:"Let it go and keep your Essence.",
       effects:{ stats:{ essence:3, willpower:1 }, flags:{ add:["let_it_go"] } } },
   ]
@@ -2419,7 +2432,7 @@ const EVENTS = [
         fatalText:"It is Great-ranked, which the grading did not say, because the last person qualified to grade it did not come back either.",
         fatalCause:"Killed closing a Gate that was graded by somebody who had not seen it." },
       success:{ text:"Closed. A few dozen Saints exist and this is the work that keeps the number down.", effects:{ stats:{ vitality:-5, renown:6 }, kill:{ rank:4, size:2 } } },
-      failure:{ text:"Closed, at the cost of a century of recovery and a province that no longer has anybody living in it.", effects:{ stats:{ vitality:-9, renown:2 }, kill:{ rank:4, size:1 } } } },
+      failure:{ text:"Closed, at the cost of a century of recovery and a province that no longer has anybody living in it.", effects:{ stats:{ vitality:-9, renown:2 }, kill:{ rank:4, size:1 }, years:80 } } },
     { label:"Send Masters in and run the operation from the perimeter.", hint:"Cunning. Pick who goes, in what order, and where you stand.",
       check:{ stat:"cunning", dc:17, dcScale:3, fatal:5, fatalKind:"gate",
         fatalText:"The perimeter is the part that fails. It is always the part that fails, and you were standing on it.",
