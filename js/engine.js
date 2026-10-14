@@ -636,6 +636,19 @@ const Engine = (() => {
   }
 
   /* ---------- resolving a choice ---------- */
+  /* The "era" term of a check's difficulty: how far the world has worsened
+     around you, one step per 20 years lived. Uncapped, that was right for an
+     Awakened (140 years, 7 steps) and absurd above it: a 5,000-year-old
+     Sovereign was 260 steps in, and a dcEra:2 check came out at DC 500+
+     (issue #48). The cap is a Master's natural lifespan in steps (320 / 20),
+     so Awakened, Master and Saint play exactly as before (checked with
+     tools/sim.js) and the highest ranks stop drifting into impossible
+     numbers. The 20 and the cap are ours, not canon. */
+  const ERA_CAP = 16;
+  function eraOf(s) {
+    return Math.min(ERA_CAP, Math.floor(years(s) / 20));
+  }
+
   function choose(s, ev, index) {
     const out = resolveChoice(s, ev, index);
     if (out.text) out.text = Hooks.reduce("text", out.text, s);
@@ -661,7 +674,7 @@ const Engine = (() => {
          Ascension thickens the Gates worldwide, so the longer you live the
          worse the world you live in gets. An Awakened who refuses to climb
          does not get to coast to a peaceful old age. */
-      const era = Math.floor(years(s) / 20);
+      const era = eraOf(s);
       /* dcSelf: the trial is measured against the challenger, not against a
          fixed bar. Canon uses this for the personal trials — the Fifth
          Nightmare has "a personal trial tailored specifically to the
@@ -717,7 +730,7 @@ const Engine = (() => {
     checkAid, isCombat, weaponBonus, armorSoak, orgSize, migrate, AID,
     soulClass: s => CLASSES[s.soulClass ?? 0],
     maxClassFor,
-    rank, years, lifeRemaining, lifespanYears, statDef, shown, eventText,
+    rank, years, lifeRemaining, lifespanYears, statDef, shown, eventText, era: eraOf,
     DAYS_PER_YEAR,
     eventById: id => EVENTS.find(e => e.id === id),
   };

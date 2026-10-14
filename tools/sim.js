@@ -7,7 +7,7 @@ function score(s,c){
   let v=0;
   if(c.check){
     const stat=s.stats[c.check.stat]||0;
-    const era=Math.floor(Engine.years(s)/20);
+    const era=Engine.era(s);
     // dcSelf: the bar is the challenger's own stat, so a high stat does not
     // make a personal trial safer. Without this the oracle over-rates the
     // Fourth and Fifth Nightmares badly.
