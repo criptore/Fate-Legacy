@@ -448,6 +448,12 @@ const ECHOES = {
   tender:       { name:"An Orchard Tender",           rank:"Awakened", bound:2,
     desc:"It prunes. Given nothing to prune it stands where you left it, indefinitely, patiently.",
     stats:{ vitality:2, cunning:2 } },
+  /* Issue #46: the generic post-Gate binding used to hand out the Orchard
+     Tender, a creature from the Iron Orchard, to players who had never been
+     there. This is what actually comes through a Gate. */
+  gate_hound:   { name:"A Hound From The Gate",       rank:"Awakened", bound:2,
+    desc:"It came through the Gate first, the way they always do. Now it walks a step behind you and watches every doorway you pass.",
+    stats:{ vitality:2, perception:2 } },
   fallen_shade: { name:"Shade of a Fallen",           rank:"Ascended", bound:4,
     desc:"A copy of something that walked beside a column of forty thousand people for centuries.",
     stats:{ vitality:4, willpower:3 } },
@@ -2337,7 +2343,7 @@ const EVENTS = [
   text:"The thing you put down at the last Gate is still available, in the only sense that matters.\n\nAn Echo is not a ghost and not a prisoner, and every instructor who has ever explained it has explained it badly. It is a copy, made out of your own Soul Essence, of something that no longer exists. It does not possess a soul. It possesses the shape of one, which is a different thing, and the Essence that holds that shape is Essence you do not get back while you hold it.\n\nThe alternative is to let the shape go and keep the Essence.",
   choices:[
     { label:"Bind it as your Echo. It will cost Essence for good.",
-      effects:{ echo:"tender", flags:{ add:["bound_a_shade"] } } },
+      effects:{ echo:"gate_hound", flags:{ add:["bound_a_shade"] } } },
     { label:"Let it go and keep your Essence.",
       effects:{ stats:{ essence:3, willpower:1 }, flags:{ add:["let_it_go"] } } },
   ]
