@@ -1668,12 +1668,19 @@ const EVENTS = [
   ]
 },
 {
-  id:"st_fourth", chapter:"transcendent", weight:16, once:true, days:400,
-  requires:{ stats:{ willpower:{ min:38 }, essence:{ min:34 } } },
+  /* Not `once` any more (issue #47): the Door could come up the moment a
+     life reached Saint, and refusing to go unready meant never going. Canon
+     keeps a Seed open to challengers until it is conquered, so it now comes
+     back on a long cooldown; "Refuse it for good" is the only permanent no.
+     Conquering moves you out of the transcendent chapter, so it cannot
+     re-offer after that. */
+  id:"st_fourth", chapter:"transcendent", weight:16, cooldown:120, days:400,
+  requires:{ stats:{ willpower:{ min:38 }, essence:{ min:34 } }, flags:{ none:["chose_to_stay"] } },
   title:"The Fourth Door",
   text:"Three people have ever done this.\n\nAster, Song and Vale came back from the Fourth Nightmare wreathed in an authority the world had no word for, and then chose to say nothing about it and rule from behind the clans instead. There has not been a fourth. There has not been a serious attempt at a fourth in living memory, and living memory now means yours.\n\nSix thousand years on the other side of it. And a world that will spend every one of them declining to hold you.",
   choices:[
     { label:"Enter the Seed and face the Fourth Nightmare.", effects:{ nightmare:"fourth" } },
+    { label:"Not yet. Prepare, and wait for the next Seed.", effects:{ stats:{ willpower:1, essence:1 } } },
     { label:"Refuse it for good, and live out your life as a Saint.",
       effects:{ stats:{ willpower:4, tether:2 }, flags:{ add:["chose_to_stay"] } } },
   ]
@@ -1694,9 +1701,9 @@ const EVENTS = [
 /* Until v0.4.0 a failed crossing, or turning around, sent a Saint home alive
    and un-ascended, which breaks the rule that a Nightmare ends in conquest or
    death (the same exit was removed from the Second Nightmares in v0.3.4).
-   It also stranded the life: st_fourth is `once`, so a tester spent the rest
-   of a 900-year life alternating two events (issue #6). The second attempt
-   below is the only one there is. */
+   It also stranded the life: st_fourth was `once` (until #47), so a tester
+   spent the rest of a 900-year life alternating two events (issue #6). The
+   second attempt below is the only one there is. */
 {
   id:"qn1_2", scripted:true, once:true, days:30, fixedTime:true,
   title:"The Quiet Between Stars",
