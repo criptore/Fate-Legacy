@@ -341,6 +341,12 @@ const Engine = (() => {
     }
     if (fx.chapter) s.chapter = fx.chapter;
     if (fx.days) advance(s, fx.days, false);
+    /* `years`: an exact span of the character's life, never scaled by rank.
+       For outcomes whose text says how long they took ("Two hundred and ten
+       years, alone"), so the age the player sees matches the story and the
+       time risk is real (issue #46). Applied after any rank change, so a
+       success that ascends you is measured against the new lifespan. */
+    if (fx.years) advance(s, fx.years * DAYS_PER_YEAR, true);
     if (fx.goto) s.pending = fx.goto;
     if (fx.death) kill(s, typeof fx.death === "string" ? fx.death : fx.death.text,
                        typeof fx.death === "string" ? "killed" : fx.death.kind);
