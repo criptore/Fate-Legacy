@@ -40,6 +40,16 @@ that touches Rank, Class, Aspect or Lineage, check it against
 `CACHE` version. Bump both whenever a CSS or JS file changes, or returning
 players keep the old file. `/?repair` clears a stuck service worker.
 
+## Visit counter
+
+`index.html` loads [GoatCounter](https://www.goatcounter.com/) (site code
+`fatelegacy`, dashboard at https://fatelegacy.goatcounter.com). No cookies,
+no personal data. Besides page views, `track()` in `js/ui.js` sends two
+events: `life-start/<origin>` and `life-end/<furthest rank>`. It is a
+cross-origin request, so `sw.js` (same-origin only) never touches it, and
+GoatCounter ignores localhost, so local testing is not counted. Every call
+is wrapped so a blocked or missing counter cannot break the game.
+
 ## The rune HUD and day mode
 
 The status HUD is styled as the Spell's status page ("a script only the

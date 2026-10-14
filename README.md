@@ -19,6 +19,10 @@ free for anyone to play.
 The source is open for the same reason. If you enjoy the setting, take the
 code and run with it.
 
+The site counts visits anonymously with [GoatCounter](https://www.goatcounter.com/)
+(no cookies, no personal data, nothing stored on your device), only to know
+how many people play. Blocking it changes nothing in the game.
+
 If GuiltyThree or a rights holder would rather this didn't exist in this form,
 opening an issue is enough. It will be taken down without argument.
 
