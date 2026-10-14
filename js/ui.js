@@ -359,6 +359,7 @@
   function end() {
     show("end");
     const r = Engine.rank(S);
+    track(`life-end/${S.rank === 0 && S.chapter === "aspirant" ? "aspirant" : r.id}`, "Life ended");
     const KIND = { nightmare:"Died in a Nightmare", gate:"Died at a Gate", dream_realm:"Died in the Dream Realm",
       hollow:"Hollow", lost:"Lost", murdered:"Murdered", war:"Killed in the war of the Domains",
       chain:"Killed by the Chain of Nightmares", age:"Died of the years", wounds:"Died of wounds",
@@ -590,8 +591,16 @@
     }
   }
 
+  /* Anonymous event counts for the visit counter in index.html. Optional by
+     design: blocked, offline or on localhost, window.goatcounter is missing
+     or ignores it, and nothing here may ever break the game. */
+  function track(path, title) {
+    try { window.goatcounter?.count?.({ path, title: title ?? path, event: true }); } catch (e) {}
+  }
+
   function startNew(originId) {
     S = Engine.newRun(originId);
+    track(`life-start/${originId}`, "Life started");
     show("game");
     step();
   }
